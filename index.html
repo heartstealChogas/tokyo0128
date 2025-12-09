@@ -162,6 +162,7 @@
             ]);
             const [input, setInput] = useState('');
             const [isLoading, setIsLoading] = useState(false);
+            // 제공해주신 API 키를 기본값으로 설정
             const [userApiKey, setUserApiKey] = useState('AIzaSyBLQ8GHJJC5V5qCSBOZY2Y2mXXPqhlIovg');
             const [showSettings, setShowSettings] = useState(false);
             const messagesEndRef = useRef(null);
@@ -170,9 +171,8 @@
                 const storedKey = localStorage.getItem('gemini_api_key');
                 if (storedKey) {
                     setUserApiKey(storedKey);
-                } else {
-                    setShowSettings(true);
-                }
+                } 
+                // 설정된 키가 있으므로 자동 설정창 팝업 제거
             }, []);
 
             const saveApiKey = (key) => {
@@ -861,7 +861,7 @@
 
                     {/* Bottom Info */}
                      <div className="text-center text-gray-400 text-[10px] pb-8">
-                        © 2026 Tokyo Guide
+                        © 2026 Tokyo Trip Guide
                     </div>
                 </div>
             );
