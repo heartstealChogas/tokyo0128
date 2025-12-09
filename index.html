@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2026 도쿄 여행 가이드</title>
     
-    <!-- 1. Tailwind CSS 불러오기 -->
+    <!-- 1. Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. React & ReactDOM 불러오기 (Production 버전) -->
+    <!-- 2. React & ReactDOM (Production) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
-    <!-- 3. Babel (JSX 변환기) 불러오기 -->
+    <!-- 3. Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- 폰트 설정 (Pretendard) -->
+    <!-- 4. Pretendard Font -->
     <style>
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
         
@@ -24,11 +24,11 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fadeIn {
-            animation: fadeIn 0.4s ease-out forwards;
+            animation: fadeIn 0.3s ease-out forwards;
         }
         @keyframes spin-slow {
             from { transform: rotate(0deg); }
@@ -38,7 +38,7 @@
             animation: spin-slow 10s linear infinite;
         }
         
-        /* 벚꽃 떨어지는 애니메이션 */
+        /* 벚꽃 효과 */
         .sakura-container {
             position: fixed;
             top: 0;
@@ -53,7 +53,7 @@
             position: absolute;
             background-color: #ffd7e6;
             border-radius: 100% 0 100% 0;
-            opacity: 0.7;
+            opacity: 0.6;
             animation: fall linear infinite;
         }
         @keyframes fall {
@@ -62,42 +62,20 @@
             100% { opacity: 0; top: 100%; transform: translateX(20px) rotate(360deg); }
         }
 
-        /* 스크롤바 숨기기 */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-rose-50 text-gray-900">
     <div id="root"></div>
 
-    <!-- 5. React 코드 작성 (type="text/babel") -->
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- 아이콘 컴포넌트 ---
+        // --- 아이콘 (SVG) ---
         const Icon = ({ children, className, ...props }) => (
-            <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="24" 
-                height="24" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className={className}
-                {...props}
-            >
-                {children}
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>
         );
-
         const Train = (props) => <Icon {...props}><rect width="16" height="16" x="4" y="3" rx="2" /><path d="M4 11h16" /><path d="M12 3v8" /><path d="m8 19-2 3" /><path d="m18 22-2-3" /><path d="M8 15h0" /><path d="M16 15h0" /></Icon>;
         const CheckSquare = (props) => <Icon {...props}><path d="m9 11 3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></Icon>;
         const Flower = (props) => <Icon {...props}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></Icon>;
@@ -106,38 +84,94 @@
         const MapIcon = (props) => <Icon {...props}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" x2="9" y1="3" y2="18" /><line x1="15" x2="15" y1="6" y2="21" /></Icon>;
         const ChevronLeft = (props) => <Icon {...props}><path d="m15 18-6-6 6-6"/></Icon>;
         const ChevronRight = (props) => <Icon {...props}><path d="m9 18 6-6-6-6"/></Icon>;
+        const ChevronDown = (props) => <Icon {...props}><path d="m6 9 6 6 6-6"/></Icon>;
+        const ChevronUp = (props) => <Icon {...props}><path d="m18 15-6-6-6 6"/></Icon>;
 
-        // 벚꽃 컴포넌트
+        // --- 벚꽃 배경 효과 ---
         const SakuraEffect = () => {
             const [petals, setPetals] = useState([]);
-
             useEffect(() => {
-                const createPetal = () => ({
+                const initialPetals = Array.from({ length: 12 }).map(() => ({
                     id: Math.random(),
                     left: Math.random() * 100 + '%',
-                    animationDuration: Math.random() * 5 + 5 + 's',
-                    width: Math.random() * 10 + 10 + 'px',
-                    height: Math.random() * 10 + 10 + 'px',
-                });
-
-                const initialPetals = Array.from({ length: 15 }).map(createPetal);
+                    animationDuration: Math.random() * 5 + 8 + 's',
+                    width: Math.random() * 10 + 8 + 'px',
+                    height: Math.random() * 10 + 8 + 'px',
+                }));
                 setPetals(initialPetals);
             }, []);
-
             return (
                 <div className="sakura-container">
                     {petals.map(petal => (
-                        <div 
-                            key={petal.id}
-                            className="sakura"
-                            style={{
-                                left: petal.left,
-                                animationDuration: petal.animationDuration,
-                                width: petal.width,
-                                height: petal.height
-                            }}
-                        />
+                        <div key={petal.id} className="sakura" style={{ left: petal.left, animationDuration: petal.animationDuration, width: petal.width, height: petal.height }} />
                     ))}
+                </div>
+            );
+        };
+
+        // --- 타임라인 아이템 (Activity + Nested Transports) ---
+        const TimelineItem = ({ item }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const hasTransport = item.transports && item.transports.length > 0;
+
+            return (
+                <div className="relative pl-10 lg:pl-14 py-1">
+                    {/* 타임라인 노드 */}
+                    <div className="absolute left-[19px] lg:left-[27px] -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 bg-white border-pink-400 z-10 top-2"></div>
+                    
+                    <div className="flex flex-col">
+                        {/* 상단: 시간 + 내용 + 화살표 */}
+                        <div className="flex flex-row items-start gap-3">
+                            <span className="font-bold text-pink-500 text-[10px] lg:text-xs shrink-0 min-w-[3rem] mt-0.5 font-mono">{item.time}</span>
+                            <div className="flex-1">
+                                <div className="flex items-center justify-between">
+                                    <p className="text-gray-900 font-bold text-xs lg:text-sm leading-snug">
+                                        {item.content}
+                                    </p>
+                                    
+                                    {/* 이동 정보가 있을 때만 화살표 표시 */}
+                                    {hasTransport && (
+                                        <button 
+                                            onClick={() => setIsOpen(!isOpen)}
+                                            className={`ml-2 p-1 rounded-full transition-colors flex-shrink-0 ${isOpen ? 'bg-pink-100 text-pink-500' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
+                                        >
+                                            {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                                        </button>
+                                    )}
+                                </div>
+                                {item.jp && (
+                                    <p className="text-[10px] lg:text-xs text-gray-500 mt-0.5 font-medium">{item.jp}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* 하단: 이동 정보 (토글) */}
+                        {hasTransport && isOpen && (
+                            <div className="mt-2 space-y-2 animate-fadeIn">
+                                {item.transports.map((trans, idx) => (
+                                    <div key={idx} className="py-2 px-3 bg-white rounded-xl border border-gray-200 flex items-start gap-3 w-full shadow-sm">
+                                        <Train className={`w-3.5 h-3.5 mt-0.5 shrink-0
+                                            ${trans.color === 'gray' ? 'text-gray-600' : 
+                                            trans.color === 'red' ? 'text-red-500' :
+                                            trans.color === 'orange' ? 'text-orange-500' :
+                                            trans.color === 'green' ? 'text-green-600' :
+                                            trans.color === 'blue' ? 'text-blue-500' :
+                                            trans.color === 'sky' ? 'text-sky-500' :
+                                            'text-pink-500'}`} 
+                                        />
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-gray-900 text-[10px] lg:text-xs">{trans.name}</span>
+                                            <span className="text-gray-600 text-[10px] lg:text-xs mt-0.5 leading-relaxed">{trans.detail}</span>
+                                            {trans.jp && <span className="text-gray-400 text-[9px] mt-0.5">{trans.jp}</span>}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        
+                        {/* 이동 정보가 없을 때 간격 유지용 */}
+                        {!isOpen && <div className="h-2"></div>}
+                    </div>
                 </div>
             );
         };
@@ -145,6 +179,7 @@
         const TokyoTripGuide = () => {
             const [activeDay, setActiveDay] = useState(1);
 
+            // 데이터 구조 변경: Activity 안에 Transports 배열 포함
             const itineraryData = [
                 {
                     day: 1,
@@ -152,15 +187,19 @@
                     title: '나리타공항 & 니혼바시',
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Narita+Airport&destination=Keio+Presso+Inn+Nihombashi+Kayabacho&travelmode=transit",
                     timeline: [
-                        { type: 'activity', time: '15:55', content: '나리타 공항 도착 및 입국 수속', jp: '成田空港 (나리타쿠코)' },
-                        { type: 'transport', name: '게이세이 스카이액세스', detail: '나리타공항 → 니혼바시역 (60분)', color: 'orange', jp: 'スカイアクセス' },
-                        { type: 'transport', name: '도보', detail: '니혼바시역 D2 출구 → 숙소 (도보 10분)', color: 'gray', jp: '徒歩 (토호)' },
-                        { type: 'activity', time: '18:30', content: '숙소 체크인 (게이오 프레소 인 가야바초)', jp: '京王プレッソイン (케이오 프레소인)' },
-                        { type: 'activity', time: '19:00', content: '하브스 코레도 니혼바시 (케이크)', jp: 'ハーブス (하브스)' },
-                        { type: 'activity', time: '20:00', content: '이마카츠 긴자 (닭가슴살 카츠)', jp: 'イマカツ銀座 (이마카츠 긴자)' }
+                        { 
+                            time: '15:55', content: '나리타 공항 도착 및 입국 수속', jp: '成田空港 (나리타쿠코)',
+                            transports: [
+                                { name: '게이세이 스카이액세스', detail: '나리타공항 → 니혼바시역 (60분)', color: 'orange', jp: 'スカイアクセス' },
+                                { name: '도보', detail: '니혼바시역 D2 출구 → 숙소 (도보 10분)', color: 'gray', jp: '徒歩 (토호)' }
+                            ]
+                        },
+                        { time: '18:30', content: '숙소 체크인 (게이오 프레소 인 가야바초)', jp: '京王プレッソイン (케이오 프레소인)' },
+                        { time: '19:00', content: '하브스 코레도 니혼바시 (케이크)', jp: 'ハーブス (하브스 / 20:00 마감)' },
+                        { time: '20:00', content: '이마카츠 긴자 (닭가슴살 카츠)', jp: 'イマカツ銀座 (이마카츠 긴자)' }
                     ],
                     tips: [
-                        '이마카츠 긴자점은 수요일 영업합니다.',
+                        '이마카츠 긴자점 수요일 영업 (일요일 휴무).',
                         '첫날은 패스권 개시하지 말고 IC카드 사용 추천.'
                     ],
                     japanese: [
@@ -175,12 +214,16 @@
                     title: '도쿄 디즈니랜드',
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Disneyland&travelmode=transit",
                     timeline: [
-                        { type: 'activity', time: '08:00', content: '숙소 출발', jp: '出発 (슛파츠)' },
-                        { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 핫초보리(H11) 하차', color: 'gray', jp: '日比谷線 (히비야센)' },
-                        { type: 'transport', name: 'JR 게이요선', detail: '핫초보리 → 마이하마역 (남쪽 출구)', color: 'red', jp: '京葉線 (케이요센)' },
-                        { type: 'activity', time: '09:00', content: '도쿄 디즈니랜드 입장', jp: 'ディズニーランド (디즈니란도)' },
-                        { type: 'activity', time: '13:00', content: '파크 내 점심 (피자 포트 등)', jp: 'ランチ (란치)' },
-                        { type: 'activity', time: '19:30', content: '퍼레이드 관람 및 퇴장', jp: 'パレード (파레-도)' }
+                        { 
+                            time: '08:00', content: '숙소 출발', jp: '出発 (슛파츠)',
+                            transports: [
+                                { name: 'H 히비야선', detail: '가야바초(H12) → 핫초보리(H11) 하차', color: 'gray', jp: '日比谷線 (히비야센)' },
+                                { name: 'JR 게이요선', detail: '핫초보리 → 마이하마역 (남쪽 출구)', color: 'red', jp: '京葉線 (케이요센)' }
+                            ]
+                        },
+                        { time: '09:00', content: '도쿄 디즈니랜드 입장', jp: 'ディズニーランド (디즈니란도)' },
+                        { time: '13:00', content: '파크 내 점심 (피자 포트 등)', jp: 'ランチ (란치)' },
+                        { time: '19:30', content: '퍼레이드 관람 및 퇴장', jp: 'パレード (파레-도)' }
                     ],
                     tips: [
                         '입장 직후 앱으로 DPA/패스 확인 필수.',
@@ -199,16 +242,24 @@
                     tag: 'PASS 1일차',
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Akihabara+Station&travelmode=transit",
                     timeline: [
-                        { type: 'activity', time: '10:00', content: '아키하바라 이동', jp: '秋葉原 (아키하바라)' },
-                        { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 아키하바라(H15) (3번 출구)', color: 'gray', jp: '日比谷線' },
-                        { type: 'activity', time: '12:00', content: '점심: 로스트 비프 오노', jp: 'ローストビーフ大野 (로스토비후 오노)' },
-                        { type: 'activity', time: '13:30', content: '라디오 회관 & 쇼핑', jp: 'ラジオ会館 (라지오 카이칸)' },
-                        { type: 'transport', name: 'H 히비야선', detail: '아키하바라(H15) → 가미야초(H05) (1번 출구)', color: 'gray', jp: '日比谷線' },
-                        { type: 'activity', time: '17:00', content: '도쿄 타워 야경 감상', jp: '東京タワー (토쿄타와-)' }
+                        { 
+                            time: '10:00', content: '아키하바라 이동', jp: '秋葉原 (아키하바라)',
+                            transports: [
+                                { name: 'H 히비야선', detail: '가야바초(H12) → 아키하바라(H15) (3번 출구)', color: 'gray', jp: '日比谷線' }
+                            ]
+                        },
+                        { time: '12:00', content: '점심: 로스트 비프 오노', jp: 'ローストビーフ大野 (로스토비후 오노)' },
+                        { 
+                            time: '13:30', content: '라디오 회관 & 하비코로 토이', jp: 'ラジオ会館 & ハビコロ玩具',
+                            transports: [
+                                { name: 'H 히비야선', detail: '아키하바라(H15) → 가미야초(H05) (1번 출구)', color: 'gray', jp: '日比谷線' }
+                            ]
+                        },
+                        { time: '17:00', content: '도쿄 타워 야경 감상', jp: '東京タワー (토쿄타와-)' }
                     ],
                     tips: [
-                        '아키하바라 상점은 보통 11시 오픈.',
-                        '히비야선 하나로 모든 이동 가능.'
+                        '하비코로 토이는 라디오 회관 2층에 위치.',
+                        '아키하바라 상점은 보통 11시 오픈.'
                     ],
                     japanese: [
                         { ko: '이거 새 상품인가요?', ja: 'これは新品ですか', jp: '코레 신핀 데스카?' },
@@ -223,12 +274,20 @@
                     tag: 'PASS 2일차',
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Ginza+Station&travelmode=transit",
                     timeline: [
-                        { type: 'activity', time: '10:30', content: '긴자 도착 및 반클리프 아펠 대기', jp: '銀座 (긴자)' },
-                        { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 긴자(H08) (A3/B3 출구)', color: 'gray', jp: '日比谷線' },
-                        { type: 'activity', time: '11:00', content: '반클리프 아펠 방문', jp: 'ヴァンクリーフ (반쿠리후)' },
-                        { type: 'transport', name: 'C 치요다선', detail: '긴자(C08) → 오모테산도(C04) (A2 출구)', color: 'green', jp: '千代田線 (치요다센)' },
-                        { type: 'activity', time: '14:00', content: '오모테산도 이동, 랄프스 커피', jp: '表参道 (오모테산도)' },
-                        { type: 'activity', time: '16:00', content: '캣스트리트 산책', jp: 'キャットストリート (캿토스토리토)' }
+                        { 
+                            time: '10:30', content: '긴자 도착 및 반클리프 아펠 대기', jp: '銀座 (긴자)',
+                            transports: [
+                                { name: 'H 히비야선', detail: '가야바초(H12) → 긴자(H08) (A3/B3 출구)', color: 'gray', jp: '日比谷線' }
+                            ]
+                        },
+                        { 
+                            time: '11:00', content: '반클리프 아펠 방문', jp: 'ヴァンクリーフ (반쿠리후)',
+                            transports: [
+                                { name: 'C 치요다선', detail: '긴자(C08) → 오모테산도(C04) (A2 출구)', color: 'green', jp: '千代田線 (치요다센)' }
+                            ]
+                        },
+                        { time: '14:00', content: '오모테산도 이동, 랄프스 커피', jp: '表参道 (오모테산도)' },
+                        { time: '16:00', content: '캣스트리트 산책', jp: 'キャットストリート (캿토스토리토)' }
                     ],
                     tips: [
                         '반클리프 아펠 오픈(11:00) 맞춰 방문 추천.',
@@ -245,18 +304,32 @@
                     date: '2.1 (일)',
                     title: '롯폰기 & 오다이바',
                     tag: 'PASS 3일차',
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tsujihan+Ark+Hills&travelmode=transit",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Pain+Maison+Ginza&travelmode=transit",
                     timeline: [
-                        { type: 'activity', time: '10:45', content: '츠지한 아크힐즈점 도착', jp: 'つじ半 アークヒルズ店 (츠지한 아크힐즈)' },
-                        { type: 'transport', name: 'H 히비야선', detail: '가야바초 → 가미야초(H05) 하차 (도보 10분)', color: 'gray', jp: '日比谷線' },
-                        { type: 'activity', time: '13:00', content: '롯폰기 힐즈 구경 후 오다이바 이동', jp: '六本木ヒルズ (롯폰기 히루즈)' },
-                        { type: 'transport', name: 'G 긴자선', detail: '롯폰기 → 신바시(G08) 환승', color: 'orange', jp: '銀座線 (긴자센)' },
-                        { type: 'transport', name: '유리카모메', detail: '신바시 → 다이바역 (별도 티켓 구매)', color: 'blue', jp: 'ゆりかもめ (유리카모메)' },
-                        { type: 'activity', time: '15:30', content: '다이버시티 (건담) & 아쿠아시티', jp: 'お台場 (오다이바)' },
-                        { type: 'activity', time: '18:00', content: '레인보우 브리지 야경', jp: 'レインボーブリッジ (레인보- 부리지)' }
+                        { 
+                            time: '09:00', content: '판 메종 긴자 (소금빵)', jp: 'パン・メゾン (판 메종 / 08:30~19:00)',
+                            transports: [
+                                { name: 'H 히비야선', detail: '가야바초 → 핫초보리 → 긴자잇초메 (도보 5분)', color: 'gray', jp: '日比谷線' }
+                            ]
+                        },
+                        { 
+                            time: '10:45', content: '츠지한 아크힐즈점 이동', jp: 'つじ半 アークヒルズ店 (츠지한 아크힐즈)',
+                            transports: [
+                                { name: 'H 히비야선', detail: '긴자 → 가미야초(H05) or 롯폰기잇초메', color: 'gray', jp: '日比谷線' }
+                            ]
+                        },
+                        { 
+                            time: '13:00', content: '롯폰기 힐즈 구경 후 오다이바 이동', jp: '六本木ヒルズ (롯폰기 히루즈)',
+                            transports: [
+                                { name: 'G 긴자선', detail: '롯폰기 → 신바시(G08) 환승', color: 'orange', jp: '銀座線 (긴자센)' },
+                                { name: '유리카모메', detail: '신바시 → 다이바역 (별도 티켓 구매)', color: 'blue', jp: 'ゆりかもめ (유리카모메)' }
+                            ]
+                        },
+                        { time: '15:30', content: '다이버시티 (건담) & 아쿠아시티', jp: 'お台場 (오다이바)' },
+                        { time: '18:00', content: '레인보우 브리지 야경', jp: 'レインボーブリッジ (레인보- 부리지)' }
                     ],
                     tips: [
-                        '츠지한 아크힐즈점 정상 영업.',
+                        '판 메종(화 휴무), 츠지한 아크힐즈점 정상 영업.',
                         '유리카모메 맨 앞칸(1-1) 뷰 추천.'
                     ],
                     japanese: [
@@ -271,17 +344,26 @@
                     title: '신주쿠 & 시부야',
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Gyoen+Roan&travelmode=transit",
                     timeline: [
-                        { type: 'activity', time: '10:30', content: '신주쿠 이동 & 도쿄 도청 전망대', jp: '東京都庁 (토쿄 토쵸)' },
-                        { type: 'transport', name: 'T 토자이선', detail: '가야바초(T11) → 구단시타 환승 → 신주쿠(S01)', color: 'sky', jp: '東西線 (토자이센)' },
-                        { type: 'activity', time: '12:00', content: '점심: 교엔 로안', jp: '御苑 炉庵 (교엔 로안)' },
-                        { type: 'transport', name: 'JR 야마노테선', detail: '신주쿠 → 시부야', color: 'green', jp: '山手線 (야마노테센)' },
-                        { type: 'activity', time: '14:30', content: '시부야 미야시타 파크', jp: '宮下パーク (미야시타 파쿠)' },
-                        { type: 'activity', time: '17:00', content: '시부야 스카이 (예약 필수)', jp: '渋谷スカイ (시부야 스카이)' },
-                        { type: 'activity', time: '19:30', content: '미요시테이 (저녁)', jp: '三善亭 (미요시테이)' }
+                        { 
+                            time: '10:30', content: '신주쿠 이동 & 도쿄 도청 전망대', jp: '東京都庁 (토쿄 토쵸)',
+                            transports: [
+                                { name: 'T 토자이선', detail: '가야바초(T11) → 구단시타 환승 → 신주쿠(S01)', color: 'sky', jp: '東西線 (토자이센)' }
+                            ]
+                        },
+                        { 
+                            time: '12:00', content: '점심: 교엔 로안', jp: '御苑 炉庵 (교엔 로안 / 월요일 영업)',
+                            transports: [
+                                { name: 'JR 야마노테선', detail: '신주쿠 → 시부야', color: 'green', jp: '山手線 (야마노테센)' }
+                            ]
+                        },
+                        { time: '13:30', content: '스즈카케 (이세탄 백화점)', jp: '鈴懸 (스즈카케 / 10:00~20:00)' },
+                        { time: '15:00', content: '시부야 미야시타 파크', jp: '宮下パーク (미야시타 파쿠)' },
+                        { time: '17:00', content: '시부야 스카이 (예약 필수)', jp: '渋谷スカイ (시부야 스카이)' },
+                        { time: '19:30', content: '미요시테이 (저녁)', jp: '三善亭 (미요시테이)' }
                     ],
                     tips: [
-                        '교엔 로안은 일요일 휴무라 오늘은 영업합니다.',
-                        '시부야 스카이는 예약 필수.',
+                        '교엔 로안(일 휴무) 정상 영업. 신주쿠 교엔은 휴무.',
+                        '스즈카케는 이세탄 지하 1층.',
                         '패스권 만료, IC카드 사용.'
                     ],
                     japanese: [
@@ -296,12 +378,20 @@
                     title: '니혼바시 & 나리타공항',
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Narita+Airport&travelmode=transit",
                     timeline: [
-                        { type: 'activity', time: '09:00', content: '체크아웃', jp: 'チェックアウト (쳇쿠아우토)' },
-                        { type: 'transport', name: '도보', detail: '숙소 → 니혼바시역', color: 'gray', jp: '徒歩' },
-                        { type: 'activity', time: '10:00', content: '니혼바시역으로 이동 & 탑승', jp: '日本橋駅 (니혼바시에키)' },
-                        { type: 'transport', name: '게이세이 스카이액세스', detail: '니혼바시역 → 나리타 공항', color: 'orange', jp: 'スカイアクセス' },
-                        { type: 'activity', time: '11:10', content: '나리타 공항 도착 & 면세점', jp: '成田空港 (나리타쿠코)' },
-                        { type: 'activity', time: '14:00', content: '인천행 KE704 탑승', jp: '搭乗 (토죠)' }
+                        { 
+                            time: '09:00', content: '체크아웃', jp: 'チェックアウト (쳇쿠아우토)',
+                            transports: [
+                                { name: '도보', detail: '숙소 → 니혼바시역', color: 'gray', jp: '徒歩' }
+                            ]
+                        },
+                        { 
+                            time: '10:00', content: '니혼바시역으로 이동 & 탑승', jp: '日本橋駅 (니혼바시에키)',
+                            transports: [
+                                { name: '게이세이 스카이액세스', detail: '니혼바시역 → 나리타 공항', color: 'orange', jp: 'スカイアクセス' }
+                            ]
+                        },
+                        { time: '11:10', content: '나리타 공항 도착 & 면세점', jp: '成田空港 (나리타쿠코)' },
+                        { time: '14:00', content: '인천행 KE704 탑승', jp: '搭乗 (토죠)' }
                     ],
                     tips: [
                         '남은 동전은 공항 편의점/가챠로 처리.',
@@ -317,39 +407,26 @@
             const currentDayData = itineraryData.find(d => d.day === activeDay) || itineraryData[0];
             const totalDays = itineraryData.length;
 
-            const handlePrevDay = () => {
-                if (activeDay > 1) {
-                    setActiveDay(activeDay - 1);
-                }
-            };
-
-            const handleNextDay = () => {
-                if (activeDay < totalDays) {
-                    setActiveDay(activeDay + 1);
-                }
-            };
+            const handlePrevDay = () => { if (activeDay > 1) setActiveDay(activeDay - 1); };
+            const handleNextDay = () => { if (activeDay < totalDays) setActiveDay(activeDay + 1); };
 
             return (
                 <div className="flex h-screen bg-rose-50 text-gray-900 overflow-hidden font-pretendard">
                     <SakuraEffect />
 
-                    {/* Sidebar Navigation */}
+                    {/* Sidebar */}
                     <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white/95 backdrop-blur-md shadow-2xl border-r border-pink-100 hidden lg:block`}>
                         <div className="p-6 flex flex-col h-full">
                             <div className="flex items-center gap-2 mb-6 text-pink-500">
                                 <Flower className="w-8 h-8 animate-spin-slow" />
                                 <h1 className="text-xl font-bold tracking-tight text-gray-900">도쿄 여행 <span className="text-xs block text-pink-400 font-normal mt-1">2026.1.28 - 2.3</span></h1>
                             </div>
-
                             <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar pr-2">
                                 {itineraryData.map((data) => (
                                     <button
                                         key={data.day}
-                                        onClick={() => { setActiveDay(data.day); }}
-                                        className={`w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-300 flex flex-col gap-0.5 border border-transparent
-                                            ${activeDay === data.day 
-                                                ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-lg shadow-pink-200 scale-105' 
-                                                : 'hover:bg-pink-50 text-gray-700 hover:border-pink-100'}`}
+                                        onClick={() => setActiveDay(data.day)}
+                                        className={`w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-300 flex flex-col gap-0.5 border border-transparent ${activeDay === data.day ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-lg shadow-pink-200 scale-105' : 'hover:bg-pink-50 text-gray-700 hover:border-pink-100'}`}
                                     >
                                         <span className={`text-[10px] font-medium ${activeDay === data.day ? 'text-pink-100' : 'text-gray-500'}`}>{data.date}</span>
                                         <span className="font-bold text-base">{data.day}일차</span>
@@ -360,10 +437,8 @@
                         </div>
                     </aside>
 
-                    {/* Main Content Area */}
+                    {/* Main Content */}
                     <main className="flex-1 flex flex-col h-full overflow-hidden relative lg:ml-64">
-                        
-                        {/* Mobile Header (네비게이션 없이 현재 정보만 표시) */}
                         <div className="lg:hidden flex items-center justify-between px-5 py-4 bg-white/90 backdrop-blur-md shadow-sm z-30 sticky top-0">
                             <div className="flex items-center gap-2">
                                 <span className="text-pink-500 font-bold text-lg">Day {activeDay}</span>
@@ -372,125 +447,55 @@
                             </div>
                         </div>
 
-                        {/* Scrollable Content */}
                         <div className="flex-1 overflow-y-auto p-4 lg:p-10 scroll-smooth relative">
                             <div className="max-w-2xl mx-auto space-y-6 pb-20">
-                                
                                 <div className="animate-fadeIn space-y-6">
-                                    
-                                    {/* Title Section & Map Button */}
-                                    <div className="mt-2 lg:mt-0">
-                                        {currentDayData.tag && (
-                                            <span className="inline-block px-3 py-1 bg-pink-100 text-pink-600 text-[11px] font-bold rounded-full mb-3">
-                                                {currentDayData.tag}
-                                            </span>
-                                        )}
-                                        <h2 className="text-2xl lg:text-3xl font-extrabold text-gray-900 leading-tight mb-2">{currentDayData.title}</h2>
-                                        <p className="text-pink-400 font-medium text-sm">{currentDayData.date}</p>
-                                        
-                                        {/* Google Map Button Card */}
-                                        <a 
-                                            href={currentDayData.mapUrl} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="mt-4 block w-1/2 group relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-500 to-blue-400 shadow-md transition-all hover:shadow-blue-200 hover:-translate-y-0.5"
-                                        >
-                                            <div className="px-3 py-2 flex items-center justify-between">
-                                                <div className="flex items-center gap-2 text-white">
-                                                    <div className="p-1.5 bg-white/20 rounded-full backdrop-blur-sm">
-                                                        <MapIcon className="w-4 h-4" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-bold text-sm">{currentDayData.day}일차 지도</p>
-                                                    </div>
+                                    <div className="mt-2 lg:mt-0 flex justify-between items-start">
+                                        <div>
+                                            {currentDayData.tag && <span className="inline-block px-3 py-1 bg-pink-100 text-pink-600 text-[11px] font-bold rounded-full mb-3">{currentDayData.tag}</span>}
+                                            <h2 className="text-2xl lg:text-3xl font-extrabold text-gray-900 leading-tight mb-2">{currentDayData.title}</h2>
+                                            <p className="text-pink-400 font-medium text-sm">{currentDayData.date}</p>
+                                        </div>
+                                        <a href={currentDayData.mapUrl} target="_blank" rel="noopener noreferrer" className="block w-1/2 group relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-500 to-blue-400 shadow-md transition-all hover:shadow-blue-200 hover:-translate-y-0.5 shrink-0 ml-4">
+                                            <div className="px-3 py-2 flex items-center justify-between text-white">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="p-1.5 bg-white/20 rounded-full backdrop-blur-sm"><MapIcon className="w-4 h-4" /></div>
+                                                    <p className="font-bold text-sm">지도</p>
                                                 </div>
-                                                <div className="bg-white/20 p-1 rounded-full text-white transform group-hover:translate-x-1 transition-transform">
+                                                <div className="bg-white/20 p-1 rounded-full transform group-hover:translate-x-1 transition-transform">
                                                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                                                 </div>
                                             </div>
                                         </a>
-
-                                        {/* Critical Alert */}
-                                        {currentDayData.alert && (
-                                            <div className="mt-4 bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-start gap-3">
-                                                <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                                                <p className="text-rose-600 text-sm font-bold leading-snug">{currentDayData.alert}</p>
-                                            </div>
-                                        )}
                                     </div>
 
-                                    {/* Combined Timeline Section */}
-                                    <div className="bg-white rounded-3xl p-5 lg:p-8 shadow-xl border border-pink-50 relative overflow-hidden">
-                                        {/* Vertical Line */}
-                                        <div className="absolute left-[26px] lg:left-[34px] top-8 bottom-8 w-0.5 bg-gradient-to-b from-pink-200 to-rose-100"></div>
-                                        
-                                        <div className="space-y-7 relative">
-                                            {currentDayData.timeline.map((item, idx) => (
-                                                <div key={idx} className="relative pl-10 lg:pl-14">
-                                                    {/* Timeline Node */}
-                                                    <div className={`absolute left-[19px] lg:left-[27px] -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 
-                                                        ${item.type === 'activity' 
-                                                            ? 'bg-white border-pink-400 z-10' 
-                                                            : 'bg-gray-200 border-gray-300 w-2.5 h-2.5 left-[19px] lg:left-[27px]'}`}>
-                                                    </div>
+                                    {currentDayData.alert && (
+                                        <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-start gap-3">
+                                            <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+                                            <p className="text-rose-600 text-sm font-bold leading-snug">{currentDayData.alert}</p>
+                                        </div>
+                                    )}
 
-                                                    {item.type === 'activity' ? (
-                                                        <div className="flex flex-row items-start gap-3 group">
-                                                            <span className="font-bold text-pink-500 text-[10px] lg:text-xs shrink-0 min-w-[3rem] mt-0.5">{item.time}</span>
-                                                            <div className="flex flex-col">
-                                                                <p className="text-gray-900 font-semibold text-xs lg:text-sm leading-snug">
-                                                                    {item.content}
-                                                                </p>
-                                                                {item.jp && (
-                                                                    <p className="text-[10px] lg:text-xs text-gray-400 mt-0.5 font-medium">{item.jp}</p>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        // 배경색 변경 및 텍스트 색상 변경 (흰색 배경, 진한 글씨)
-                                                        <div className="mt-1 mb-1 py-2 px-3 bg-white rounded-xl border border-gray-100 flex items-start gap-3 w-full backdrop-blur-sm">
-                                                            <Train className={`w-3.5 h-3.5 mt-0.5 shrink-0
-                                                                ${item.color === 'gray' ? 'text-gray-600' : 
-                                                                item.color === 'red' ? 'text-red-500' :
-                                                                item.color === 'orange' ? 'text-orange-500' :
-                                                                item.color === 'green' ? 'text-green-600' :
-                                                                item.color === 'blue' ? 'text-blue-500' :
-                                                                'text-pink-500'}`} 
-                                                            />
-                                                            <div className="flex flex-col">
-                                                                <span className="font-bold text-gray-900 text-[10px] lg:text-xs">{item.name}</span>
-                                                                <span className="text-gray-900 text-[10px] lg:text-xs mt-0.5 leading-relaxed">{item.detail}</span>
-                                                                {item.jp && <span className="text-gray-400 text-[10px] mt-0.5">{item.jp}</span>}
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                    <div className="bg-white rounded-3xl p-5 lg:p-8 shadow-xl border border-pink-50 relative overflow-hidden">
+                                        <div className="absolute left-[26px] lg:left-[34px] top-8 bottom-8 w-0.5 bg-gradient-to-b from-pink-200 to-rose-100"></div>
+                                        <div className="space-y-2 relative">
+                                            {currentDayData.timeline.map((item, idx) => (
+                                                <TimelineItem key={idx} item={item} />
                                             ))}
                                         </div>
                                     </div>
 
-                                    {/* Info Grid (Tips & Japanese) */}
                                     <div className="grid grid-cols-1 gap-4">
-                                        {/* Tips */}
                                         <div className="bg-gradient-to-br from-rose-50 to-white rounded-2xl p-5 shadow-sm border border-pink-100">
-                                            <h3 className="text-xs font-bold text-rose-500 flex items-center gap-2 mb-3">
-                                                <CheckSquare className="w-3.5 h-3.5" /> 꿀팁 & 체크
-                                            </h3>
+                                            <h3 className="text-xs font-bold text-rose-500 flex items-center gap-2 mb-3"><CheckSquare className="w-3.5 h-3.5" /> 꿀팁 & 체크</h3>
                                             <ul className="space-y-2">
                                                 {currentDayData.tips.map((tip, idx) => (
-                                                    <li key={idx} className="flex items-start gap-2 text-xs text-gray-900 leading-relaxed">
-                                                        <span className="text-rose-400 mt-1 shrink-0 text-xs">●</span>
-                                                        {tip}
-                                                    </li>
+                                                    <li key={idx} className="flex items-start gap-2 text-xs text-gray-900 leading-relaxed"><span className="text-rose-400 mt-1 shrink-0 text-xs">●</span>{tip}</li>
                                                 ))}
                                             </ul>
                                         </div>
-
-                                        {/* Japanese */}
                                         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                                            <h3 className="text-xs font-bold text-indigo-500 flex items-center gap-2 mb-3">
-                                                <Languages className="w-3.5 h-3.5" /> 필수 일본어
-                                            </h3>
+                                            <h3 className="text-xs font-bold text-indigo-500 flex items-center gap-2 mb-3"><Languages className="w-3.5 h-3.5" /> 필수 일본어</h3>
                                             <div className="space-y-2.5">
                                                 {currentDayData.japanese.map((lang, idx) => (
                                                     <div key={idx} className="flex flex-col gap-0.5 border-b border-gray-100 pb-2 last:border-0 last:pb-0">
@@ -504,26 +509,12 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                             
-                            {/* 이전/다음 버튼 네비게이션 */}
                             <div className="fixed bottom-6 right-6 flex gap-3 z-50">
-                                <button 
-                                    onClick={handlePrevDay} 
-                                    disabled={activeDay === 1}
-                                    className={`p-3 rounded-full shadow-lg transition-all duration-300 ${activeDay === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-pink-500 hover:bg-pink-50 hover:scale-110'}`}
-                                >
-                                    <ChevronLeft className="w-6 h-6" />
-                                </button>
-                                <button 
-                                    onClick={handleNextDay} 
-                                    disabled={activeDay === totalDays}
-                                    className={`p-3 rounded-full shadow-lg transition-all duration-300 ${activeDay === totalDays ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-pink-500 to-rose-400 text-white hover:scale-110 hover:shadow-pink-200'}`}
-                                >
-                                    <ChevronRight className="w-6 h-6" />
-                                </button>
+                                <button onClick={handlePrevDay} disabled={activeDay === 1} className={`p-3 rounded-full shadow-lg transition-all duration-300 ${activeDay === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-pink-500 hover:bg-pink-50 hover:scale-110'}`}><ChevronLeft className="w-6 h-6" /></button>
+                                <button onClick={handleNextDay} disabled={activeDay === totalDays} className={`p-3 rounded-full shadow-lg transition-all duration-300 ${activeDay === totalDays ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-pink-500 to-rose-400 text-white hover:scale-110 hover:shadow-pink-200'}`}><ChevronRight className="w-6 h-6" /></button>
                             </div>
                         </div>
                     </main>
