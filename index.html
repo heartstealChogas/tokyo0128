@@ -86,14 +86,14 @@
             const [activeDay, setActiveDay] = useState(1);
             const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-            // 각 일자별 정확한 구글 지도 경로 URL 설정
+            // 각 일자별 정확한 구글 지도 경로 URL 설정 (대중교통 travelmode=transit 적용)
             const itineraryData = [
                 {
                     day: 1,
                     date: '1.28 (수)',
                     title: '나리타공항 & 니혼바시',
                     // 1일차: 나리타 -> 니혼바시역 -> 호텔 -> 하브스 -> 이마카츠
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Narita+Airport&destination=Imakatsu+Ginza&waypoints=Nihombashi+Station|Keio+Presso+Inn+Nihombashi+Kayabacho|Harbs+Coredo+Nihonbashi",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Narita+Airport&destination=Imakatsu+Ginza&waypoints=Nihombashi+Station|Keio+Presso+Inn+Nihombashi+Kayabacho|Harbs+Coredo+Nihonbashi&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '15:55', content: '나리타 공항 도착 및 입국 수속', jp: '成田空港 (나리타쿠코)' },
                         { type: 'transport', name: '게이세이 스카이액세스', detail: '나리타공항 → 니혼바시역 (60분)', color: 'orange', jp: 'スカイアクセス' },
@@ -118,7 +118,7 @@
                     date: '1.29 (목)',
                     title: '도쿄 디즈니랜드',
                     // 2일차: 호텔 -> 핫초보리 -> 디즈니랜드
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Disneyland&waypoints=Hatchobori+Station|Maihama+Station",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Disneyland&waypoints=Hatchobori+Station|Maihama+Station&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '08:00', content: '숙소 출발', jp: '出発 (슛파츠)' },
                         { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 핫초보리(H11) 하차', color: 'gray', jp: '日比谷線 (히비야센)' },
@@ -143,7 +143,7 @@
                     title: '아키하바라 & 도쿄타워',
                     tag: 'PASS 1일차',
                     // 3일차: 호텔 -> 아키하바라(로스트비프, 라디오회관) -> 도쿄타워
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Tower&waypoints=Akihabara+Station|Roast+Beef+Ono+Akihabara|Akihabara+Radio+Kaikan",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Tower&waypoints=Akihabara+Station|Roast+Beef+Ono+Akihabara|Akihabara+Radio+Kaikan&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '10:00', content: '아키하바라 이동', jp: '秋葉原 (아키하바라)' },
                         { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 아키하바라(H15) (3번 출구)', color: 'gray', jp: '日比谷線' },
@@ -168,7 +168,7 @@
                     title: '긴자 & 오모테산도',
                     tag: 'PASS 2일차',
                     // 4일차: 호텔 -> 긴자(반클리프) -> 오모테산도 -> 랄프스 -> 캣스트리트
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Cat+Street&waypoints=Ginza+Station|Van+Cleef+%26+Arpels+Ginza|Omotesando+Station|Ralph%27s+Coffee+Omotesando",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Cat+Street&waypoints=Ginza+Station|Van+Cleef+%26+Arpels+Ginza|Omotesando+Station|Ralph%27s+Coffee+Omotesando&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '10:30', content: '긴자 도착 및 반클리프 아펠 대기', jp: '銀座 (긴자)' },
                         { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 긴자(H08) (A3/B3 출구)', color: 'gray', jp: '日比谷線' },
@@ -192,8 +192,9 @@
                     date: '2.1 (일)',
                     title: '롯폰기 & 오다이바',
                     tag: 'PASS 3일차',
+                    alert: '※ 아크힐즈점 일요일 휴무로 장소 변경됨',
                     // 5일차: 호텔 -> 아크힐즈(츠지한) -> 롯폰기힐즈 -> 신바시 -> 오다이바
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=DiverCity+Tokyo+Plaza&waypoints=Tsujihan+Ark+Hills|Roppongi+Hills|Shimbashi+Station",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=DiverCity+Tokyo+Plaza&waypoints=Tsujihan+Ark+Hills|Roppongi+Hills|Shimbashi+Station&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '10:45', content: '츠지한 아크힐즈점 도착', jp: 'つじ半 アークヒルズ店 (츠지한 아크힐즈)' },
                         { type: 'transport', name: 'H 히비야선', detail: '가야바초 → 가미야초(H05) 하차 (도보 10분)', color: 'gray', jp: '日比谷線' },
@@ -219,7 +220,7 @@
                     title: '신주쿠 & 시부야',
                     alert: '※ 신주쿠 교엔 월요일 정기 휴무',
                     // 6일차: 호텔 -> 신주쿠(도청, 우동신) -> 시부야(미야시타, 스카이, 미요시테이)
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Miyoshitei+Shibuya&waypoints=Tokyo+Metropolitan+Government+Building|Udon+Shin|Miyashita+Park|Shibuya+Sky",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Miyoshitei+Shibuya&waypoints=Tokyo+Metropolitan+Government+Building|Udon+Shin|Miyashita+Park|Shibuya+Sky&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '10:30', content: '신주쿠 이동 & 도쿄 도청 전망대', jp: '東京都庁 (토쿄 토쵸)' },
                         { type: 'transport', name: 'T 토자이선', detail: '가야바초(T11) → 구단시타 환승 → 신주쿠(S01)', color: 'sky', jp: '東西線 (토자이센)' },
@@ -245,7 +246,7 @@
                     date: '2.3 (화)',
                     title: '니혼바시 & 나리타공항',
                     // 7일차: 호텔 -> 니혼바시역 -> 나리타공항
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Narita+Airport&waypoints=Nihombashi+Station",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Narita+Airport&waypoints=Nihombashi+Station&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '09:00', content: '체크아웃', jp: 'チェックアウト (쳇쿠아우토)' },
                         { type: 'transport', name: '도보', detail: '숙소 → 니혼바시역', color: 'gray', jp: '徒歩' },
