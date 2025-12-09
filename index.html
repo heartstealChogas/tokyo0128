@@ -75,16 +75,21 @@
 
         const Train = (props) => <Icon {...props}><rect width="16" height="16" x="4" y="3" rx="2" /><path d="M4 11h16" /><path d="M12 3v8" /><path d="m8 19-2 3" /><path d="m18 22-2-3" /><path d="M8 15h0" /><path d="M16 15h0" /></Icon>;
         const CheckSquare = (props) => <Icon {...props}><path d="m9 11 3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></Icon>;
-        const Menu = (props) => <Icon {...props}><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></Icon>;
+        // Menu 아이콘 제거
+        // const Menu = (props) => <Icon {...props}><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></Icon>;
         const Flower = (props) => <Icon {...props}><circle cx="12" cy="12" r="3" /><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5" /></Icon>;
         const Languages = (props) => <Icon {...props}><path d="m5 8 6 6" /><path d="m4 14 6-6 2-3" /><path d="M2 5h12" /><path d="M7 2h1" /><path d="m22 22-5-10-5 10" /><path d="M14 18h6" /></Icon>;
         const AlertCircle = (props) => <Icon {...props}><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></Icon>;
         const MapIcon = (props) => <Icon {...props}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" x2="9" y1="3" y2="18" /><line x1="15" x2="15" y1="6" y2="21" /></Icon>;
+        // 이전/다음 버튼 아이콘 추가
+        const ChevronLeft = (props) => <Icon {...props}><path d="m15 18-6-6 6-6"/></Icon>;
+        const ChevronRight = (props) => <Icon {...props}><path d="m9 18 6-6-6-6"/></Icon>;
         // --------------------------------------------------------
 
         const TokyoTripGuide = () => {
             const [activeDay, setActiveDay] = useState(1);
-            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+            // isMobileMenuOpen 상태 제거
+            // const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
             // 각 일자별 정확한 구글 지도 경로 URL 설정 (대중교통 travelmode=transit 적용)
             const itineraryData = [
@@ -92,8 +97,8 @@
                     day: 1,
                     date: '1.28 (수)',
                     title: '나리타공항 & 니혼바시',
-                    // 1일차: 나리타 -> 니혼바시역 -> 호텔 -> 하브스 -> 이마카츠
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Narita+Airport&destination=Imakatsu+Ginza&waypoints=Nihombashi+Station|Keio+Presso+Inn+Nihombashi+Kayabacho|Harbs+Coredo+Nihonbashi&travelmode=transit",
+                    // 공항 -> 숙소 (체크인 먼저)
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Narita+Airport&destination=Keio+Presso+Inn+Nihombashi+Kayabacho&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '15:55', content: '나리타 공항 도착 및 입국 수속', jp: '成田空港 (나리타쿠코)' },
                         { type: 'transport', name: '게이세이 스카이액세스', detail: '나리타공항 → 니혼바시역 (60분)', color: 'orange', jp: 'スカイアクセス' },
@@ -117,8 +122,8 @@
                     day: 2,
                     date: '1.29 (목)',
                     title: '도쿄 디즈니랜드',
-                    // 2일차: 호텔 -> 핫초보리 -> 디즈니랜드
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Disneyland&waypoints=Hatchobori+Station|Maihama+Station&travelmode=transit",
+                    // 숙소 -> 디즈니랜드 (중간 역은 구글이 알아서 추천함)
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Disneyland&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '08:00', content: '숙소 출발', jp: '出発 (슛파츠)' },
                         { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 핫초보리(H11) 하차', color: 'gray', jp: '日比谷線 (히비야센)' },
@@ -142,8 +147,8 @@
                     date: '1.30 (금)',
                     title: '아키하바라 & 도쿄타워',
                     tag: 'PASS 1일차',
-                    // 3일차: 호텔 -> 아키하바라(로스트비프, 라디오회관) -> 도쿄타워
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Tower&waypoints=Akihabara+Station|Roast+Beef+Ono+Akihabara|Akihabara+Radio+Kaikan&travelmode=transit",
+                    // 숙소 -> 아키하바라 (첫 번째 목적지)
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Akihabara+Station&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '10:00', content: '아키하바라 이동', jp: '秋葉原 (아키하바라)' },
                         { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 아키하바라(H15) (3번 출구)', color: 'gray', jp: '日比谷線' },
@@ -167,8 +172,8 @@
                     date: '1.31 (토)',
                     title: '긴자 & 오모테산도',
                     tag: 'PASS 2일차',
-                    // 4일차: 호텔 -> 긴자(반클리프) -> 오모테산도 -> 랄프스 -> 캣스트리트
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Cat+Street&waypoints=Ginza+Station|Van+Cleef+%26+Arpels+Ginza|Omotesando+Station|Ralph%27s+Coffee+Omotesando&travelmode=transit",
+                    // 숙소 -> 긴자 (첫 번째 목적지)
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Ginza+Station&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '10:30', content: '긴자 도착 및 반클리프 아펠 대기', jp: '銀座 (긴자)' },
                         { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 긴자(H08) (A3/B3 출구)', color: 'gray', jp: '日比谷線' },
@@ -192,12 +197,13 @@
                     date: '2.1 (일)',
                     title: '롯폰기 & 오다이바',
                     tag: 'PASS 3일차',
-                    alert: '※ 아크힐즈점 일요일 휴무로 장소 변경됨',
-                    // 5일차: 호텔 -> 아크힐즈(츠지한) -> 롯폰기힐즈 -> 신바시 -> 오다이바
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=DiverCity+Tokyo+Plaza&waypoints=Tsujihan+Ark+Hills|Roppongi+Hills|Shimbashi+Station&travelmode=transit",
+                    // 5일차 alert 제거
+                    // alert: '※ 아크힐즈점 일요일 휴무로 장소 변경됨',
+                    // 숙소 -> 도쿄 미드타운 (첫 번째 목적지)
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Midtown&travelmode=transit",
                     timeline: [
-                        { type: 'activity', time: '10:45', content: '츠지한 아크힐즈점 도착', jp: 'つじ半 アークヒルズ店 (츠지한 아크힐즈)' },
-                        { type: 'transport', name: 'H 히비야선', detail: '가야바초 → 가미야초(H05) 하차 (도보 10분)', color: 'gray', jp: '日比谷線' },
+                        { type: 'activity', time: '10:45', content: '츠지한 도쿄 미드타운점 도착', jp: 'つじ半 ミッドタウン店 (츠지한 미드타운)' },
+                        { type: 'transport', name: 'H 히비야선', detail: '가야바초 → 롯폰기(H04) 하차 (미드타운 연결)', color: 'gray', jp: '日比谷線' },
                         { type: 'activity', time: '13:00', content: '롯폰기 힐즈 구경 후 오다이바 이동', jp: '六本木ヒルズ (롯폰기 히루즈)' },
                         { type: 'transport', name: 'G 긴자선', detail: '롯폰기 → 신바시(G08) 환승', color: 'orange', jp: '銀座線 (긴자센)' },
                         { type: 'transport', name: '유리카모메', detail: '신바시 → 다이바역 (별도 티켓 구매)', color: 'blue', jp: 'ゆりかもめ (유리카모메)' },
@@ -205,7 +211,8 @@
                         { type: 'activity', time: '18:00', content: '레인보우 브리지 야경', jp: 'レインボーブリッジ (레인보- 부리지)' }
                     ],
                     tips: [
-                        '츠지한 아크힐즈점 일요일 정상 영업 (11:00~21:30).',
+                        // 5일차 tip 제거
+                        // '츠지한 아크힐즈점 휴무로 [미드타운점] 이용.',
                         '유리카모메 맨 앞칸(1-1) 뷰 추천.'
                     ],
                     japanese: [
@@ -219,8 +226,8 @@
                     date: '2.2 (월)',
                     title: '신주쿠 & 시부야',
                     alert: '※ 신주쿠 교엔 월요일 정기 휴무',
-                    // 6일차: 호텔 -> 신주쿠(도청, 우동신) -> 시부야(미야시타, 스카이, 미요시테이)
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Miyoshitei+Shibuya&waypoints=Tokyo+Metropolitan+Government+Building|Udon+Shin|Miyashita+Park|Shibuya+Sky&travelmode=transit",
+                    // 숙소 -> 신주쿠 도쿄도청 (첫 번째 목적지)
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Metropolitan+Government+Building&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '10:30', content: '신주쿠 이동 & 도쿄 도청 전망대', jp: '東京都庁 (토쿄 토쵸)' },
                         { type: 'transport', name: 'T 토자이선', detail: '가야바초(T11) → 구단시타 환승 → 신주쿠(S01)', color: 'sky', jp: '東西線 (토자이센)' },
@@ -245,8 +252,8 @@
                     day: 7,
                     date: '2.3 (화)',
                     title: '니혼바시 & 나리타공항',
-                    // 7일차: 호텔 -> 니혼바시역 -> 나리타공항
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Narita+Airport&waypoints=Nihombashi+Station&travelmode=transit",
+                    // 숙소 -> 나리타공항
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Narita+Airport&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '09:00', content: '체크아웃', jp: 'チェックアウト (쳇쿠아우토)' },
                         { type: 'transport', name: '도보', detail: '숙소 → 니혼바시역', color: 'gray', jp: '徒歩' },
@@ -267,16 +274,31 @@
             ];
 
             const currentDayData = itineraryData.find(d => d.day === activeDay) || itineraryData[0];
+            const totalDays = itineraryData.length;
+
+            // 이전 날짜로 이동
+            const handlePrevDay = () => {
+                if (activeDay > 1) {
+                    setActiveDay(activeDay - 1);
+                }
+            };
+
+            // 다음 날짜로 이동
+            const handleNextDay = () => {
+                if (activeDay < totalDays) {
+                    setActiveDay(activeDay + 1);
+                }
+            };
 
             return (
                 <div className="flex h-screen bg-rose-50 text-gray-800 overflow-hidden font-pretendard">
-                    {/* Mobile Menu Overlay */}
-                    {isMobileMenuOpen && (
+                    {/* Mobile Menu Overlay 제거 */}
+                    {/* {isMobileMenuOpen && (
                         <div className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />
-                    )}
+                    )} */}
 
-                    {/* Sidebar Navigation (Days) */}
-                    <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white/95 backdrop-blur-md shadow-2xl border-r border-pink-100 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                    {/* Sidebar Navigation (Days) 제거 */}
+                    {/* <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white/95 backdrop-blur-md shadow-2xl border-r border-pink-100 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                         <div className="p-6 flex flex-col h-full">
                             <div className="flex items-center gap-2 mb-6 text-pink-500">
                                 <Flower className="w-8 h-8 animate-spin-slow" />
@@ -300,7 +322,7 @@
                                 ))}
                             </nav>
                         </div>
-                    </aside>
+                    </aside> */}
 
                     {/* Main Content Area */}
                     <main className="flex-1 flex flex-col h-full overflow-hidden relative">
@@ -309,20 +331,21 @@
                             <Flower className="w-40 h-40 text-pink-300" />
                         </div>
 
-                        {/* Mobile Header */}
+                        {/* Mobile Header 수정 (메뉴 버튼 제거) */}
                         <div className="lg:hidden flex items-center justify-between px-5 py-4 bg-white/90 backdrop-blur-md shadow-sm z-30 sticky top-0">
                             <div className="flex items-center gap-2">
                                 <span className="text-pink-500 font-bold text-lg">Day {activeDay}</span>
                                 <span className="text-gray-400 text-sm">|</span>
                                 <span className="text-gray-600 text-sm truncate max-w-[150px]">{currentDayData.title}</span>
                             </div>
-                            <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -mr-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+                            {/* Menu 버튼 제거 */}
+                            {/* <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -mr-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
                                 <Menu className="w-6 h-6" />
-                            </button>
+                            </button> */}
                         </div>
 
                         {/* Scrollable Content */}
-                        <div className="flex-1 overflow-y-auto p-4 lg:p-10 scroll-smooth">
+                        <div className="flex-1 overflow-y-auto p-4 lg:p-10 scroll-smooth relative">
                             <div className="max-w-2xl mx-auto space-y-6 pb-20">
                                 
                                 <div className="animate-fadeIn space-y-6">
@@ -351,7 +374,8 @@
                                                     </div>
                                                     <div>
                                                         <p className="font-bold text-sm">{currentDayData.day}일차 경로 보기</p>
-                                                        <p className="text-[10px] text-blue-100 opacity-90">View Day {currentDayData.day} Route / ルートを見る</p>
+                                                        {/* 폰트 크기 1단계 증가 (text-[10px] -> text-xs) */}
+                                                        <p className="text-xs text-blue-100 opacity-90">View Day {currentDayData.day} Route / ルートを見る</p>
                                                     </div>
                                                 </div>
                                                 <div className="bg-white/20 p-1.5 rounded-full text-white transform group-hover:translate-x-1 transition-transform">
@@ -392,12 +416,14 @@
                                                                     {item.content}
                                                                 </p>
                                                                 {item.jp && (
-                                                                    <p className="text-[9px] lg:text-[10px] text-gray-400 mt-0.5 font-medium">{item.jp}</p>
+                                                                    // 폰트 크기 1단계 증가 (text-[9px] -> text-[10px], lg:text-[10px] -> lg:text-xs)
+                                                                    <p className="text-[10px] lg:text-xs text-gray-400 mt-0.5 font-medium">{item.jp}</p>
                                                                 )}
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <div className="mt-1 mb-1 py-2 px-3 bg-gray-50/80 rounded-xl border border-gray-100 flex items-start gap-3 w-full backdrop-blur-sm">
+                                                        // 배경색 변경 (bg-gray-50/80 -> bg-white)
+                                                        <div className="mt-1 mb-1 py-2 px-3 bg-white rounded-xl border border-gray-100 flex items-start gap-3 w-full backdrop-blur-sm">
                                                             <Train className={`w-3.5 h-3.5 mt-0.5 shrink-0
                                                                 ${item.color === 'gray' ? 'text-gray-400' : 
                                                                 item.color === 'red' ? 'text-red-400' :
@@ -408,8 +434,10 @@
                                                             />
                                                             <div className="flex flex-col">
                                                                 <span className="font-bold text-gray-600 text-[10px] lg:text-xs">{item.name}</span>
-                                                                <span className="text-gray-400 text-[9px] lg:text-[10px] mt-0.5 leading-relaxed">{item.detail}</span>
-                                                                {item.jp && <span className="text-gray-300 text-[8px] mt-0.5">{item.jp}</span>}
+                                                                {/* 폰트 크기 1단계 증가 (text-[9px] -> text-[10px], lg:text-[10px] -> lg:text-xs) */}
+                                                                <span className="text-gray-400 text-[10px] lg:text-xs mt-0.5 leading-relaxed">{item.detail}</span>
+                                                                {/* 폰트 크기 1단계 증가 (text-[8px] -> text-[10px]) */}
+                                                                {item.jp && <span className="text-gray-300 text-[10px] mt-0.5">{item.jp}</span>}
                                                             </div>
                                                         </div>
                                                     )}
@@ -428,7 +456,8 @@
                                             <ul className="space-y-2">
                                                 {currentDayData.tips.map((tip, idx) => (
                                                     <li key={idx} className="flex items-start gap-2 text-xs text-gray-600 leading-relaxed">
-                                                        <span className="text-rose-400 mt-1 shrink-0 text-[10px]">●</span>
+                                                        {/* 폰트 크기 1단계 증가 (text-[10px] -> text-xs) */}
+                                                        <span className="text-rose-400 mt-1 shrink-0 text-xs">●</span>
                                                         {tip}
                                                     </li>
                                                 ))}
@@ -443,7 +472,8 @@
                                             <div className="space-y-2.5">
                                                 {currentDayData.japanese.map((lang, idx) => (
                                                     <div key={idx} className="flex flex-col gap-0.5 border-b border-gray-50 pb-2 last:border-0 last:pb-0">
-                                                        <span className="text-[10px] text-gray-400">{lang.ko}</span>
+                                                        {/* 폰트 크기 1단계 증가 (text-[10px] -> text-xs) */}
+                                                        <span className="text-xs text-gray-400">{lang.ko}</span>
                                                         <span className="text-xs font-bold text-indigo-600">{lang.jp}</span>
                                                     </div>
                                                 ))}
@@ -452,6 +482,24 @@
                                     </div>
 
                                 </div>
+                            </div>
+                            
+                            {/* 이전/다음 버튼 네비게이션 추가 */}
+                            <div className="fixed bottom-6 right-6 flex gap-3 z-50">
+                                <button 
+                                    onClick={handlePrevDay} 
+                                    disabled={activeDay === 1}
+                                    className={`p-3 rounded-full shadow-lg transition-all duration-300 ${activeDay === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-pink-500 hover:bg-pink-50 hover:scale-110'}`}
+                                >
+                                    <ChevronLeft className="w-6 h-6" />
+                                </button>
+                                <button 
+                                    onClick={handleNextDay} 
+                                    disabled={activeDay === totalDays}
+                                    className={`p-3 rounded-full shadow-lg transition-all duration-300 ${activeDay === totalDays ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-pink-500 to-rose-400 text-white hover:scale-110 hover:shadow-pink-200'}`}
+                                >
+                                    <ChevronRight className="w-6 h-6" />
+                                </button>
                             </div>
                         </div>
                     </main>
