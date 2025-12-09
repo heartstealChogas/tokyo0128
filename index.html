@@ -86,6 +86,15 @@
         const ChevronRight = (props) => <Icon {...props}><path d="m9 18 6-6-6-6"/></Icon>;
         const ChevronDown = (props) => <Icon {...props}><path d="m6 9 6 6 6-6"/></Icon>;
         const ChevronUp = (props) => <Icon {...props}><path d="m18 15-6-6-6 6"/></Icon>;
+        
+        // 카테고리별 아이콘 추가
+        const Plane = (props) => <Icon {...props}><path d="M2 12h20"/><path d="M13 2v10"/><path d="M13 12v10"/><path d="M9 12 13 2l4 10"/><path d="M9 12 13 22l4-10"/></Icon>;
+        const Bed = (props) => <Icon {...props}><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></Icon>;
+        const Utensils = (props) => <Icon {...props}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></Icon>;
+        const Coffee = (props) => <Icon {...props}><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></Icon>;
+        const ShoppingBag = (props) => <Icon {...props}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></Icon>;
+        const Camera = (props) => <Icon {...props}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></Icon>;
+        const Star = (props) => <Icon {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></Icon>;
 
         // --- 벚꽃 배경 효과 ---
         const SakuraEffect = () => {
@@ -109,56 +118,49 @@
             );
         };
 
-        // --- 타임라인 아이템 (Activity + Nested Transports) ---
+        // --- 카테고리별 아이콘 선택 ---
+        const CategoryIcon = ({ type }) => {
+            switch (type) {
+                case 'food': return <Utensils className="w-4 h-4 text-orange-500" />;
+                case 'cafe': return <Coffee className="w-4 h-4 text-amber-700" />;
+                case 'shopping': return <ShoppingBag className="w-4 h-4 text-purple-500" />;
+                case 'sightseeing': return <Camera className="w-4 h-4 text-blue-500" />;
+                case 'theme_park': return <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />;
+                case 'accommodation': return <Bed className="w-4 h-4 text-indigo-500" />;
+                case 'flight': return <Plane className="w-4 h-4 text-sky-500" />;
+                default: return <div className="w-4 h-4 rounded-full bg-gray-300"></div>;
+            }
+        };
+
+        // --- 타임라인 아이템 ---
         const TimelineItem = ({ item }) => {
             const [isOpen, setIsOpen] = useState(false);
             const hasTransport = item.transports && item.transports.length > 0;
 
             return (
-                <div className="relative pl-10 lg:pl-14 py-1">
-                    {/* 타임라인 노드 */}
-                    <div className="absolute left-[19px] lg:left-[27px] -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 bg-white border-pink-400 z-10 top-2"></div>
-                    
+                <div className="relative pl-10 lg:pl-14 py-1.5">
+                    <div className="absolute left-[19px] lg:left-[27px] -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 bg-white border-pink-400 z-10 top-2.5"></div>
                     <div className="flex flex-col">
-                        {/* 상단: 시간 + 내용 + 화살표 */}
                         <div className="flex flex-row items-start gap-3">
-                            <span className="font-bold text-pink-500 text-[10px] lg:text-xs shrink-0 min-w-[3rem] mt-0.5 font-mono">{item.time}</span>
+                            <span className="font-bold text-pink-500 text-[10px] lg:text-xs shrink-0 min-w-[3rem] mt-1 tracking-tight">{item.time}</span>
+                            <div className="mt-0.5 shrink-0"><CategoryIcon type={item.category} /></div>
                             <div className="flex-1">
-                                <div className="flex items-center justify-between">
-                                    <p className="text-gray-900 font-bold text-xs lg:text-sm leading-snug">
-                                        {item.content}
-                                    </p>
-                                    
-                                    {/* 이동 정보가 있을 때만 화살표 표시 */}
+                                <div className="flex items-start justify-between">
+                                    <p className="text-gray-900 font-bold text-xs lg:text-sm leading-snug mt-0.5">{item.content}</p>
                                     {hasTransport && (
-                                        <button 
-                                            onClick={() => setIsOpen(!isOpen)}
-                                            className={`ml-2 p-1 rounded-full transition-colors flex-shrink-0 ${isOpen ? 'bg-pink-100 text-pink-500' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}
-                                        >
+                                        <button onClick={() => setIsOpen(!isOpen)} className={`ml-2 p-1 rounded-full transition-colors flex-shrink-0 ${isOpen ? 'bg-pink-100 text-pink-500' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
                                             {isOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                                         </button>
                                     )}
                                 </div>
-                                {item.jp && (
-                                    <p className="text-[10px] lg:text-xs text-gray-500 mt-0.5 font-medium">{item.jp}</p>
-                                )}
+                                {item.jp && <p className="text-[10px] lg:text-xs text-gray-500 mt-0.5 font-medium">{item.jp}</p>}
                             </div>
                         </div>
-
-                        {/* 하단: 이동 정보 (토글) */}
                         {hasTransport && isOpen && (
-                            <div className="mt-2 space-y-2 animate-fadeIn">
+                            <div className="mt-2 space-y-2 animate-fadeIn ml-8">
                                 {item.transports.map((trans, idx) => (
                                     <div key={idx} className="py-2 px-3 bg-white rounded-xl border border-gray-200 flex items-start gap-3 w-full shadow-sm">
-                                        <Train className={`w-3.5 h-3.5 mt-0.5 shrink-0
-                                            ${trans.color === 'gray' ? 'text-gray-600' : 
-                                            trans.color === 'red' ? 'text-red-500' :
-                                            trans.color === 'orange' ? 'text-orange-500' :
-                                            trans.color === 'green' ? 'text-green-600' :
-                                            trans.color === 'blue' ? 'text-blue-500' :
-                                            trans.color === 'sky' ? 'text-sky-500' :
-                                            'text-pink-500'}`} 
-                                        />
+                                        <Train className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${trans.color === 'gray' ? 'text-gray-600' : trans.color === 'red' ? 'text-red-500' : trans.color === 'orange' ? 'text-orange-500' : trans.color === 'green' ? 'text-green-600' : trans.color === 'blue' ? 'text-blue-500' : trans.color === 'sky' ? 'text-sky-500' : 'text-pink-500'}`} />
                                         <div className="flex flex-col">
                                             <span className="font-bold text-gray-900 text-[10px] lg:text-xs">{trans.name}</span>
                                             <span className="text-gray-600 text-[10px] lg:text-xs mt-0.5 leading-relaxed">{trans.detail}</span>
@@ -168,9 +170,7 @@
                                 ))}
                             </div>
                         )}
-                        
-                        {/* 이동 정보가 없을 때 간격 유지용 */}
-                        {!isOpen && <div className="h-2"></div>}
+                        {!isOpen && <div className="h-1"></div>}
                     </div>
                 </div>
             );
@@ -179,7 +179,6 @@
         const TokyoTripGuide = () => {
             const [activeDay, setActiveDay] = useState(1);
 
-            // 데이터 구조 변경: Activity 안에 Transports 배열 포함
             const itineraryData = [
                 {
                     day: 1,
@@ -188,19 +187,19 @@
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Narita+Airport&destination=Keio+Presso+Inn+Nihombashi+Kayabacho&travelmode=transit",
                     timeline: [
                         { 
-                            time: '15:55', content: '나리타 공항 도착 및 입국 수속', jp: '成田空港 (나리타쿠코)',
+                            time: '15:55', category: 'flight', content: '나리타 공항 도착 및 입국 수속', jp: '成田空港 (나리타쿠코)',
                             transports: [
                                 { name: '게이세이 스카이액세스', detail: '나리타공항 → 니혼바시역 (60분)', color: 'orange', jp: 'スカイアクセス' },
                                 { name: '도보', detail: '니혼바시역 D2 출구 → 숙소 (도보 10분)', color: 'gray', jp: '徒歩 (토호)' }
                             ]
                         },
-                        { time: '18:30', content: '숙소 체크인 (게이오 프레소 인 가야바초)', jp: '京王プレッソイン (케이오 프레소인)' },
-                        { time: '19:00', content: '하브스 코레도 니혼바시 (케이크)', jp: 'ハーブス (하브스 / 20:00 마감)' },
-                        { time: '20:00', content: '이마카츠 긴자 (닭가슴살 카츠)', jp: 'イマカツ銀座 (이마카츠 긴자)' }
+                        { time: '18:30', category: 'accommodation', content: '숙소 체크인 (게이오 프레소 인 가야바초)', jp: '京王プレッソイン (케이오 프레소인)' },
+                        { time: '19:00', category: 'cafe', content: '하브스 코레도 니혼바시 (케이크)', jp: 'ハーブス (20:00 마감 / 19:30 L.O)' },
+                        { time: '20:00', category: 'food', content: '이마카츠 긴자 (닭가슴살 카츠)', jp: 'イマカツ銀座 (이마카츠 긴자)' }
                     ],
                     tips: [
                         '이마카츠 긴자점 수요일 영업 (일요일 휴무).',
-                        '첫날은 패스권 개시하지 말고 IC카드 사용 추천.'
+                        '하브스 마감 시간이 빠듯하니 체크인 후 서두르세요.'
                     ],
                     japanese: [
                         { ko: '체크인 부탁합니다', ja: 'チェックインお願いします', jp: '체크인 오네가이시마스' },
@@ -215,19 +214,19 @@
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Disneyland&travelmode=transit",
                     timeline: [
                         { 
-                            time: '08:00', content: '숙소 출발', jp: '出発 (슛파츠)',
+                            time: '08:00', category: 'accommodation', content: '숙소 출발', jp: '出発 (슛파츠)',
                             transports: [
                                 { name: 'H 히비야선', detail: '가야바초(H12) → 핫초보리(H11) 하차', color: 'gray', jp: '日比谷線 (히비야센)' },
                                 { name: 'JR 게이요선', detail: '핫초보리 → 마이하마역 (남쪽 출구)', color: 'red', jp: '京葉線 (케이요센)' }
                             ]
                         },
-                        { time: '09:00', content: '도쿄 디즈니랜드 입장', jp: 'ディズニーランド (디즈니란도)' },
-                        { time: '13:00', content: '파크 내 점심 (피자 포트 등)', jp: 'ランチ (란치)' },
-                        { time: '19:30', content: '퍼레이드 관람 및 퇴장', jp: 'パレード (파레-도)' }
+                        { time: '09:00', category: 'theme_park', content: '도쿄 디즈니랜드 입장', jp: 'ディズニーランド (디즈니란도)' },
+                        { time: '13:00', category: 'food', content: '파크 내 점심 (피자 포트 등)', jp: 'ランチ (란치)' },
+                        { time: '19:30', category: 'theme_park', content: '퍼레이드 관람 및 퇴장', jp: 'パレード (파레-도)' }
                     ],
                     tips: [
                         '입장 직후 앱으로 DPA/패스 확인 필수.',
-                        '저녁엔 바닷바람이 차니 핫팩 준비.'
+                        '밤에는 쌀쌀하니 핫팩과 외투 챙기세요.'
                     ],
                     japanese: [
                         { ko: '사진 좀 찍어주시겠어요?', ja: '写真を撮ってもらえますか', jp: '샤신 톳테 모라에마스카?' },
@@ -243,58 +242,61 @@
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Akihabara+Station&travelmode=transit",
                     timeline: [
                         { 
-                            time: '10:00', content: '아키하바라 이동', jp: '秋葉原 (아키하바라)',
+                            time: '10:00', category: 'sightseeing', content: '아키하바라 이동', jp: '秋葉原 (아키하바라)',
                             transports: [
                                 { name: 'H 히비야선', detail: '가야바초(H12) → 아키하바라(H15) (3번 출구)', color: 'gray', jp: '日比谷線' }
                             ]
                         },
-                        { time: '12:00', content: '점심: 로스트 비프 오노', jp: 'ローストビーフ大野 (로스토비후 오노)' },
+                        { time: '12:00', category: 'food', content: '점심: 로스트 비프 오노', jp: 'ローストビーフ大野 (로스토비후 오노)' },
                         { 
-                            time: '13:30', content: '라디오 회관 & 하비코로 토이', jp: 'ラジオ会館 & ハビコロ玩具',
+                            time: '13:30', category: 'shopping', content: '라디오 회관 & 하비코로 토이', jp: 'ラジオ会館 & ハビコロ玩具',
                             transports: [
                                 { name: 'H 히비야선', detail: '아키하바라(H15) → 가미야초(H05) (1번 출구)', color: 'gray', jp: '日比谷線' }
                             ]
                         },
-                        { time: '17:00', content: '도쿄 타워 야경 감상', jp: '東京タワー (토쿄타와-)' }
+                        { time: '17:00', category: 'sightseeing', content: '도쿄 타워 & 아자부다이 힐스', jp: '東京タワー (토쿄타와-)' }
                     ],
                     tips: [
-                        '하비코로 토이는 라디오 회관 2층에 위치.',
-                        '아키하바라 상점은 보통 11시 오픈.'
+                        '패스 개시! 아키하바라와 롯폰기 라인 집중.',
+                        '도쿄 타워 보고 바로 옆 아자부다이 힐스 야경 추천.'
                     ],
                     japanese: [
                         { ko: '이거 새 상품인가요?', ja: 'これは新品ですか', jp: '코레 신핀 데스카?' },
-                        { ko: '중고인가요?', ja: '中古ですか', jp: '츄-코 데스카?' },
                         { ko: '할인 되나요?', ja: '割引できますか', jp: '와리비키 데키마스카?' }
                     ]
                 },
                 {
                     day: 4,
                     date: '1.31 (토)',
-                    title: '긴자 & 오모테산도',
+                    title: '긴자 & 롯폰기 일루미',
                     tag: 'PASS 2일차',
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Ginza+Station&travelmode=transit",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Roppongi+Hills&waypoints=Ginza+Station|Omotesando+Station&travelmode=transit",
                     timeline: [
                         { 
-                            time: '10:30', content: '긴자 도착 및 반클리프 아펠 대기', jp: '銀座 (긴자)',
+                            time: '10:30', category: 'shopping', content: '긴자 도착 및 반클리프 아펠', jp: '銀座 (긴자) / ヴァンクリーフ',
                             transports: [
                                 { name: 'H 히비야선', detail: '가야바초(H12) → 긴자(H08) (A3/B3 출구)', color: 'gray', jp: '日比谷線' }
                             ]
                         },
                         { 
-                            time: '11:00', content: '반클리프 아펠 방문', jp: 'ヴァンクリーフ (반쿠리후)',
+                            time: '14:00', category: 'sightseeing', content: '오모테산도 & 캣스트리트', jp: '表参道 (오모테산도)',
                             transports: [
                                 { name: 'C 치요다선', detail: '긴자(C08) → 오모테산도(C04) (A2 출구)', color: 'green', jp: '千代田線 (치요다센)' }
                             ]
                         },
-                        { time: '14:00', content: '오모테산도 이동, 랄프스 커피', jp: '表参道 (오모테산도)' },
-                        { time: '16:00', content: '캣스트리트 산책', jp: 'キャットストリート (캿토스토리토)' }
+                        { 
+                            time: '17:00', category: 'sightseeing', content: '롯폰기 힐즈 (케야키자카 야경)', jp: '六本木ヒルズ (롯폰기 히루즈)',
+                            transports: [
+                                { name: 'C 치요다선/H 히비야선', detail: '오모테산도 → 롯폰기 (도보/지하철)', color: 'gray', jp: '移動 (이동)' }
+                            ]
+                        },
+                        { time: '19:30', category: 'food', content: '롯폰기 근처 저녁 식사', jp: 'ディナー (디나-)' }
                     ],
                     tips: [
-                        '반클리프 아펠 오픈(11:00) 맞춰 방문 추천.',
-                        '오모테산도 육교 위가 사진 명당.'
+                        '겨울 도쿄의 하이라이트, 케야키자카 일루미네이션!',
+                        '오모테산도에서 롯폰기는 택시로도 가깝습니다.'
                     ],
                     japanese: [
-                        { ko: '착용해 봐도 되나요?', ja: '試着してもいいですか', jp: '시챠쿠 시테모 이이데스카?' },
                         { ko: '재고 있나요?', ja: '在庫はありますか', jp: '자이코 아리마스카?' },
                         { ko: '선물 포장 해주세요', ja: 'プレゼント用に包んでください', jp: '푸레젠토 요-니 츠츤데 쿠다사이' }
                     ]
@@ -302,39 +304,42 @@
                 {
                     day: 5,
                     date: '2.1 (일)',
-                    title: '롯폰기 & 오다이바',
+                    title: '긴자 & 오다이바 & 마루노우치',
                     tag: 'PASS 3일차',
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Pain+Maison+Ginza&travelmode=transit",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=DiverCity+Tokyo+Plaza&waypoints=Pain+Maison+Ginza|Tsujihan+Nihonbashi&travelmode=transit",
                     timeline: [
                         { 
-                            time: '09:00', content: '판 메종 긴자 (소금빵)', jp: 'パン・メゾン (판 메종 / 08:30~19:00)',
+                            time: '08:30', category: 'food', content: '판 메종 긴자 (소금빵)', jp: 'パン・メゾン (판 메종 / 08:30 오픈)',
                             transports: [
                                 { name: 'H 히비야선', detail: '가야바초 → 핫초보리 → 긴자잇초메 (도보 5분)', color: 'gray', jp: '日比谷線' }
                             ]
                         },
                         { 
-                            time: '10:45', content: '츠지한 아크힐즈점 이동', jp: 'つじ半 アークヒルズ店 (츠지한 아크힐즈)',
+                            time: '11:00', category: 'food', content: '츠지한 니혼바시 본점 (점심)', jp: 'つじ半 日本橋本店 (츠지한 본점)',
                             transports: [
-                                { name: 'H 히비야선', detail: '긴자 → 가미야초(H05) or 롯폰기잇초메', color: 'gray', jp: '日比谷線' }
+                                { name: '도보/지하철', detail: '긴자에서 니혼바시 이동', color: 'gray', jp: '移動' }
                             ]
                         },
                         { 
-                            time: '13:00', content: '롯폰기 힐즈 구경 후 오다이바 이동', jp: '六本木ヒルズ (롯폰기 히루즈)',
+                            time: '13:00', category: 'sightseeing', content: '오다이바 이동 & 관광', jp: 'お台場 (오다이바)',
                             transports: [
-                                { name: 'G 긴자선', detail: '롯폰기 → 신바시(G08) 환승', color: 'orange', jp: '銀座線 (긴자센)' },
-                                { name: '유리카모메', detail: '신바시 → 다이바역 (별도 티켓 구매)', color: 'blue', jp: 'ゆりかもめ (유리카모메)' }
+                                { name: 'G 긴자선/유리카모메', detail: '니혼바시 → 신바시 → 오다이바', color: 'blue', jp: 'ゆりかもめ (유리카모메)' }
                             ]
                         },
-                        { time: '15:30', content: '다이버시티 (건담) & 아쿠아시티', jp: 'お台場 (오다이바)' },
-                        { time: '18:00', content: '레인보우 브리지 야경', jp: 'レインボーブリッジ (레인보- 부리지)' }
+                        { time: '15:30', category: 'shopping', content: '다이버시티 (건담) & 아쿠아시티', jp: 'ダイバーシティ (다이바시티)' },
+                        { 
+                            time: '19:00', category: 'sightseeing', content: '마루노우치 일루미네이션', jp: '丸の内イルミネーション',
+                            transports: [
+                                { name: '유리카모메/JR', detail: '오다이바 → 신바시 → 도쿄역/유락초', color: 'blue', jp: '移動' }
+                            ]
+                        }
                     ],
                     tips: [
-                        '판 메종(화 휴무), 츠지한 아크힐즈점 정상 영업.',
-                        '유리카모메 맨 앞칸(1-1) 뷰 추천.'
+                        '다이버시티는 오다이바의 필수 코스!',
+                        '츠지한 본점은 대기가 길 수 있으니 오픈 전 도착 추천.'
                     ],
                     japanese: [
                         { ko: '파는 빼 주세요', ja: 'ネギ抜きでお願いします', jp: '네기 누키데 오네가이시마스' },
-                        { ko: '얼마나 기다려야 하나요?', ja: 'どのくらい待ちますか', jp: '도노쿠라이 마치마스카?' },
                         { ko: '창가 자리 부탁해요', ja: '窓側の席をお願いします', jp: '마도가와노 세키 오네가이시마스' }
                     ]
                 },
@@ -342,32 +347,35 @@
                     day: 6,
                     date: '2.2 (월)',
                     title: '신주쿠 & 시부야',
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Gyoen+Roan&travelmode=transit",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Isetan+Shinjuku&travelmode=transit",
                     timeline: [
                         { 
-                            time: '10:30', content: '신주쿠 이동 & 도쿄 도청 전망대', jp: '東京都庁 (토쿄 토쵸)',
+                            time: '10:30', category: 'shopping', content: '신주쿠 이세탄 백화점 쇼핑', jp: '伊勢丹 新宿店 (이세탄 신주쿠)',
                             transports: [
-                                { name: 'T 토자이선', detail: '가야바초(T11) → 구단시타 환승 → 신주쿠(S01)', color: 'sky', jp: '東西線 (토자이센)' }
+                                { name: 'T 토자이선', detail: '가야바초(T11) → 구단시타 환승 → 신주쿠산초메(S02)', color: 'sky', jp: '都営新宿線' }
                             ]
                         },
                         { 
-                            time: '12:00', content: '점심: 교엔 로안', jp: '御苑 炉庵 (교엔 로안 / 월요일 영업)',
+                            time: '12:30', category: 'food', content: '점심: 교엔 로안', jp: '御苑 炉庵 (교엔 로안 / 월요일 영업)',
+                            transports: [
+                                { name: '도보', detail: '이세탄 백화점에서 도보 5분', color: 'gray', jp: '徒歩' }
+                            ]
+                        },
+                        { time: '14:00', category: 'cafe', content: '스즈카케 (이세탄 지하 1층)', jp: '鈴懸 (스즈카케 / 선물 구매)' },
+                        { 
+                            time: '15:00', category: 'sightseeing', content: '시부야 미야시타 파크', jp: '宮下パーク (미야시타 파쿠)',
                             transports: [
                                 { name: 'JR 야마노테선', detail: '신주쿠 → 시부야', color: 'green', jp: '山手線 (야마노테센)' }
                             ]
                         },
-                        { time: '13:30', content: '스즈카케 (이세탄 백화점)', jp: '鈴懸 (스즈카케 / 10:00~20:00)' },
-                        { time: '15:00', content: '시부야 미야시타 파크', jp: '宮下パーク (미야시타 파쿠)' },
-                        { time: '17:00', content: '시부야 스카이 (예약 필수)', jp: '渋谷スカイ (시부야 스카이)' },
-                        { time: '19:30', content: '미요시테이 (저녁)', jp: '三善亭 (미요시테이)' }
+                        { time: '17:00', category: 'sightseeing', content: '시부야 스카이 (예약 필수)', jp: '渋谷スカイ (시부야 스카이)' },
+                        { time: '19:30', category: 'food', content: '미요시테이 (저녁)', jp: '三善亭 (미요시테이)' }
                     ],
                     tips: [
-                        '교엔 로안(일 휴무) 정상 영업. 신주쿠 교엔은 휴무.',
-                        '스즈카케는 이세탄 지하 1층.',
-                        '패스권 만료, IC카드 사용.'
+                        '시부야 미야시타 파크는 옥상 공원 뷰가 좋습니다.',
+                        '이세탄 쇼핑 시간 넉넉히 확보했습니다.'
                     ],
                     japanese: [
-                        { ko: '전망대는 몇 층인가요?', ja: '展望台は何階ですか', jp: '텐보-다이와 난카이 데스카?' },
                         { ko: '한국어 메뉴판 있나요?', ja: '韓国語のメニューはありますか', jp: '캉코쿠고노 메뉴- 아리마스카?' },
                         { ko: '계산은 테이블에서 하나요?', ja: '会計はテーブルですか', jp: '카이케이와 테-부루데스카?' }
                     ]
@@ -379,19 +387,19 @@
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Narita+Airport&travelmode=transit",
                     timeline: [
                         { 
-                            time: '09:00', content: '체크아웃', jp: 'チェックアウト (쳇쿠아우토)',
+                            time: '09:00', category: 'accommodation', content: '체크아웃', jp: 'チェックアウト (쳇쿠아우토)',
                             transports: [
                                 { name: '도보', detail: '숙소 → 니혼바시역', color: 'gray', jp: '徒歩' }
                             ]
                         },
                         { 
-                            time: '10:00', content: '니혼바시역으로 이동 & 탑승', jp: '日本橋駅 (니혼바시에키)',
+                            time: '10:00', category: 'flight', content: '니혼바시역 탑승 (공항행)', jp: '日本橋駅 (니혼바시에키)',
                             transports: [
                                 { name: '게이세이 스카이액세스', detail: '니혼바시역 → 나리타 공항', color: 'orange', jp: 'スカイアクセス' }
                             ]
                         },
-                        { time: '11:10', content: '나리타 공항 도착 & 면세점', jp: '成田空港 (나리타쿠코)' },
-                        { time: '14:00', content: '인천행 KE704 탑승', jp: '搭乗 (토죠)' }
+                        { time: '11:10', category: 'shopping', content: '나리타 공항 도착 & 면세점', jp: '成田空港 (나리타쿠코)' },
+                        { time: '14:00', category: 'flight', content: '인천행 KE704 탑승', jp: '搭乗 (토죠)' }
                     ],
                     tips: [
                         '남은 동전은 공항 편의점/가챠로 처리.',
