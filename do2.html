@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 도쿄 여행 가이드</title>
+    
+    <!-- 1. Tailwind CSS 불러오기 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. React & ReactDOM 불러오기 (Production 버전) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- 3. Babel (JSX 변환기) 불러오기 -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- 폰트 설정 (Pretendard) -->
+    <style>
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+        
+        body {
+            font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 10s linear infinite;
+        }
+        /* 스크롤바 숨기기 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-rose-50 text-gray-800">
+    <div id="root"></div>
+
+    <!-- 5. React 코드 작성 (type="text/babel") -->
+    <script type="text/babel">
+        const { useState } = React;
+
+        // --- 아이콘 컴포넌트 직접 정의 (외부 라이브러리 의존성 제거) ---
+        const Icon = ({ children, className, ...props }) => (
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="24" 
+                height="24" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className={className}
+                {...props}
+            >
+                {children}
+            </svg>
+        );
+
+        const Train = (props) => <Icon {...props}><rect width="16" height="16" x="4" y="3" rx="2" /><path d="M4 11h16" /><path d="M12 3v8" /><path d="m8 19-2 3" /><path d="m18 22-2-3" /><path d="M8 15h0" /><path d="M16 15h0" /></Icon>;
+        const CheckSquare = (props) => <Icon {...props}><path d="m9 11 3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></Icon>;
+        const Menu = (props) => <Icon {...props}><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></Icon>;
+        const Flower = (props) => <Icon {...props}><circle cx="12" cy="12" r="3" /><path d="M12 16.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 1 1 12 7.5a4.5 4.5 0 1 1 4.5 4.5 4.5 4.5 0 1 1-4.5 4.5" /></Icon>;
+        const Languages = (props) => <Icon {...props}><path d="m5 8 6 6" /><path d="m4 14 6-6 2-3" /><path d="M2 5h12" /><path d="M7 2h1" /><path d="m22 22-5-10-5 10" /><path d="M14 18h6" /></Icon>;
+        const AlertCircle = (props) => <Icon {...props}><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></Icon>;
+        // --------------------------------------------------------
+
+        const TokyoTripGuide = () => {
+            const [activeDay, setActiveDay] = useState(1);
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+            const itineraryData = [
+                {
+                    day: 1,
+                    date: '1.28 (수)',
+                    title: '나리타공항 & 니혼바시',
+                    timeline: [
+                        { type: 'activity', time: '15:55', content: '나리타 공항 도착 및 입국 수속' },
+                        { type: 'transport', name: '게이세이 스카이액세스', detail: '나리타공항 → 니혼바시역 (60분)', color: 'orange' },
+                        { type: 'transport', name: '도보', detail: '니혼바시역 D2 출구 → 숙소 (도보 10분)', color: 'gray' },
+                        { type: 'activity', time: '18:30', content: '숙소 체크인 (게이오 프레소 인 가야바초)' },
+                        { type: 'activity', time: '19:00', content: '하브스 코레도 니혼바시 (케이크)' },
+                        { type: 'activity', time: '20:00', content: '이마카츠 긴자 (닭가슴살 카츠)' }
+                    ],
+                    tips: [
+                        '이마카츠 긴자점은 일요일 휴무지만, 오늘은 수요일이라 영업합니다.',
+                        '첫날은 패스권 개시하지 말고 IC카드 충전해서 사용하세요.',
+                        '숙소는 가야바초역 4b 출구 바로 앞입니다.'
+                    ],
+                    japanese: [
+                        { ko: '체크인 부탁합니다', jp: '체크인 오네가이시마스' },
+                        { ko: '예약했습니다', jp: '요야쿠 시마시타' },
+                        { ko: '지금 들어갈 수 있나요?', jp: '이마 하이레마스카?' }
+                    ]
+                },
+                {
+                    day: 2,
+                    date: '1.29 (목)',
+                    title: '도쿄 디즈니랜드',
+                    timeline: [
+                        { type: 'activity', time: '08:00', content: '숙소 출발' },
+                        { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 핫초보리(H11) 하차', color: 'gray' },
+                        { type: 'transport', name: 'JR 게이요선', detail: '핫초보리 → 마이하마역 (남쪽 출구)', color: 'red' },
+                        { type: 'activity', time: '09:00', content: '도쿄 디즈니랜드 입장' },
+                        { type: 'activity', time: '13:00', content: '파크 내 점심 (피자 포트 등)' },
+                        { type: 'activity', time: '19:30', content: '퍼레이드 관람 및 퇴장' }
+                    ],
+                    tips: [
+                        '입장 직후 앱으로 DPA(유료패스) 상황 확인하세요.',
+                        '저녁엔 바닷바람이 차니 핫팩 필수!'
+                    ],
+                    japanese: [
+                        { ko: '사진 좀 찍어주시겠어요?', jp: '샤신 톳테 모라에마스카?' },
+                        { ko: '이거 어디서 파나요?', jp: '코레 도코니 웃테마스카?' },
+                        { ko: '포장해 주세요', jp: '테이크 아우토 데 오네가이시마스' }
+                    ]
+                },
+                {
+                    day: 3,
+                    date: '1.30 (금)',
+                    title: '아키하바라 & 도쿄타워',
+                    tag: 'PASS 1일차',
+                    timeline: [
+                        { type: 'activity', time: '10:00', content: '아키하바라 이동 (늦잠 OK)' },
+                        { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 아키하바라(H15) (3번 출구)', color: 'gray' },
+                        { type: 'activity', time: '12:00', content: '점심: 로스트 비프 오노' },
+                        { type: 'activity', time: '13:30', content: '라디오 회관 & 하비코로 토이 쇼핑' },
+                        { type: 'transport', name: 'H 히비야선', detail: '아키하바라(H15) → 가미야초(H05) (1번 출구)', color: 'gray' },
+                        { type: 'activity', time: '17:00', content: '도쿄 타워 야경 감상' }
+                    ],
+                    tips: [
+                        '아키하바라 상점은 보통 11시에 엽니다. 서두르지 마세요.',
+                        '라디오 회관에서 피규어 가격 비교는 필수입니다.',
+                        '히비야선 하나로 모든 이동이 가능한 날입니다.'
+                    ],
+                    japanese: [
+                        { ko: '이거 새 상품인가요?', jp: '코레 신핀 데스카?' },
+                        { ko: '중고인가요?', jp: '츄-코 데스카?' },
+                        { ko: '할인 되나요?', jp: '와리비키 데키마스카?' }
+                    ]
+                },
+                {
+                    day: 4,
+                    date: '1.31 (토)',
+                    title: '긴자 & 오모테산도',
+                    tag: 'PASS 2일차',
+                    timeline: [
+                        { type: 'activity', time: '10:30', content: '긴자 도착 및 반클리프 아펠 대기' },
+                        { type: 'transport', name: 'H 히비야선', detail: '가야바초(H12) → 긴자(H08) (A3/B3 출구)', color: 'gray' },
+                        { type: 'activity', time: '11:00', content: '반클리프 아펠 방문' },
+                        { type: 'transport', name: 'C 치요다선', detail: '긴자(C08) → 오모테산도(C04) (A2 출구)', color: 'green' },
+                        { type: 'activity', time: '14:00', content: '오모테산도 이동, 랄프스 커피' },
+                        { type: 'activity', time: '16:00', content: '캣스트리트 산책' }
+                    ],
+                    tips: [
+                        '반클리프 아펠 오픈(11:00) 맞춰 가면 대기 없이 입장 확률 높음.',
+                        '오모테산도 육교 위가 사진 명당입니다.'
+                    ],
+                    japanese: [
+                        { ko: '착용해 봐도 되나요?', jp: '시챠쿠 시테모 이이데스카?' },
+                        { ko: '재고 있나요?', jp: '자이코 아리마스카?' },
+                        { ko: '선물 포장 해주세요', jp: '푸레젠토 요-니 츠츤데 쿠다사이' }
+                    ]
+                },
+                {
+                    day: 5,
+                    date: '2.1 (일)',
+                    title: '롯폰기 & 오다이바',
+                    tag: 'PASS 3일차',
+                    alert: '※ 아크힐즈점 일요일 휴무로 장소 변경됨',
+                    timeline: [
+                        { type: 'activity', time: '10:45', content: '츠지한 도쿄 미드타운점 도착 (롯폰기)' },
+                        { type: 'transport', name: 'H 히비야선', detail: '가야바초 → 롯폰기(H04) 하차 (미드타운 연결)', color: 'gray' },
+                        { type: 'activity', time: '13:00', content: '롯폰기 힐즈 구경 후 오다이바 이동' },
+                        { type: 'transport', name: 'G 긴자선', detail: '롯폰기 → 신바시(G08) 환승', color: 'orange' },
+                        { type: 'transport', name: '유리카모메', detail: '신바시 → 다이바역 (별도 티켓 구매)', color: 'blue' },
+                        { type: 'activity', time: '15:30', content: '다이버시티 (건담) & 아쿠아시티' },
+                        { type: 'activity', time: '18:00', content: '레인보우 브리지 야경' }
+                    ],
+                    tips: [
+                        '기존 아크힐즈점은 일요일 휴무라 [미드타운점]으로 변경했습니다.',
+                        '유리카모메 맨 앞칸(1-1) 사수하면 최고의 뷰를 볼 수 있습니다.'
+                    ],
+                    japanese: [
+                        { ko: '파는 빼 주세요', jp: '네기 누키데 오네가이시마스' },
+                        { ko: '얼마나 기다려야 하나요?', jp: '도노쿠라이 마치마스카?' },
+                        { ko: '창가 자리 부탁해요', jp: '마도가와노 세키 오네가이시마스' }
+                    ]
+                },
+                {
+                    day: 6,
+                    date: '2.2 (월)',
+                    title: '신주쿠 & 시부야',
+                    alert: '※ 신주쿠 교엔 월요일 정기 휴무',
+                    timeline: [
+                        { type: 'activity', time: '10:30', content: '신주쿠 이동 & 도쿄 도청 전망대 (무료)' },
+                        { type: 'transport', name: 'T 토자이선', detail: '가야바초(T11) → 구단시타 환승 → 신주쿠(S01)', color: 'sky' },
+                        { type: 'activity', time: '12:30', content: '우동 신 또는 루미네 쇼핑' },
+                        { type: 'transport', name: 'JR 야마노테선', detail: '신주쿠 → 시부야', color: 'green' },
+                        { type: 'activity', time: '14:30', content: '시부야 미야시타 파크' },
+                        { type: 'activity', time: '17:00', content: '시부야 스카이 (예약 필수)' },
+                        { type: 'activity', time: '19:30', content: '미요시테이 (저녁)' }
+                    ],
+                    tips: [
+                        '신주쿠 교엔 휴무로 도쿄 도청 전망대(북쪽 전망대 영업 예상)로 대체했습니다.',
+                        '시부야 스카이는 4주 전 예약 필수입니다. (오후 4:30 입장 추천)',
+                        '패스권 만료될 시간이니 IC카드 사용하세요.'
+                    ],
+                    japanese: [
+                        { ko: '전망대는 몇 층인가요?', jp: '텐보-다이와 난카이 데스카?' },
+                        { ko: '한국어 메뉴판 있나요?', jp: '캉코쿠고노 메뉴- 아리마스카?' },
+                        { ko: '계산은 테이블에서 하나요?', jp: '카이케이와 테-부루데스카?' }
+                    ]
+                },
+                {
+                    day: 7,
+                    date: '2.3 (화)',
+                    title: '니혼바시 & 나리타공항',
+                    timeline: [
+                        { type: 'activity', time: '09:00', content: '체크아웃 (짐 챙기기)' },
+                        { type: 'transport', name: '도보', detail: '숙소 → 니혼바시역', color: 'gray' },
+                        { type: 'activity', time: '10:00', content: '니혼바시역으로 이동 & 탑승' },
+                        { type: 'transport', name: '게이세이 스카이액세스', detail: '니혼바시역 → 나리타 공항', color: 'orange' },
+                        { type: 'activity', time: '11:10', content: '나리타 공항 도착 & 면세점' },
+                        { type: 'activity', time: '14:00', content: '인천행 KE704 탑승' }
+                    ],
+                    tips: [
+                        '남은 동전은 공항 편의점이나 가챠로 털어버리세요.',
+                        '니혼바시역까지 도보로 10~15분 소요됩니다.'
+                    ],
+                    japanese: [
+                        { ko: '감사했습니다', jp: '아리가토 고자이마시타' },
+                        { ko: '다음에 또 올게요', jp: '마타 키마스' }
+                    ]
+                }
+            ];
+
+            const currentDayData = itineraryData.find(d => d.day === activeDay) || itineraryData[0];
+
+            return (
+                <div className="flex h-screen bg-rose-50 text-gray-800 overflow-hidden font-pretendard">
+                    {/* Mobile Menu Overlay */}
+                    {isMobileMenuOpen && (
+                        <div className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />
+                    )}
+
+                    {/* Sidebar Navigation (Days) */}
+                    <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white/95 backdrop-blur-md shadow-2xl border-r border-pink-100 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                        <div className="p-6 flex flex-col h-full">
+                            <div className="flex items-center gap-2 mb-6 text-pink-500">
+                                <Flower className="w-8 h-8 animate-spin-slow" />
+                                <h1 className="text-xl font-bold tracking-tight text-gray-800">도쿄 여행 <span className="text-xs block text-pink-400 font-normal mt-1">2026.1.28 - 2.3</span></h1>
+                            </div>
+
+                            <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar pr-2">
+                                {itineraryData.map((data) => (
+                                    <button
+                                        key={data.day}
+                                        onClick={() => { setActiveDay(data.day); setIsMobileMenuOpen(false); }}
+                                        className={`w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-300 flex flex-col gap-0.5 border border-transparent
+                                            ${activeDay === data.day 
+                                                ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-lg shadow-pink-200 scale-105' 
+                                                : 'hover:bg-pink-50 text-gray-600 hover:border-pink-100'}`}
+                                    >
+                                        <span className={`text-[10px] font-medium ${activeDay === data.day ? 'text-pink-100' : 'text-gray-400'}`}>{data.date}</span>
+                                        <span className="font-bold text-base">{data.day}일차</span>
+                                        <span className={`text-xs truncate w-full ${activeDay === data.day ? 'text-white/90' : 'text-gray-500'}`}>{data.title}</span>
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
+                    </aside>
+
+                    {/* Main Content Area */}
+                    <main className="flex-1 flex flex-col h-full overflow-hidden relative">
+                        {/* Decorative Sakura Petals */}
+                        <div className="absolute top-0 right-0 p-8 opacity-30 pointer-events-none">
+                            <Flower className="w-40 h-40 text-pink-300" />
+                        </div>
+
+                        {/* Mobile Header */}
+                        <div className="lg:hidden flex items-center justify-between px-5 py-4 bg-white/90 backdrop-blur-md shadow-sm z-30 sticky top-0">
+                            <div className="flex items-center gap-2">
+                                <span className="text-pink-500 font-bold text-lg">Day {activeDay}</span>
+                                <span className="text-gray-400 text-sm">|</span>
+                                <span className="text-gray-600 text-sm truncate max-w-[150px]">{currentDayData.title}</span>
+                            </div>
+                            <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -mr-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors">
+                                <Menu className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {/* Scrollable Content */}
+                        <div className="flex-1 overflow-y-auto p-4 lg:p-10 scroll-smooth">
+                            <div className="max-w-2xl mx-auto space-y-6 pb-20">
+                                
+                                <div className="animate-fadeIn space-y-6">
+                                    
+                                    {/* Title Section */}
+                                    <div className="mt-2 lg:mt-0">
+                                        {currentDayData.tag && (
+                                            <span className="inline-block px-3 py-1 bg-pink-100 text-pink-600 text-[11px] font-bold rounded-full mb-3">
+                                                {currentDayData.tag}
+                                            </span>
+                                        )}
+                                        <h2 className="text-2xl lg:text-3xl font-extrabold text-gray-800 leading-tight">{currentDayData.title}</h2>
+                                        <p className="text-pink-400 font-medium mt-1.5 text-sm">{currentDayData.date}</p>
+                                        
+                                        {/* Critical Alert */}
+                                        {currentDayData.alert && (
+                                            <div className="mt-4 bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-start gap-3">
+                                                <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+                                                <p className="text-rose-600 text-sm font-bold leading-snug">{currentDayData.alert}</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Combined Timeline Section */}
+                                    <div className="bg-white rounded-3xl p-5 lg:p-8 shadow-xl border border-pink-50 relative overflow-hidden">
+                                        {/* Vertical Line */}
+                                        <div className="absolute left-[26px] lg:left-[34px] top-8 bottom-8 w-0.5 bg-gradient-to-b from-pink-200 to-rose-100"></div>
+                                        
+                                        <div className="space-y-8 relative">
+                                            {currentDayData.timeline.map((item, idx) => (
+                                                <div key={idx} className="relative pl-10 lg:pl-14">
+                                                    {/* Timeline Node */}
+                                                    <div className={`absolute left-[19px] lg:left-[27px] -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 
+                                                        ${item.type === 'activity' 
+                                                            ? 'bg-white border-pink-400 z-10' 
+                                                            : 'bg-gray-50 border-gray-300 w-2.5 h-2.5 left-[19px] lg:left-[27px]'}`}>
+                                                    </div>
+
+                                                    {item.type === 'activity' ? (
+                                                        <div className="flex flex-row items-baseline gap-3 group">
+                                                            <span className="font-bold text-pink-500 text-sm lg:text-base shrink-0 min-w-[3rem]">{item.time}</span>
+                                                            <p className="text-gray-800 font-semibold text-base lg:text-lg group-hover:text-pink-600 transition-colors leading-snug">
+                                                                {item.content}
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="mt-1 mb-1 py-2.5 px-3.5 bg-gray-50/80 rounded-xl border border-gray-100 flex items-start gap-3 w-full backdrop-blur-sm">
+                                                            <Train className={`w-4 h-4 mt-0.5 shrink-0
+                                                                ${item.color === 'gray' ? 'text-gray-500' : 
+                                                                item.color === 'red' ? 'text-red-500' :
+                                                                item.color === 'orange' ? 'text-orange-500' :
+                                                                item.color === 'green' ? 'text-green-500' :
+                                                                item.color === 'blue' ? 'text-blue-500' :
+                                                                'text-pink-500'}`} 
+                                                            />
+                                                            <div className="flex flex-col">
+                                                                <span className="font-bold text-gray-700 text-sm">{item.name}</span>
+                                                                <span className="text-gray-500 text-xs mt-0.5 leading-relaxed">{item.detail}</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Info Grid (Tips & Japanese) */}
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {/* Tips */}
+                                        <div className="bg-gradient-to-br from-rose-50 to-white rounded-2xl p-5 shadow-sm border border-pink-100">
+                                            <h3 className="text-sm font-bold text-rose-500 flex items-center gap-2 mb-3">
+                                                <CheckSquare className="w-4 h-4" /> 꿀팁 & 체크
+                                            </h3>
+                                            <ul className="space-y-2.5">
+                                                {currentDayData.tips.map((tip, idx) => (
+                                                    <li key={idx} className="flex items-start gap-2.5 text-sm text-gray-600 leading-relaxed">
+                                                        <span className="text-rose-400 mt-1 shrink-0 text-xs">●</span>
+                                                        {tip}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        {/* Japanese */}
+                                        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+                                            <h3 className="text-sm font-bold text-indigo-500 flex items-center gap-2 mb-3">
+                                                <Languages className="w-4 h-4" /> 필수 일본어
+                                            </h3>
+                                            <div className="space-y-3">
+                                                {currentDayData.japanese.map((lang, idx) => (
+                                                    <div key={idx} className="flex flex-col gap-1 border-b border-gray-50 pb-2 last:border-0 last:pb-0">
+                                                        <span className="text-xs text-gray-400">{lang.ko}</span>
+                                                        <span className="text-sm font-bold text-indigo-600">{lang.jp}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TokyoTripGuide />);
+    </script>
+</body>
+</html>
