@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 도쿄 여행 가이드</title>
+    <title>2026 도쿄 여행 가이드 (최종)</title>
     
     <!-- 1. Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -21,15 +21,18 @@
         
         body {
             font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+            background-color: #fff1f2; /* rose-50 */
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
+        /* 애니메이션 정의 */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fadeIn {
-            animation: fadeIn 0.3s ease-out forwards;
+        .animate-slideDown {
+            animation: slideDown 0.3s ease-out forwards;
         }
+
         @keyframes spin-slow {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -65,27 +68,17 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 형광펜 효과 애니메이션 */
-        .highlight-text {
-            background: linear-gradient(to top, #ccfbf1 50%, transparent 50%);
-            padding: 0 2px;
-            font-weight: 700;
-        }
-        
-        /* 더 강한 형광 효과 (추천 메뉴용) */
+        /* 더 강한 형광 효과 (추천 맛집 이름용) */
         .recommend-highlight {
             background-color: #bef264; /* Lime-300 */
             color: #1a2e05;
-            padding: 2px 6px;
-            border-radius: 4px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            padding: 1px 4px;
+            border-radius: 3px;
             font-weight: 800;
-            display: inline-block;
-            transform: rotate(-1deg);
         }
     </style>
 </head>
-<body class="bg-rose-50 text-gray-900">
+<body class="text-gray-900">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -96,13 +89,8 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>
         );
         const Train = (props) => <Icon {...props}><rect width="16" height="16" x="4" y="3" rx="2" /><path d="M4 11h16" /><path d="M12 3v8" /><path d="m8 19-2 3" /><path d="m18 22-2-3" /><path d="M8 15h0" /><path d="M16 15h0" /></Icon>;
-        const CheckSquare = (props) => <Icon {...props}><path d="m9 11 3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></Icon>;
         const Flower = (props) => <Icon {...props}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></Icon>;
-        const Languages = (props) => <Icon {...props}><path d="m5 8 6 6" /><path d="m4 14 6-6 2-3" /><path d="M2 5h12" /><path d="M7 2h1" /><path d="m22 22-5-10-5 10" /><path d="M14 18h6" /></Icon>;
-        const AlertCircle = (props) => <Icon {...props}><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></Icon>;
         const MapIcon = (props) => <Icon {...props}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" x2="9" y1="3" y2="18" /><line x1="15" x2="15" y1="6" y2="21" /></Icon>;
-        const ChevronLeft = (props) => <Icon {...props}><path d="m15 18-6-6 6-6"/></Icon>;
-        const ChevronRight = (props) => <Icon {...props}><path d="m9 18 6-6-6-6"/></Icon>;
         const ChevronDown = (props) => <Icon {...props}><path d="m6 9 6 6 6-6"/></Icon>;
         const ChevronUp = (props) => <Icon {...props}><path d="m18 15-6-6-6 6"/></Icon>;
         
@@ -150,21 +138,23 @@
             }
         };
 
+        // --- 타임라인 아이템 (수정 없음) ---
         const TimelineItem = ({ item }) => {
             const [isOpen, setIsOpen] = useState(false);
             const hasTransport = item.transports && item.transports.length > 0;
 
             return (
-                <div className="relative pl-10 lg:pl-14 py-1.5">
-                    <div className="absolute left-[19px] lg:left-[27px] -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 bg-white border-pink-400 z-10 top-2.5"></div>
+                <div className="relative pl-10 lg:pl-14 py-2">
+                    <div className="absolute left-[19px] lg:left-[27px] -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 bg-white border-pink-400 z-10 top-3"></div>
+                    <div className="absolute left-[18px] lg:left-[26px] top-4 bottom-0 w-0.5 bg-gradient-to-b from-pink-200 to-rose-100 -z-0"></div>
+                    
                     <div className="flex flex-col">
                         <div className="flex flex-row items-start gap-3">
-                            <span className="font-bold text-pink-500 text-[10px] lg:text-xs shrink-0 min-w-[3rem] mt-1 tracking-tight">{item.time}</span>
+                            <span className="font-bold text-pink-500 text-[11px] lg:text-xs shrink-0 min-w-[3rem] mt-1 tracking-tight">{item.time}</span>
                             <div className="mt-0.5 shrink-0"><CategoryIcon type={item.category} /></div>
                             <div className="flex-1">
                                 <div className="flex items-start justify-between">
                                     <div className="text-gray-900 font-bold text-xs lg:text-sm leading-snug mt-0.5">
-                                        {/* JSX 컨텐츠 지원을 위해 직접 렌더링 */}
                                         {item.content}
                                     </div>
                                     {hasTransport && (
@@ -190,16 +180,80 @@
                                 ))}
                             </div>
                         )}
-                        {!isOpen && <div className="h-1"></div>}
                     </div>
                 </div>
             );
         };
 
-        const TokyoTripGuide = () => {
-            const [activeDay, setActiveDay] = useState(1);
+        // --- 날짜별 아코디언 카드 ---
+        const DayCard = ({ data, isOpen, onClick }) => {
+            return (
+                <div className={`transition-all duration-300 rounded-3xl overflow-hidden border ${isOpen ? 'border-pink-300 shadow-xl bg-white scale-[1.01]' : 'border-white bg-white/80 hover:bg-white hover:shadow-md'}`}>
+                    {/* Header - Always Visible */}
+                    <div 
+                        onClick={onClick}
+                        className={`p-5 lg:p-6 cursor-pointer flex items-center justify-between transition-colors ${isOpen ? 'bg-gradient-to-r from-pink-50 to-white' : ''}`}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-2xl ${isOpen ? 'bg-pink-500 text-white shadow-lg shadow-pink-200' : 'bg-pink-100 text-pink-500'}`}>
+                                <span className="text-[10px] font-medium leading-none mb-0.5">Day</span>
+                                <span className="text-xl font-bold leading-none">{data.day}</span>
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-pink-500">{data.date}</span>
+                                    {data.tag && <span className="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] rounded-full font-bold">{data.tag}</span>}
+                                </div>
+                                <h3 className={`text-lg font-bold mt-0.5 ${isOpen ? 'text-gray-900' : 'text-gray-600'}`}>{data.title}</h3>
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                            <a 
+                                href={data.mapUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="hidden sm:flex items-center justify-center w-9 h-9 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors"
+                            >
+                                <MapIcon className="w-4 h-4" />
+                            </a>
+                            <div className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 ${isOpen ? 'bg-pink-100 text-pink-500 rotate-180' : 'text-gray-400'}`}>
+                                <ChevronDown className="w-5 h-5" />
+                            </div>
+                        </div>
+                    </div>
 
-            // 데이터 수정: 빈 점심/저녁 일정에 추천 맛집 추가 및 형광펜 스타일 적용
+                    {/* Body - Collapsible */}
+                    {isOpen && (
+                        <div className="px-4 pb-6 pt-0 animate-slideDown border-t border-pink-50">
+                             <a 
+                                href={data.mapUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="sm:hidden mt-4 mb-2 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-blue-50 text-blue-600 font-bold text-sm hover:bg-blue-100 transition-colors"
+                            >
+                                <MapIcon className="w-4 h-4" /> 지도 보기
+                            </a>
+
+                            <div className="mt-2">
+                                {data.timeline.map((item, idx) => (
+                                    <TimelineItem key={idx} item={item} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const TokyoTripGuide = () => {
+            const [openDay, setOpenDay] = useState(1);
+
+            const toggleDay = (day) => {
+                setOpenDay(openDay === day ? null : day);
+            };
+
             const itineraryData = [
                 {
                     day: 1,
@@ -216,16 +270,28 @@
                         },
                         { time: '18:30', category: 'accommodation', content: '숙소 체크인 (게이오 프레소 인 가야바초)', jp: '京王プレッソイン (케이오 프레소인)' },
                         { time: '19:00', category: 'cafe', content: '하브스 코레도 니혼바시 (케이크)', jp: 'ハーブス (20:00 마감 / 19:30 L.O)' },
-                        { time: '20:00', category: 'food', content: '이마카츠 긴자 (닭가슴살 카츠)', jp: 'イマカツ銀座 (이마카츠 긴자)' }
-                    ],
-                    tips: [
-                        '이마카츠 긴자점 수요일 영업 (일요일 휴무).',
-                        '하브스 마감 시간이 빠듯하니 체크인 후 서두르세요.'
-                    ],
-                    japanese: [
-                        { ko: '체크인 부탁합니다', ja: 'チェックインお願いします', jp: '체크인 오네가이시마스' },
-                        { ko: '예약했습니다', ja: '予約しました', jp: '요야쿠 시마시타' },
-                        { ko: '지금 들어갈 수 있나요?', ja: '今入れますか', jp: '이마 하이레마스카?' }
+                        { 
+                            time: '20:00', category: 'food', 
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 저녁 맛집 추천 (택1)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 이마카츠 긴자</span> : 부드러운 닭가슴살 카츠가 일품인 곳</li>
+                                        <li><span className="recommend-highlight">2. 츠지한</span> : 해산물이 듬뿍 들어간 제이타쿠동 맛집</li>
+                                        <li><span className="recommend-highlight">3. 카네코 한노스케</span> : 푸짐한 에도마에 텐동 본점</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '니혼바시/긴자 지역' 
+                        },
+                        { 
+                            time: '21:30', category: 'sightseeing', 
+                            content: '니혼바시 다리 & 기린상 (야경)', 
+                            jp: '日本橋 (니혼바시 / 숙소 도보 5분)',
+                            transports: [
+                                { name: '도보', detail: '식사 후 가볍게 산책 및 사진 촬영', color: 'gray', jp: '散歩 (산포)' }
+                            ]
+                        }
                     ]
                 },
                 {
@@ -242,23 +308,22 @@
                             ]
                         },
                         { time: '09:00', category: 'theme_park', content: '도쿄 디즈니랜드 입장', jp: 'ディズニーランド (디즈니란도)' },
-                        { time: '13:00', category: 'food', content: '파크 내 점심 (피자 포트 등)', jp: 'ランチ (란치)' },
+                        { time: '13:00', category: 'food', content: '파크 내 점심 (피자 포트 / 츄러스)', jp: 'ランチ (란치)' },
                         { time: '19:30', category: 'theme_park', content: '퍼레이드 관람 및 퇴장', jp: 'パレード (파레-도)' },
                         { 
                             time: '20:30', category: 'food', 
-                            content: <span>추천 저녁: <span className="recommend-highlight">소라노이로 NIPPON (라멘)</span></span>, 
-                            jp: 'ソラノイロ (도쿄역 라멘스트리트 / 숙소 복귀 중 환승)' 
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 저녁 맛집 추천 (도쿄역 라멘)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 소라노이로</span> : 깔끔한 비건 라멘 & 중화 소바</li>
+                                        <li><span className="recommend-highlight">2. 로쿠린샤</span> : 진한 국물의 츠케멘 유명 맛집 (웨이팅 주의)</li>
+                                        <li><span className="recommend-highlight">3. 이카루가</span> : 진한 돈코츠 베이스의 도쿄역 라멘</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '도쿄역 라멘 스트리트' 
                         }
-                    ],
-                    tips: [
-                        '입장 직후 앱으로 DPA/패스 확인 필수.',
-                        '밤에는 쌀쌀하니 핫팩과 외투 챙기세요.',
-                        '저녁은 도쿄역으로 돌아와 라멘 스트리트 추천!'
-                    ],
-                    japanese: [
-                        { ko: '사진 좀 찍어주시겠어요?', ja: '写真を撮ってもらえますか', jp: '샤신 톳테 모라에마스카?' },
-                        { ko: '이거 어디서 파나요?', ja: 'これはどこで売っていますか', jp: '코레 도코니 웃테마스카?' },
-                        { ko: '포장해 주세요', ja: 'テイクアウトでお願いします', jp: '테이크아우토 데 오네가이시마스' }
                     ]
                 },
                 {
@@ -274,7 +339,20 @@
                                 { name: 'H 히비야선', detail: '가야바초(H12) → 아키하바라(H15) (3번 출구)', color: 'gray', jp: '日比谷線' }
                             ]
                         },
-                        { time: '12:00', category: 'food', content: '점심: 로스트 비프 오노', jp: 'ローストビーフ大野 (로스토비후 오노)' },
+                        { 
+                            time: '12:00', category: 'food', 
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 점심 맛집 추천 (택1)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 규카츠 이치니산</span> : 아키하바라 줄서는 규카츠 맛집</li>
+                                        <li><span className="recommend-highlight">2. 로스트비프 오노</span> : 산처럼 쌓아주는 로스트비프 덮밥</li>
+                                        <li><span className="recommend-highlight">3. 큐슈 장가라 라멘</span> : 진한 돈코츠 라멘 전문점</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '아키하바라 지역' 
+                        },
                         { 
                             time: '13:30', category: 'shopping', content: '라디오 회관 & 하비코로 토이', jp: 'ラジオ会館 & ハビコロ玩具',
                             transports: [
@@ -284,26 +362,26 @@
                         { time: '17:00', category: 'sightseeing', content: '도쿄 타워 & 아자부다이 힐스', jp: '東京タワー (토쿄타와-)' },
                         { 
                             time: '19:30', category: 'food', 
-                            content: <span>추천 저녁: <span className="recommend-highlight">와라야키야 (타다키/이자카야)</span></span>, 
-                            jp: '藁焼き屋 (하마마츠초 근처 / 도쿄타워 뷰)' 
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 저녁 맛집 추천 (택1)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 와라야키야</span> : 박력 있는 가다랑어 짚불구이 타다키</li>
+                                        <li><span className="recommend-highlight">2. 아키타야</span> : 서서 먹는 노포 분위기의 모츠야키(내장구이)</li>
+                                        <li><span className="recommend-highlight">3. 멘야 무사시</span> : 차슈가 큼직한 츠케멘/라멘 맛집</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '하마마츠초/다이몬 지역' 
                         }
-                    ],
-                    tips: [
-                        '패스 개시! 아키하바라와 롯폰기 라인 집중.',
-                        '도쿄 타워 보고 바로 옆 아자부다이 힐스 야경 추천.',
-                        '와라야키야는 짚불구이 퍼포먼스가 있는 맛집입니다.'
-                    ],
-                    japanese: [
-                        { ko: '이거 새 상품인가요?', ja: 'これは新品ですか', jp: '코레 신핀 데스카?' },
-                        { ko: '할인 되나요?', ja: '割引できますか', jp: '와리비키 데키마스카?' }
                     ]
                 },
                 {
                     day: 4,
                     date: '1.31 (토)',
-                    title: '긴자 & 롯폰기 일루미',
+                    title: '긴자 & 시바공원(도쿄타워)',
                     tag: 'PASS 2일차',
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Roppongi+Hills&waypoints=Ginza+Station|Omotesando+Station&travelmode=transit",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Roppongi+Hills&waypoints=Ginza+Station|Shiba+Park&travelmode=transit",
                     timeline: [
                         { 
                             time: '10:30', category: 'shopping', content: '긴자 도착 및 반클리프 아펠', jp: '銀座 (긴자) / ヴァンクリーフ',
@@ -313,90 +391,115 @@
                         },
                         { 
                             time: '13:00', category: 'food',
-                            content: <span>추천 점심: <span className="recommend-highlight">마이센 아오야마 본점 (돈카츠)</span></span>,
-                            jp: 'まい泉 青山本店 (오모테산도 이동 후 식사)'
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 점심 맛집 추천 (택1)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 긴자 텐쿠니</span> : 100년 전통의 새우튀김 텐동</li>
+                                        <li><span className="recommend-highlight">2. 긴자 바이린</span> : 히레카츠 샌드와 돈카츠 정식</li>
+                                        <li><span className="recommend-highlight">3. 사토 요스케</span> : 윤기 나는 이나니와 우동 맛집</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '긴자 지역'
                         },
                         { 
-                            time: '14:30', category: 'sightseeing', content: '오모테산도 & 캣스트리트', jp: '表参道 (오모테산도)',
+                            time: '15:00', category: 'sightseeing', content: '시바 공원 & 조조지 (도쿄타워 뷰)', jp: '芝公園 & 増上寺 (시바코엔)',
                             transports: [
-                                { name: 'C 치요다선', detail: '긴자(C08) → 오모테산도(C04) (A2 출구)', color: 'green', jp: '千代田線 (치요다센)' }
+                                { name: 'H 히비야선/도보', detail: '긴자 → 카미야초 or 도보 이동', color: 'gray', jp: '移動' }
                             ]
                         },
                         { 
                             time: '17:30', category: 'sightseeing', content: '롯폰기 힐즈 (케야키자카 야경)', jp: '六本木ヒルズ (롯폰기 히루즈)',
                             transports: [
-                                { name: 'C 치요다선/H 히비야선', detail: '오모테산도 → 롯폰기 (도보/지하철)', color: 'gray', jp: '移動 (이동)' }
+                                { name: 'H 히비야선', detail: '카미야초 → 롯폰기', color: 'gray', jp: '日比谷線' }
                             ]
                         },
                         { 
                             time: '19:30', category: 'food', 
-                            content: <span>추천 저녁: <span className="recommend-highlight">곤파치 니시아자부 (이자카야)</span></span>, 
-                            jp: '権八 西麻布 (킬빌 촬영지 / 분위기 굿)' 
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 저녁 맛집 추천 (택1)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 곤파치 니시아자부</span> : 킬빌 촬영지, 숯불 꼬치구이 & 소바</li>
+                                        <li><span className="recommend-highlight">2. 츠루톤탄</span> : 세숫대야처럼 큰 그릇에 나오는 우동</li>
+                                        <li><span className="recommend-highlight">3. 아푸리 라멘</span> : 깔끔한 유자 소금 라멘 (롯폰기 힐즈점)</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '롯폰기/니시아자부 지역' 
                         }
-                    ],
-                    tips: [
-                        '겨울 도쿄의 하이라이트, 케야키자카 일루미네이션!',
-                        '오모테산도에서 롯폰기는 택시로도 가깝습니다.',
-                        '마이센은 오모테산도의 랜드마크 같은 돈카츠 집입니다.'
-                    ],
-                    japanese: [
-                        { ko: '재고 있나요?', ja: '在庫はありますか', jp: '자이코 아리마스카?' },
-                        { ko: '선물 포장 해주세요', ja: 'プレゼント用に包んでください', jp: '푸레젠토 요-니 츠츤데 쿠다사이' }
                     ]
                 },
                 {
                     day: 5,
                     date: '2.1 (일)',
-                    title: '긴자 & 오다이바 & 마루노우치',
+                    title: '오다이바 & 긴자',
                     tag: 'PASS 3일차',
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=DiverCity+Tokyo+Plaza&waypoints=Pain+Maison+Ginza|Tsujihan+Nihonbashi&travelmode=transit",
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Marunouchi+Illumination&waypoints=Pain+Maison+Ginza|Odaiba+Marine+Park|DiverCity+Tokyo+Plaza&travelmode=transit",
                     timeline: [
                         { 
-                            time: '08:30', category: 'food', content: '판 메종 긴자 (소금빵)', jp: 'パン・メゾン (판 메종 / 08:30 오픈)',
+                            time: '08:30', category: 'food',
+                            content: <span>아침: <span className="recommend-highlight">판 메종 (소금빵 / 메론 소금빵 / 앙버터)</span></span>, 
+                            jp: 'パン・メゾン (오픈런 추천)',
                             transports: [
-                                { name: 'H 히비야선', detail: '가야바초 → 핫초보리 → 긴자잇초메 (도보 5분)', color: 'gray', jp: '日比谷線' }
+                                { name: 'H 히비야선/도보', detail: '숙소 → 긴자잇초메 (도보/지하철)', color: 'gray', jp: '移動' }
                             ]
                         },
                         { 
-                            time: '11:00', category: 'food', content: '츠지한 니혼바시 본점 (점심)', jp: 'つじ半 日本橋本店 (츠지한 본점)',
+                            time: '10:30', category: 'sightseeing', content: '오다이바 해변공원 (레인보우 브리지 뷰)', jp: 'お台場海浜公園 (오다이바 카이힌코엔)',
                             transports: [
-                                { name: '도보/지하철', detail: '긴자에서 니혼바시 이동', color: 'gray', jp: '移動' }
+                                { name: 'G 긴자선/유리카모메', detail: '긴자 → 신바시 → 오다이바 해변공원', color: 'blue', jp: 'ゆりかもめ (유리카모메)' }
                             ]
                         },
                         { 
-                            time: '13:00', category: 'sightseeing', content: '오다이바 이동 & 관광', jp: 'お台場 (오다이바)',
+                            time: '12:30', category: 'food', 
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 점심 맛집 추천 (택1)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 쿠아아이나</span> : 레인보우 브리지 뷰 아보카도 버거</li>
+                                        <li><span className="recommend-highlight">2. 카네코 한노스케</span> : 다이버시티 푸드코트 내 텐동</li>
+                                        <li><span className="recommend-highlight">3. 츠키지 타마 스시</span> : 덱스 도쿄 비치 내 스시 (무한리필/단품)</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '오다이바 지역'
+                        },
+                        { time: '14:30', category: 'shopping', content: '다이버시티 (건담) 구경', jp: 'ダイバーシティ (다이바시티)' },
+                        { 
+                            time: '17:00', category: 'shopping', content: '긴자/유락초 복귀', jp: '銀座 (긴자)',
                             transports: [
-                                { name: 'G 긴자선/유리카모메', detail: '니혼바시 → 신바시 → 오다이바', color: 'blue', jp: 'ゆりかもめ (유리카모메)' }
+                                { name: '유리카모메/지하철', detail: '오다이바 → 신바시 → 유락초', color: 'gray', jp: '移動' }
                             ]
                         },
-                        { time: '15:30', category: 'shopping', content: '다이버시티 (건담) & 아쿠아시티', jp: 'ダイバーシティ (다이바시티)' },
                         { 
                             time: '19:00', category: 'sightseeing', content: '마루노우치 일루미네이션', jp: '丸の内イルミネーション',
                             transports: [
-                                { name: '유리카모메/JR', detail: '오다이바 → 신바시 → 도쿄역/유락초', color: 'blue', jp: '移動' }
+                                { name: '도보', detail: '유락초 → 도쿄역 (도보 이동)', color: 'gray', jp: '徒歩' }
                             ]
                         },
                         {
                             time: '20:00', category: 'food',
-                            content: <span>추천 저녁: <span className="recommend-highlight">네무로 하나마루 (키테 마루노우치)</span></span>,
-                            jp: '根室花まる (키테 5층 / 회전초밥)'
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 저녁 맛집 추천 (택1)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 네무로 하나마루</span> : 키테 5층 인기 회전초밥 (대기 필수)</li>
+                                        <li><span className="recommend-highlight">2. 오코노미야키 키지</span> : 미슐랭 빕구르망 오코노미야키</li>
+                                        <li><span className="recommend-highlight">3. 멘야 시치사이</span> : 주문 즉시 면을 뽑아주는 수타 라멘</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '도쿄역/마루노우치 지역'
                         }
-                    ],
-                    tips: [
-                        '다이버시티는 오다이바의 필수 코스!',
-                        '츠지한 본점은 대기가 길 수 있으니 오픈 전 도착 추천.',
-                        '네무로 하나마루는 도쿄역 바로 앞 KITTE 건물에 있습니다.'
-                    ],
-                    japanese: [
-                        { ko: '파는 빼 주세요', ja: 'ネギ抜きでお願いします', jp: '네기 누키데 오네가이시마스' },
-                        { ko: '창가 자리 부탁해요', ja: '窓側の席をお願いします', jp: '마도가와노 세키 오네가이시마스' }
                     ]
                 },
                 {
                     day: 6,
                     date: '2.2 (월)',
-                    title: '신주쿠 & 시부야',
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Isetan+Shinjuku&travelmode=transit",
+                    title: '신주쿠 & 오모테산도 & 시부야',
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Shibuya+Sky&waypoints=Isetan+Shinjuku|Omotesando+Hills&travelmode=transit",
                     timeline: [
                         { 
                             time: '10:30', category: 'shopping', content: '신주쿠 이세탄 백화점 쇼핑', jp: '伊勢丹 新宿店 (이세탄 신주쿠)',
@@ -405,28 +508,46 @@
                             ]
                         },
                         { 
-                            time: '12:30', category: 'food', content: '점심: 교엔 로안', jp: '御苑 炉庵 (교엔 로안 / 월요일 영업)',
-                            transports: [
-                                { name: '도보', detail: '이세탄 백화점에서 도보 5분', color: 'gray', jp: '徒歩' }
-                            ]
+                            time: '12:30', category: 'food', 
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 점심 맛집 추천 (택1)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 교엔 로안</span> : 깔끔한 우동/소바와 덮밥 정식 (월 영업)</li>
+                                        <li><span className="recommend-highlight">2. 톤친 라멘</span> : 미슐랭 빕구르망 돈코츠 라멘</li>
+                                        <li><span className="recommend-highlight">3. 나베조 신주쿠</span> : 샤브샤브/스키야키 무한리필</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '신주쿠 산초메 지역'
                         },
-                        { time: '14:00', category: 'cafe', content: '스즈카케 (이세탄 지하 1층)', jp: '鈴懸 (스즈카케 / 선물 구매)' },
                         { 
-                            time: '15:00', category: 'sightseeing', content: '시부야 미야시타 파크', jp: '宮下パーク (미야시타 파쿠)',
+                            time: '14:30', category: 'sightseeing', content: '오모테산도 & 캣스트리트 (도보 이동)', jp: '表参道 (오모테산도)',
                             transports: [
-                                { name: 'JR 야마노테선', detail: '신주쿠 → 시부야', color: 'green', jp: '山手線 (야마노테센)' }
+                                { name: 'F 후쿠토신선', detail: '신주쿠산초메 → 메이지진구마에 (하라주쿠)', color: 'gray', jp: '副都心線' },
+                                { name: '도보', detail: '하라주쿠 → 오모테산도 → 캣스트리트 → 시부야', color: 'gray', jp: '散歩 (산포 코스 추천)' }
                             ]
                         },
-                        { time: '17:00', category: 'sightseeing', content: '시부야 스카이 (예약 필수)', jp: '渋谷スカイ (시부야 스카이)' },
-                        { time: '19:30', category: 'food', content: '미요시테이 (저녁)', jp: '三善亭 (미요시테이)' }
-                    ],
-                    tips: [
-                        '시부야 미야시타 파크는 옥상 공원 뷰가 좋습니다.',
-                        '이세탄 쇼핑 시간 넉넉히 확보했습니다.'
-                    ],
-                    japanese: [
-                        { ko: '한국어 메뉴판 있나요?', ja: '韓国語のメニューはありますか', jp: '캉코쿠고노 메뉴- 아리마스카?' },
-                        { ko: '계산은 테이블에서 하나요?', ja: '会計はテーブルですか', jp: '카이케이와 테-부루데스카?' }
+                        { 
+                            time: '16:00', category: 'cafe', 
+                            content: <span>추천 카페: <span className="recommend-highlight">랄프스 커피 (라떼 / 브라우니 / 샌드위치)</span></span>,
+                            jp: 'ラルフズコーヒー (Ralph\'s Coffee)' 
+                        },
+                        { time: '17:30', category: 'sightseeing', content: '시부야 스카이 (예약 필수)', jp: '渋谷スカイ (시부야 스카이)' },
+                        { 
+                            time: '19:30', category: 'food', 
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 저녁 맛집 추천 (택1)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 코테가에시</span> : 직접 만들어 먹는 오코노미야키/몬자야키</li>
+                                        <li><span className="recommend-highlight">2. 몬자 모헤지</span> : 시부야 스크램블 스퀘어 내 몬자야키</li>
+                                        <li><span className="recommend-highlight">3. 우오베이</span> : 터치패드로 주문하는 가성비 회전초밥</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '시부야 지역' 
+                        }
                     ]
                 },
                 {
@@ -450,136 +571,54 @@
                         { time: '11:10', category: 'shopping', content: '나리타 공항 도착 & 면세점', jp: '成田空港 (나리타쿠코)' },
                         { 
                             time: '12:30', category: 'food', 
-                            content: <span>추천 점심: <span className="recommend-highlight">스시 쿄타츠 (공항 맛집)</span></span>, 
-                            jp: 'すし京辰 (나리타 1터미널 / 마지막 스시)' 
+                            content: (
+                                <div className="bg-white/50 rounded-lg p-2 border border-pink-100 mt-1">
+                                    <span className="font-bold text-pink-600 text-xs block mb-1.5">🍽️ 공항 점심 추천 (택1)</span>
+                                    <ul className="space-y-1.5 text-xs text-gray-700">
+                                        <li><span className="recommend-highlight">1. 스시 쿄타츠</span> : 공항 퀄리티를 넘어서는 스시 맛집</li>
+                                        <li><span className="recommend-highlight">2. 토미타 라멘</span> : 일본 제일의 츠케멘 분점 (4층)</li>
+                                        <li><span className="recommend-highlight">3. 기네야 무기마루</span> : 가볍게 먹기 좋은 우동 전문점</li>
+                                    </ul>
+                                </div>
+                            ),
+                            jp: '나리타공항 1터미널' 
                         },
                         { time: '14:00', category: 'flight', content: '인천행 KE704 탑승', jp: '搭乗 (토죠)' }
-                    ],
-                    tips: [
-                        '남은 동전은 공항 편의점/가챠로 처리.',
-                        '스시 쿄타츠는 공항 스시 중 퀄리티가 가장 좋습니다.'
-                    ],
-                    japanese: [
-                        { ko: '감사했습니다', ja: 'ありがとうございました', jp: '아리가토 고자이마시타' },
-                        { ko: '다음에 또 올게요', ja: 'また来ます', jp: '마타 키마스' }
                     ]
                 }
             ];
 
-            const currentDayData = itineraryData.find(d => d.day === activeDay) || itineraryData[0];
-            const totalDays = itineraryData.length;
-
-            const handlePrevDay = () => { if (activeDay > 1) setActiveDay(activeDay - 1); };
-            const handleNextDay = () => { if (activeDay < totalDays) setActiveDay(activeDay + 1); };
-
             return (
-                <div className="flex h-screen bg-rose-50 text-gray-900 overflow-hidden font-pretendard">
+                <div className="min-h-screen pb-20 relative">
                     <SakuraEffect />
-
-                    {/* Sidebar */}
-                    <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white/95 backdrop-blur-md shadow-2xl border-r border-pink-100 hidden lg:block`}>
-                        <div className="p-6 flex flex-col h-full">
-                            <div className="flex items-center gap-2 mb-6 text-pink-500">
-                                <Flower className="w-8 h-8 animate-spin-slow" />
-                                <h1 className="text-xl font-bold tracking-tight text-gray-900">도쿄 여행 <span className="text-xs block text-pink-400 font-normal mt-1">2026.1.28 - 2.3</span></h1>
-                            </div>
-                            <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar pr-2">
-                                {itineraryData.map((data) => (
-                                    <button
-                                        key={data.day}
-                                        onClick={() => setActiveDay(data.day)}
-                                        className={`w-full text-left px-4 py-3.5 rounded-2xl transition-all duration-300 flex flex-col gap-0.5 border border-transparent ${activeDay === data.day ? 'bg-gradient-to-r from-pink-500 to-rose-400 text-white shadow-lg shadow-pink-200 scale-105' : 'hover:bg-pink-50 text-gray-700 hover:border-pink-100'}`}
-                                    >
-                                        <span className={`text-[10px] font-medium ${activeDay === data.day ? 'text-pink-100' : 'text-gray-500'}`}>{data.date}</span>
-                                        <span className="font-bold text-base">{data.day}일차</span>
-                                        <span className={`text-xs truncate w-full ${activeDay === data.day ? 'text-white/90' : 'text-gray-500'}`}>{data.title}</span>
-                                    </button>
-                                ))}
-                            </nav>
+                    
+                    {/* Header */}
+                    <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-pink-100 px-6 py-5 flex items-center justify-between">
+                         <div className="flex items-center gap-2 text-pink-500">
+                            <Flower className="w-6 h-6 animate-spin-slow" />
+                            <h1 className="text-xl font-extrabold tracking-tight text-gray-900">도쿄 여행 <span className="text-sm font-normal text-pink-400 ml-1">2026</span></h1>
                         </div>
-                    </aside>
-
-                    {/* Main Content */}
-                    <main className="flex-1 flex flex-col h-full overflow-hidden relative lg:ml-64">
-                        <div className="lg:hidden flex items-center justify-between px-5 py-4 bg-white/90 backdrop-blur-md shadow-sm z-30 sticky top-0">
-                            <div className="flex items-center gap-2">
-                                <span className="text-pink-500 font-bold text-lg">Day {activeDay}</span>
-                                <span className="text-gray-400 text-sm">|</span>
-                                <span className="text-gray-900 text-sm truncate max-w-[200px]">{currentDayData.title}</span>
-                            </div>
+                        <div className="text-xs font-medium text-gray-500 bg-pink-50 px-3 py-1.5 rounded-full">
+                            2026.1.28 - 2.3
                         </div>
+                    </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 lg:p-10 scroll-smooth relative">
-                            <div className="max-w-2xl mx-auto space-y-6 pb-20">
-                                <div className="animate-fadeIn space-y-6">
-                                    <div className="mt-2 lg:mt-0 flex justify-between items-start">
-                                        <div>
-                                            {currentDayData.tag && <span className="inline-block px-3 py-1 bg-pink-100 text-pink-600 text-[11px] font-bold rounded-full mb-3">{currentDayData.tag}</span>}
-                                            <h2 className="text-2xl lg:text-3xl font-extrabold text-gray-900 leading-tight mb-2">{currentDayData.title}</h2>
-                                            <p className="text-pink-400 font-medium text-sm">{currentDayData.date}</p>
-                                        </div>
-                                        <a href={currentDayData.mapUrl} target="_blank" rel="noopener noreferrer" className="block w-1/2 group relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-500 to-blue-400 shadow-md transition-all hover:shadow-blue-200 hover:-translate-y-0.5 shrink-0 ml-4">
-                                            <div className="px-3 py-2 flex items-center justify-between text-white">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="p-1.5 bg-white/20 rounded-full backdrop-blur-sm"><MapIcon className="w-4 h-4" /></div>
-                                                    <p className="font-bold text-sm">지도</p>
-                                                </div>
-                                                <div className="bg-white/20 p-1 rounded-full transform group-hover:translate-x-1 transition-transform">
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
+                    {/* Content List */}
+                    <div className="max-w-2xl mx-auto p-4 sm:p-6 space-y-4">
+                        {itineraryData.map((data) => (
+                            <DayCard 
+                                key={data.day} 
+                                data={data} 
+                                isOpen={openDay === data.day} 
+                                onClick={() => toggleDay(data.day)} 
+                            />
+                        ))}
+                    </div>
 
-                                    {currentDayData.alert && (
-                                        <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-start gap-3">
-                                            <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                                            <p className="text-rose-600 text-sm font-bold leading-snug">{currentDayData.alert}</p>
-                                        </div>
-                                    )}
-
-                                    <div className="bg-white rounded-3xl p-5 lg:p-8 shadow-xl border border-pink-50 relative overflow-hidden">
-                                        <div className="absolute left-[26px] lg:left-[34px] top-8 bottom-8 w-0.5 bg-gradient-to-b from-pink-200 to-rose-100"></div>
-                                        <div className="space-y-2 relative">
-                                            {currentDayData.timeline.map((item, idx) => (
-                                                <TimelineItem key={idx} item={item} />
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 gap-4">
-                                        <div className="bg-gradient-to-br from-rose-50 to-white rounded-2xl p-5 shadow-sm border border-pink-100">
-                                            <h3 className="text-xs font-bold text-rose-500 flex items-center gap-2 mb-3"><CheckSquare className="w-3.5 h-3.5" /> 꿀팁 & 체크</h3>
-                                            <ul className="space-y-2">
-                                                {currentDayData.tips.map((tip, idx) => (
-                                                    <li key={idx} className="flex items-start gap-2 text-xs text-gray-900 leading-relaxed"><span className="text-rose-400 mt-1 shrink-0 text-xs">●</span>{tip}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                                            <h3 className="text-xs font-bold text-indigo-500 flex items-center gap-2 mb-3"><Languages className="w-3.5 h-3.5" /> 필수 일본어</h3>
-                                            <div className="space-y-2.5">
-                                                {currentDayData.japanese.map((lang, idx) => (
-                                                    <div key={idx} className="flex flex-col gap-0.5 border-b border-gray-100 pb-2 last:border-0 last:pb-0">
-                                                        <span className="text-xs text-gray-900 font-bold">{lang.ko}</span>
-                                                        <div className="flex flex-col">
-                                                            <span className="text-xs text-indigo-700 font-medium">{lang.ja}</span>
-                                                            <span className="text-[10px] text-gray-400">{lang.jp}</span>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div className="fixed bottom-6 right-6 flex gap-3 z-50">
-                                <button onClick={handlePrevDay} disabled={activeDay === 1} className={`p-3 rounded-full shadow-lg transition-all duration-300 ${activeDay === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-pink-500 hover:bg-pink-50 hover:scale-110'}`}><ChevronLeft className="w-6 h-6" /></button>
-                                <button onClick={handleNextDay} disabled={activeDay === totalDays} className={`p-3 rounded-full shadow-lg transition-all duration-300 ${activeDay === totalDays ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-pink-500 to-rose-400 text-white hover:scale-110 hover:shadow-pink-200'}`}><ChevronRight className="w-6 h-6" /></button>
-                            </div>
-                        </div>
-                    </main>
+                    {/* Bottom Info */}
+                     <div className="text-center text-gray-400 text-xs pb-10">
+                        © 2026 Tokyo Trip Guide
+                    </div>
                 </div>
             );
         };
