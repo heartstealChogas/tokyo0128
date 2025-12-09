@@ -100,7 +100,7 @@
 
         const Train = (props) => <Icon {...props}><rect width="16" height="16" x="4" y="3" rx="2" /><path d="M4 11h16" /><path d="M12 3v8" /><path d="m8 19-2 3" /><path d="m18 22-2-3" /><path d="M8 15h0" /><path d="M16 15h0" /></Icon>;
         const CheckSquare = (props) => <Icon {...props}><path d="m9 11 3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></Icon>;
-        const Flower = (props) => <Icon {...props}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></Icon>; // Custom Flower shape simplified
+        const Flower = (props) => <Icon {...props}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/></Icon>;
         const Languages = (props) => <Icon {...props}><path d="m5 8 6 6" /><path d="m4 14 6-6 2-3" /><path d="M2 5h12" /><path d="M7 2h1" /><path d="m22 22-5-10-5 10" /><path d="M14 18h6" /></Icon>;
         const AlertCircle = (props) => <Icon {...props}><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></Icon>;
         const MapIcon = (props) => <Icon {...props}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" x2="9" y1="3" y2="18" /><line x1="15" x2="15" y1="6" y2="21" /></Icon>;
@@ -161,8 +161,7 @@
                     ],
                     tips: [
                         '이마카츠 긴자점은 수요일 영업합니다.',
-                        '첫날은 패스권 개시하지 말고 IC카드 사용 추천.',
-                        '숙소는 가야바초역 4b 출구 바로 앞.'
+                        '첫날은 패스권 개시하지 말고 IC카드 사용 추천.'
                     ],
                     japanese: [
                         { ko: '체크인 부탁합니다', ja: 'チェックインお願いします', jp: '체크인 오네가이시마스' },
@@ -246,6 +245,7 @@
                     date: '2.1 (일)',
                     title: '롯폰기 & 오다이바',
                     tag: 'PASS 3일차',
+                    // 아크힐즈로 원복
                     mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tsujihan+Ark+Hills&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '10:45', content: '츠지한 아크힐즈점 도착', jp: 'つじ半 アークヒルズ店 (츠지한 아크힐즈)' },
@@ -257,7 +257,7 @@
                         { type: 'activity', time: '18:00', content: '레인보우 브리지 야경', jp: 'レインボーブリッジ (레인보- 부리지)' }
                     ],
                     tips: [
-                        '츠지한 아크힐즈점 일요일 정상 영업.',
+                        '츠지한 아크힐즈점 정상 영업.',
                         '유리카모메 맨 앞칸(1-1) 뷰 추천.'
                     ],
                     japanese: [
@@ -270,19 +270,19 @@
                     day: 6,
                     date: '2.2 (월)',
                     title: '신주쿠 & 시부야',
-                    alert: '※ 신주쿠 교엔 월요일 정기 휴무',
-                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Metropolitan+Government+Building&travelmode=transit",
+                    alert: '※ 신주쿠 교엔 월요일 휴무 / 식당은 영업',
+                    mapUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Gyoen+Roan&travelmode=transit",
                     timeline: [
                         { type: 'activity', time: '10:30', content: '신주쿠 이동 & 도쿄 도청 전망대', jp: '東京都庁 (토쿄 토쵸)' },
                         { type: 'transport', name: 'T 토자이선', detail: '가야바초(T11) → 구단시타 환승 → 신주쿠(S01)', color: 'sky', jp: '東西線 (토자이센)' },
-                        { type: 'activity', time: '12:30', content: '우동 신 또는 루미네 쇼핑', jp: 'うどん慎 (우동 신)' },
+                        { type: 'activity', time: '12:00', content: '점심: 교엔 로안', jp: '御苑 炉庵 (교엔 로안)' },
                         { type: 'transport', name: 'JR 야마노테선', detail: '신주쿠 → 시부야', color: 'green', jp: '山手線 (야마노테센)' },
                         { type: 'activity', time: '14:30', content: '시부야 미야시타 파크', jp: '宮下パーク (미야시타 파쿠)' },
                         { type: 'activity', time: '17:00', content: '시부야 스카이 (예약 필수)', jp: '渋谷スカイ (시부야 스카이)' },
                         { type: 'activity', time: '19:30', content: '미요시테이 (저녁)', jp: '三善亭 (미요시테이)' }
                     ],
                     tips: [
-                        '신주쿠 교엔 휴무로 도쿄 도청 전망대 대체.',
+                        '교엔 로안은 일요일 휴무라 오늘은 영업합니다.',
                         '시부야 스카이는 예약 필수.',
                         '패스권 만료, IC카드 사용.'
                     ],
@@ -404,7 +404,6 @@
                                                     </div>
                                                     <div>
                                                         <p className="font-bold text-sm">{currentDayData.day}일차 경로 보기</p>
-                                                        <p className="text-xs text-blue-100 opacity-90">View Day {currentDayData.day} Route / ルートを見る</p>
                                                     </div>
                                                 </div>
                                                 <div className="bg-white/20 p-1.5 rounded-full text-white transform group-hover:translate-x-1 transition-transform">
@@ -445,7 +444,7 @@
                                                                     {item.content}
                                                                 </p>
                                                                 {item.jp && (
-                                                                    <p className="text-[10px] lg:text-xs text-gray-400 mt-0.5 font-medium">{item.jp}</p>
+                                                                    <p className="text-[9px] lg:text-[10px] text-gray-400 mt-0.5 font-medium">{item.jp}</p>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -461,9 +460,9 @@
                                                                 'text-pink-500'}`} 
                                                             />
                                                             <div className="flex flex-col">
-                                                                <span className="font-bold text-gray-900 text-[10px] lg:text-xs">{item.name}</span>
-                                                                <span className="text-gray-900 text-[10px] lg:text-xs mt-0.5 leading-relaxed">{item.detail}</span>
-                                                                {item.jp && <span className="text-gray-400 text-[10px] mt-0.5">{item.jp}</span>}
+                                                                <span className="font-bold text-gray-900 text-[9px] lg:text-[10px]">{item.name}</span>
+                                                                <span className="text-gray-900 text-[9px] lg:text-[10px] mt-0.5 leading-relaxed">{item.detail}</span>
+                                                                {item.jp && <span className="text-gray-400 text-[9px] mt-0.5">{item.jp}</span>}
                                                             </div>
                                                         </div>
                                                     )}
