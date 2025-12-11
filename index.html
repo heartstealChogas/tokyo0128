@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tokyo Trip Guide</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tokyo Trip Guide 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script type="importmap">
@@ -15,6 +15,39 @@
             }
         }
     </script>
+    <style>
+        /* 프리텐다드 폰트 */
+        @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+        body {
+            font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+            background-color: #fdf2f8; /* 핑크 배경 */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 스크롤바 숨김 (모바일 경험 향상) */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        .animate-slideDown {
+            animation: slideDown 0.3s ease-out forwards;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-spin-slow {
+            animation: spin 8s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <div id="root"></div>
@@ -23,539 +56,596 @@
         import React, { useState, useEffect } from 'react';
         import { createRoot } from 'react-dom/client';
         import { 
-          Plane, Bus, Hotel, MapPin, Utensils, Ticket, 
-          ShoppingBag, Camera, Star, Zap, Train, Moon, Sun, 
-          ChevronDown, ChevronUp, Coffee, Flower, ArrowRight, Navigation, Map
+            Plane, Hotel, MapPin, Utensils, ShoppingBag, Camera, Star, Zap, Train, 
+            Moon, Sun, ChevronDown, ChevronUp, Coffee, Flower, Navigation, Map, 
+            Clock, ArrowDown, ExternalLink
         } from 'lucide-react';
 
-        // --- 1. 스타일 및 애니메이션 정의 (CSS) ---
-        const GlobalStyles = () => (
-          <style>{`
-            /* 프리텐다드 폰트 임포트 */
-            @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+        // --- 1. 유틸리티 컴포넌트 ---
 
-            /* 전체 폰트 적용 */
-            body {
-              font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-            }
+        // 지하철 노선 색상 매핑
+        const getLineColor = (lineName) => {
+            if (lineName.includes('긴자')) return 'bg-orange-400 text-white';
+            if (lineName.includes('마루노우치')) return 'bg-red-500 text-white';
+            if (lineName.includes('히비야')) return 'bg-gray-400 text-white';
+            if (lineName.includes('토자이')) return 'bg-sky-400 text-white';
+            if (lineName.includes('치요다')) return 'bg-green-600 text-white';
+            if (lineName.includes('유라쿠초')) return 'bg-yellow-600 text-white';
+            if (lineName.includes('한조몬')) return 'bg-purple-600 text-white';
+            if (lineName.includes('오에도')) return 'bg-pink-600 text-white';
+            if (lineName.includes('아사쿠사')) return 'bg-rose-400 text-white';
+            if (lineName.includes('JR')) return 'bg-green-500 text-white';
+            if (lineName.includes('유리카모메')) return 'bg-blue-400 text-white';
+            if (lineName.includes('후쿠토신')) return 'bg-amber-700 text-white';
+            return 'bg-gray-500 text-white';
+        };
 
-            @keyframes slideDown {
-              from { opacity: 0; transform: translateY(-5px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes fadeIn {
-              from { opacity: 0; }
-              to { opacity: 1; }
-            }
-            .animate-spin-slow { 
-              animation: spin 8s linear infinite; 
-            }
-            @keyframes spin { 
-              from { transform: rotate(0deg); } 
-              to { transform: rotate(360deg); } 
-            }
-            .animate-slideDown {
-              animation: slideDown 0.3s ease-out forwards;
-            }
-            .animate-fadeIn {
-              animation: fadeIn 0.4s ease-out forwards;
-            }
-            /* 스크롤바 커스텀 */
-            ::-webkit-scrollbar {
-              width: 6px;
-            }
-            ::-webkit-scrollbar-track {
-              background: transparent;
-            }
-            ::-webkit-scrollbar-thumb {
-              background: #f9a8d4; 
-              border-radius: 10px;
-            }
-          `}</style>
-        );
-
-        // --- 2. 아이콘 매핑 (User UI Style) ---
         const CategoryIcon = ({ type }) => {
+            const className = "w-4 h-4";
             switch (type) {
-                case 'food': return <Utensils size={14} className="text-orange-500" />;
-                case 'cafe': return <Coffee size={14} className="text-amber-700" />;
-                case 'shopping': return <ShoppingBag size={14} className="text-purple-500" />;
-                case 'sightseeing': return <Camera size={14} className="text-blue-500" />;
-                case 'theme_park': return <Star size={14} className="text-yellow-500 fill-yellow-500" />;
-                case 'accommodation': return <Hotel size={14} className="text-indigo-500" />;
-                case 'flight': return <Plane size={14} className="text-sky-500" />;
-                case 'transport': return <Train size={14} className="text-green-600" />;
-                case 'activity': return <Zap size={14} className="text-red-500" />;
-                case 'view': return <Moon size={14} className="text-indigo-600" />;
-                case 'sunset': return <Sun size={14} className="text-orange-500" />;
-                default: return <div className="w-3.5 h-3.5 rounded-full bg-gray-300"></div>;
+                case 'food': return <Utensils className={`${className} text-orange-500`} />;
+                case 'cafe': return <Coffee className={`${className} text-amber-700`} />;
+                case 'shopping': return <ShoppingBag className={`${className} text-purple-500`} />;
+                case 'sightseeing': return <Camera className={`${className} text-blue-500`} />;
+                case 'theme_park': return <Star className={`${className} text-yellow-500 fill-yellow-500`} />;
+                case 'accommodation': return <Hotel className={`${className} text-indigo-500`} />;
+                case 'flight': return <Plane className={`${className} text-sky-500`} />;
+                case 'transport': return <Train className={`${className} text-green-600`} />;
+                case 'activity': return <Zap className={`${className} text-red-500`} />;
+                case 'view': return <Moon className={`${className} text-indigo-600`} />;
+                case 'sunset': return <Sun className={`${className} text-orange-500`} />;
+                default: return <div className="w-3 h-3 rounded-full bg-gray-300"></div>;
             }
         };
 
-        // --- 3. 거리 표시 컴포넌트 ---
-        const DistanceBadge = ({ distance }) => {
-            if (!distance) return null;
+        // --- 2. 이동 정보 컴포넌트 ---
+        const TravelInfo = ({ travel }) => {
+            if (!travel) return null;
             return (
-                <div className="relative pl-8 sm:pl-10 h-6 flex items-center">
-                    {/* 연결선 (위에서 아래로 이어짐) */}
-                    <div className="absolute left-[15px] sm:left-[21px] top-0 bottom-0 w-0.5 bg-pink-100"></div>
+                <div className="flex flex-col ml-12 mb-4 relative">
+                    {/* 점선 연결 */}
+                    <div className="absolute left-[-23px] top-[-10px] bottom-[-10px] w-0.5 border-l-2 border-dotted border-gray-300"></div>
                     
-                    {/* 거리 배지 (테두리 핑크, 텍스트 검정) */}
-                    <div className="absolute left-[16px] sm:left-[22px] -translate-x-1/2 bg-white border border-pink-200 text-[10px] text-black px-2 py-0.5 rounded-full z-10 font-mono shadow-sm tracking-tight flex items-center justify-center font-bold">
-                        {distance}
-                    </div>
-                </div>
-            );
-        };
-
-        // --- 4. 타임라인 아이템 컴포넌트 (User UI Logic) ---
-        const TimelineItem = ({ item }) => {
-            const [isOpen, setIsOpen] = useState(false);
-            // transports나 restaurants 정보가 있으면 토글 가능하게 처리
-            const hasDetails = (item.transports && item.transports.length > 0) || (item.restaurants && item.restaurants.length > 0) || item.tip;
-
-            // 장소 검색 URL 생성
-            const getSearchUrl = (query) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}&z=17`;
-
-            return (
-                <div className="relative pl-8 sm:pl-10 py-2 group">
-                    {/* 타임라인 선 및 점 */}
-                    <div className="absolute left-[16px] sm:left-[22px] -translate-x-1/2 w-3 h-3 rounded-full border-2 bg-white border-pink-400 z-10 top-3 group-hover:scale-110 transition-transform"></div>
-                    <div className="absolute left-[15px] sm:left-[21px] top-4 bottom-0 w-0.5 bg-pink-200 -z-0"></div>
-                    
-                    <div className="flex flex-col">
-                        <div className="flex flex-row items-start gap-3">
-                            {/* 시간 텍스트 (색상: 검정) */}
-                            <span className="font-bold text-black text-[11px] sm:text-xs shrink-0 min-w-[2.5rem] mt-1 tracking-tight font-mono">
-                                {item.time}
+                    <div className="bg-gray-50 rounded-lg p-2.5 border border-gray-100 flex flex-col gap-1.5 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                                <span className="bg-gray-200 text-gray-600 p-1 rounded-full"><Train size={12}/></span>
+                                <span className="text-xs font-bold text-gray-600">이동</span>
+                            </div>
+                            <span className="text-[10px] font-medium text-gray-500 bg-white px-2 py-0.5 rounded border border-gray-200 flex items-center gap-1">
+                                <Clock size={10} /> 약 {travel.time}
                             </span>
-                            <div className="mt-1 shrink-0 bg-white p-1 rounded-full shadow-sm border border-gray-100">
-                                <CategoryIcon type={item.category} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                {/* Title Row with Map Button */}
-                                <div className="flex items-start justify-between">
-                                    <div className="flex flex-col flex-1">
-                                        <div className="flex items-center gap-1.5 flex-wrap">
-                                            {/* 장소 이름 클릭 시 핀 위치 지도(줌 17) 열기 */}
-                                            <a 
-                                                href={getSearchUrl(item.jp || item.content)}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-gray-900 font-bold text-xs sm:text-sm leading-snug mt-1 break-words hover:text-pink-500 hover:underline decoration-pink-300 underline-offset-2 transition-colors flex items-center gap-1"
-                                                title="핀 위치 보기 (지도 확대)"
-                                            >
-                                                {item.content}
-                                                <Map size={10} className="text-gray-400" />
-                                            </a>
-                                        </div>
-                                        {item.jp && <p className="text-[10px] sm:text-[11px] text-gray-400 mt-0.5 font-medium">{item.jp}</p>}
-                                    </div>
-
-                                    {/* Action Buttons Right Side */}
-                                    <div className="flex items-center gap-1 ml-2 mt-1">
-                                        {/* 개별 경로 보기 버튼 (길찾기) */}
-                                        {item.pathUrl && (
-                                            <a 
-                                                href={item.pathUrl} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer"
-                                                className="p-1.5 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors flex items-center justify-center border border-blue-100"
-                                                title="이 장소까지 경로 보기"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                <Navigation size={12} />
-                                            </a>
-                                        )}
-                                        
-                                        {/* 상세 열기/닫기 토글 버튼 */}
-                                        {hasDetails && (
-                                            <button 
-                                                onClick={() => setIsOpen(!isOpen)}
-                                                className={`p-1.5 rounded-full transition-colors flex-shrink-0 ${isOpen ? 'bg-pink-100 text-pink-500' : 'bg-gray-50 text-gray-300 hover:bg-gray-100'}`}
-                                            >
-                                                {isOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                                
-                                {item.desc && <p className="text-[11px] text-gray-600 mt-1 cursor-pointer" onClick={() => hasDetails && setIsOpen(!isOpen)}>{item.desc}</p>}
-                            </div>
-                        </div>
-
-                        {/* 펼쳐지는 상세 내용 */}
-                        {hasDetails && isOpen && (
-                            <div className="mt-3 space-y-2 ml-10 sm:ml-12 animate-fadeIn origin-top">
-                                {/* 꿀팁 (Tip) */}
-                                {item.tip && (
-                                     <div className="py-2 px-3 bg-yellow-50 rounded-lg border border-yellow-100 text-[11px] text-yellow-800 flex gap-2">
-                                        <span className="font-bold shrink-0">💡 TIP:</span> {item.tip}
-                                     </div>
-                                )}
-
-                                {/* 교통편 정보 */}
-                                {item.transports && item.transports.map((trans, idx) => (
-                                    <div key={`trans-${idx}`} className="py-2 px-3 bg-white rounded-lg border border-gray-100 flex items-start gap-2 w-full shadow-sm">
-                                        <Train size={12} className={`mt-0.5 shrink-0 ${trans.color || 'text-gray-500'}`} />
-                                        <div className="flex flex-col">
-                                            <span className="font-bold text-gray-900 text-[11px]">{trans.name}</span>
-                                            <span className="text-gray-600 text-[10px] leading-relaxed">{trans.detail}</span>
-                                        </div>
-                                    </div>
-                                ))}
-                                
-                                {/* 맛집 추천 리스트 */}
-                                {item.restaurants && (
-                                    <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
-                                        <span className="text-[10px] font-bold text-orange-600 mb-2 block flex items-center gap-1">
-                                            <Utensils size={10} /> 추천 맛집
-                                        </span>
-                                        <ul className="space-y-2">
-                                            {item.restaurants.map((rest, idx) => (
-                                                <li key={`rest-${idx}`} className="text-[11px] text-gray-700">
-                                                    <span className="font-extrabold bg-white px-1.5 py-0.5 rounded text-gray-900 shadow-sm mr-1 border border-orange-100">
-                                                        {rest.name}
-                                                    </span>
-                                                    <span className="text-gray-500 text-[10px] block sm:inline sm:ml-1 mt-1 sm:mt-0">{rest.desc}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
-        };
-
-        // --- 5. 요일별 아코디언 카드 (User UI Structure) ---
-        const DayCard = ({ data, isOpen, onClick }) => {
-            return (
-                <div className={`transition-all duration-300 rounded-2xl overflow-hidden border ${isOpen ? 'border-pink-300 shadow-lg bg-white scale-[1.01]' : 'border-pink-100 bg-white hover:bg-pink-50/30 hover:shadow-sm'}`}>
-                    {/* Header - Always Visible */}
-                    <div 
-                        onClick={onClick}
-                        className={`p-4 cursor-pointer flex items-center justify-between transition-colors ${isOpen ? 'bg-pink-50/50' : ''}`}
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className={`flex flex-col items-center justify-center w-11 h-11 rounded-xl transition-colors ${isOpen ? 'bg-pink-500 text-white shadow-md' : 'bg-pink-100 text-pink-500'}`}>
-                                <span className="text-[9px] font-medium leading-none mb-0.5 opacity-80">Day</span>
-                                <span className="text-xl font-bold leading-none">{data.day}</span>
-                            </div>
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs font-bold text-pink-500">{data.date}</span>
-                                    {data.tag && <span className="px-1.5 py-0.5 bg-gray-100 text-gray-500 text-[9px] rounded-full font-bold">{data.tag}</span>}
-                                </div>
-                                <h3 className={`text-base sm:text-lg font-bold mt-0.5 ${isOpen ? 'text-gray-900' : 'text-gray-600'}`}>{data.title}</h3>
-                                <p className="text-[10px] text-gray-400 font-medium line-clamp-1">{data.subTitle}</p>
-                            </div>
                         </div>
                         
-                        <div className="flex items-center gap-2">
-                            <div className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-300 ${isOpen ? 'bg-pink-100 text-pink-500 rotate-180' : 'text-gray-300'}`}>
-                                <ChevronDown size={18} />
+                        <div className="flex items-center gap-2 flex-wrap">
+                            {travel.line && (
+                                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${getLineColor(travel.line)}`}>
+                                    {travel.line}
+                                </span>
+                            )}
+                            <div className="flex items-center text-[11px] text-gray-700 font-medium">
+                                <span>{travel.from}</span>
+                                <ArrowDown size={10} className="mx-1 rotate-[-90deg]" />
+                                <span>{travel.to}</span>
                             </div>
                         </div>
+                        {travel.desc && <p className="text-[10px] text-gray-500 pl-0.5">{travel.desc}</p>}
                     </div>
-
-                    {/* Body - Collapsible */}
-                    {isOpen && (
-                        <div className="px-2 pb-4 pt-0 animate-slideDown border-t border-pink-100">
-                            <div className="mt-1">
-                                {data.timeline.map((item, idx) => (
-                                    <React.Fragment key={idx}>
-                                        {item.distance && <DistanceBadge distance={item.distance} />}
-                                        <TimelineItem item={item} />
-                                    </React.Fragment>
-                                ))}
-                            </div>
-                        </div>
-                    )}
                 </div>
             );
         };
 
-        // --- 6. Main Component ---
+        // --- 3. 타임라인 아이템 컴포넌트 ---
+        const TimelineItem = ({ item }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            const hasDetails = item.tip || (item.restaurants && item.restaurants.length > 0) || item.desc;
+
+            // 구글 맵 검색 URL
+            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.jp || item.content)}`;
+
+            return (
+                <div className="relative mb-2 last:mb-0">
+                    {/* 시간 및 아이콘 라인 */}
+                    <div className="flex items-start gap-3 relative z-10">
+                        <div className="flex flex-col items-center w-12 shrink-0 pt-1">
+                            <span className="text-[11px] font-bold text-gray-600 font-mono tracking-tighter">{item.time}</span>
+                        </div>
+                        
+                        {/* 타임라인 점과 선 */}
+                        <div className="absolute left-[54px] top-0 bottom-0 w-px bg-pink-200 -z-10"></div>
+                        <div className="relative shrink-0">
+                             <div className="w-7 h-7 rounded-full bg-white border-2 border-pink-400 flex items-center justify-center shadow-sm z-20">
+                                <CategoryIcon type={item.category} />
+                            </div>
+                        </div>
+
+                        {/* 메인 콘텐츠 카드 */}
+                        <div className="flex-1 min-w-0 pb-6 pr-2">
+                            <div 
+                                className={`bg-white rounded-xl p-3 border shadow-sm transition-all ${isOpen ? 'border-pink-300 ring-1 ring-pink-100' : 'border-gray-100'}`}
+                            >
+                                <div className="flex justify-between items-start gap-2">
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            {/* 타이틀 (클릭 시 상세 열기) */}
+                                            <h4 
+                                                onClick={() => hasDetails && setIsOpen(!isOpen)}
+                                                className="font-bold text-gray-900 text-[15px] leading-tight cursor-pointer hover:text-pink-600 transition-colors"
+                                            >
+                                                {item.content}
+                                            </h4>
+
+                                            {/* 지도/길찾기 버튼 그룹 (항상 표시) */}
+                                            <div className="flex items-center gap-1">
+                                                <a 
+                                                    href={mapUrl}
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="w-6 h-6 flex items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors border border-blue-100"
+                                                    title="구글 지도 보기"
+                                                >
+                                                    <MapPin size={12} fill="currentColor" className="opacity-80" />
+                                                </a>
+                                                {item.pathUrl && (
+                                                    <a 
+                                                        href={item.pathUrl} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className="w-6 h-6 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors border border-green-100"
+                                                        title="길찾기"
+                                                    >
+                                                        <Navigation size={12} />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                        {item.jp && <p className="text-[11px] text-gray-400 mt-1 font-medium">{item.jp}</p>}
+                                    </div>
+                                    
+                                    {hasDetails && (
+                                        <button 
+                                            onClick={() => setIsOpen(!isOpen)}
+                                            className="text-gray-300 pt-0.5 p-1 hover:text-gray-500"
+                                        >
+                                            {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* 기본 설명 (항상 보임 혹은 짧게) */}
+                                {item.shortDesc && !isOpen && (
+                                    <p className="text-xs text-gray-500 mt-2 line-clamp-1" onClick={() => setIsOpen(true)}>{item.shortDesc}</p>
+                                )}
+
+                                {/* 확장 영역 */}
+                                {hasDetails && isOpen && (
+                                    <div className="mt-3 space-y-2 animate-slideDown border-t border-gray-50 pt-2">
+                                        {item.desc && <p className="text-xs text-gray-600 leading-relaxed">{item.desc}</p>}
+                                        
+                                        {item.tip && (
+                                            <div className="bg-yellow-50 p-2 rounded-lg text-[11px] text-yellow-800 border border-yellow-100 flex gap-1.5 items-start">
+                                                <span className="font-bold">💡 TIP:</span>
+                                                <span>{item.tip}</span>
+                                            </div>
+                                        )}
+
+                                        {item.restaurants && (
+                                            <div className="bg-orange-50 p-2 rounded-lg text-[11px] border border-orange-100">
+                                                <div className="font-bold text-orange-700 mb-1 flex items-center gap-1">
+                                                    <Utensils size={10} /> 추천 메뉴/맛집
+                                                </div>
+                                                <ul className="space-y-1">
+                                                    {item.restaurants.map((r, i) => (
+                                                        <li key={i} className="flex gap-1">
+                                                            <span className="font-bold text-orange-900">• {r.name}:</span>
+                                                            <span className="text-orange-800">{r.desc}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="flex justify-end pt-1">
+                                            <a 
+                                                href={mapUrl}
+                                                target="_blank" rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-500 bg-blue-50 px-2 py-1.5 rounded-md hover:bg-blue-100 transition-colors"
+                                            >
+                                                <Map size={10} /> 구글맵에서 자세히 보기 <ExternalLink size={8} />
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    {/* 다음 아이템으로 가는 이동 정보 */}
+                    {item.travelToNext && <TravelInfo travel={item.travelToNext} />}
+                </div>
+            );
+        };
+
+        // --- 4. 요일별 카드 ---
+        const DayCard = ({ data, isOpen, onClick }) => {
+            return (
+                <div className="mb-4 last:mb-0">
+                    <div 
+                        onClick={onClick}
+                        className={`relative z-10 bg-white rounded-2xl p-4 shadow-sm border transition-all duration-300 cursor-pointer overflow-hidden ${isOpen ? 'border-pink-400 ring-2 ring-pink-100' : 'border-white hover:border-pink-200'}`}
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-colors shrink-0 ${isOpen ? 'bg-pink-500 text-white shadow-md' : 'bg-pink-100 text-pink-500'}`}>
+                                    <span className="text-[10px] font-medium leading-none mb-0.5 opacity-80">Day</span>
+                                    <span className="text-xl font-bold leading-none">{data.day}</span>
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2 mb-0.5">
+                                        <span className="text-xs font-bold text-pink-500">{data.date}</span>
+                                        {data.tag && <span className="px-1.5 py-0.5 bg-gray-100 text-gray-500 text-[9px] rounded-full font-bold">{data.tag}</span>}
+                                    </div>
+                                    <h3 className="text-lg font-bold text-gray-900 leading-tight">{data.title}</h3>
+                                </div>
+                            </div>
+                            <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180 text-pink-500' : 'text-gray-300'}`}>
+                                <ChevronDown size={20} />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 펼쳐지는 내용 */}
+                    <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'max-h-[2000px] opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                        <div className="bg-white/50 rounded-2xl p-3 pb-6">
+                            {data.timeline.map((item, idx) => (
+                                <TimelineItem key={idx} item={item} />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- 5. 데이터 ---
+        const itineraryData = [
+            {
+                day: 1,
+                date: '1.28 (수)',
+                title: '도쿄 도착 & 니혼바시',
+                tag: '입국',
+                timeline: [
+                    { 
+                        time: '18:00', category: 'accommodation', content: '숙소 체크인', 
+                        jp: '京王プレッソイン (케이오 프레소인)',
+                        shortDesc: '니혼바시 가야바초 호텔',
+                        tip: '체크인 후 짐만 풀고 바로 저녁 식사 이동',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Narita+Airport&destination=Keio+Presso+Inn+Nihombashi+Kayabacho&travelmode=transit",
+                        travelToNext: { time: '도보 10분', from: '호텔', to: '츠지한', desc: '직진 거리로 가까움' }
+                    },
+                    { 
+                        time: '19:00', category: 'food', content: '저녁: 츠지한', 
+                        jp: 'つじ半 (츠지한 본점)', 
+                        shortDesc: '해산물 덮밥 맛집 (웨이팅 주의)',
+                        desc: '제이타쿠동(해산물 덮밥) 전문점. 다 먹고 도미 육수(타이다시) 요청 필수.',
+                        restaurants: [{ name: "우메(梅)", desc: "기본 메뉴로도 충분히 훌륭함" }],
+                        travelToNext: { time: '도보 5분', from: '츠지한', to: '니혼바시 다리', desc: '소화시킬 겸 산책' }
+                    },
+                    { 
+                        time: '20:30', category: 'sightseeing', content: '니혼바시 야경', 
+                        jp: '日本橋', 
+                        shortDesc: '코레도 무로마치 등불 거리',
+                        desc: '도쿄의 전통과 현대가 섞인 야경 명소. 다리 위 기린 동상이 포인트.',
+                        tip: '편의점(세븐일레븐) 들러서 내일 아침 간식 사서 복귀'
+                    }
+                ]
+            },
+            {
+                day: 2,
+                date: '1.29 (목)',
+                title: '도쿄 디즈니랜드',
+                tag: '테마파크',
+                timeline: [
+                    { 
+                        time: '08:00', category: 'transport', content: '출발', 
+                        shortDesc: '숙소 → 디즈니랜드',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Disneyland&travelmode=transit",
+                        travelToNext: { 
+                            time: '약 20분', 
+                            line: 'JR 게이요선', 
+                            from: '핫초보리역', 
+                            to: '마이하마역', 
+                            desc: '숙소에서 핫초보리역 도보 5분 후 탑승' 
+                        }
+                    },
+                    { 
+                        time: '09:00', category: 'theme_park', content: '디즈니랜드 입장', 
+                        jp: 'Tokyo Disneyland', 
+                        shortDesc: '오픈런 & DPA 구매',
+                        desc: '입장하자마자 앱으로 미녀와 야수 DPA(유료 패스) 구매 또는 40주년 패스 확인.',
+                        tip: '입구 근처 샵보다 안쪽이 덜 붐빔. 팝콘통부터 겟!',
+                        travelToNext: { time: '종일', from: '파크 내', to: '파크 내', desc: '' }
+                    },
+                    { 
+                        time: '13:00', category: 'food', content: '점심 식사', 
+                        shortDesc: '캐릭터 푸드 즐기기',
+                        restaurants: [{ name: "퀸 오브 하트", desc: "이상한 나라의 앨리스 컨셉 식당" }]
+                    },
+                    { 
+                        time: '20:30', category: 'sightseeing', content: '불꽃놀이 & 퇴장', 
+                        shortDesc: '스카이 풀 오브 컬러',
+                        desc: '폐장 시간까지 즐기고 JR 타고 복귀. 사람이 많으니 티켓 미리 챙길 것.'
+                    }
+                ]
+            },
+            {
+                day: 3,
+                date: '1.30 (금)',
+                title: '긴자 & 롯폰기',
+                tag: '쇼핑/야경',
+                timeline: [
+                    { 
+                        time: '10:00', category: 'transport', content: '긴자 이동', 
+                        shortDesc: '호텔 → 긴자',
+                        travelToNext: { 
+                            time: '약 10분', 
+                            line: 'H 히비야선', 
+                            from: '가야바초역', 
+                            to: '긴자역', 
+                            desc: '직통으로 이동' 
+                        }
+                    },
+                    { 
+                        time: '10:30', category: 'food', content: '판 메종 긴자', 
+                        jp: 'Pain Maison', 
+                        shortDesc: '소금빵 원조 맛집',
+                        tip: '웨이팅 있음. 대량 구매 추천(다음날 아침용). 카드 결제 불가할 수 있음.',
+                        travelToNext: { time: '도보 10분', from: '판 메종', to: '긴자 식스', desc: '긴자 거리 구경하며 이동' }
+                    },
+                    { 
+                        time: '12:00', category: 'shopping', content: '긴자 쇼핑 & 하브스', 
+                        jp: 'HARBS', 
+                        shortDesc: '루미네 유라쿠초점',
+                        desc: '긴자 식스, 유니클로 구경 후 하브스에서 크레이프 케이크.',
+                        travelToNext: { 
+                            time: '약 15분', 
+                            line: 'H 히비야선', 
+                            from: '히비야역', 
+                            to: '가미야초역', 
+                            desc: '도쿄타워 쪽으로 이동' 
+                        }
+                    },
+                    { 
+                        time: '15:30', category: 'sightseeing', content: '시바 공원 (도쿄타워)', 
+                        jp: '芝公園', 
+                        shortDesc: '도쿄타워 포토 스팟',
+                        desc: '프린스 시바 공원 잔디밭이 사진 명당.',
+                        travelToNext: { 
+                            time: '약 15분', 
+                            line: 'E 오에도선', 
+                            from: '아카바네바시역', 
+                            to: '롯폰기역', 
+                            desc: '전망대 보러 이동' 
+                        }
+                    },
+                    { 
+                        time: '18:00', category: 'view', content: '롯폰기 힐즈 전망대', 
+                        jp: 'Roppongi Hills', 
+                        shortDesc: '도쿄 시티뷰',
+                        tip: '일몰 시간에 맞춰 가면 최고. 모리 미술관도 관람 가능.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shiba+Park&destination=Roppongi+Hills&travelmode=transit",
+                        travelToNext: { time: '도보 5분', from: '힐즈', to: '이마카츠', desc: '' }
+                    },
+                    {
+                        time: '20:00', category: 'food', content: '저녁: 이마카츠',
+                        jp: 'イマカツ',
+                        desc: '닭가슴살 카츠(사사미카츠)가 입에서 녹음. 미슐랭 맛집.',
+                        tip: '예약 안했으면 웨이팅 각오해야 함.'
+                    }
+                ]
+            },
+            {
+                day: 4,
+                date: '1.31 (토)',
+                title: '하라주쿠 & 시부야',
+                tag: '트렌드',
+                timeline: [
+                    { 
+                        time: '10:30', category: 'transport', content: '하라주쿠 이동', 
+                        travelToNext: { 
+                            time: '약 35분', 
+                            line: 'C 치요다선', 
+                            from: '오테마치역', 
+                            to: '메이지진구마에역', 
+                            desc: '가야바초(토자이선)→오테마치 환승→하라주쿠 도착' 
+                        }
+                    },
+                    { 
+                        time: '11:00', category: 'food', content: '로스트비프 오노', 
+                        jp: 'Roast Beef Ohno', 
+                        shortDesc: '하라주쿠점 점심',
+                        desc: '산더미 로스트비프 덮밥. 비주얼과 맛 모두 잡음.',
+                        travelToNext: { time: '도보 이동', from: '하라주쿠', to: '오모테산도', desc: '캣스트리트 구경' }
+                    },
+                    { 
+                        time: '13:00', category: 'shopping', content: '오모테산도 & 캣스트리트', 
+                        shortDesc: '쇼핑과 카페 투어',
+                        tip: '랄프로렌 카페, 키디랜드, 휴먼메이드 등 구경',
+                        travelToNext: { time: '도보 15분', from: '오모테산도', to: '시부야', desc: '쭉 걸어서 시부야로' }
+                    },
+                    { 
+                        time: '16:30', category: 'sunset', content: '시부야 스카이', 
+                        jp: 'SHIBUYA SKY', 
+                        shortDesc: '스크램블 스퀘어 전망대',
+                        tip: '예약 필수! 에스컬레이터 샷과 모서리 샷이 포인트.',
+                        travelToNext: { 
+                            time: '약 15분', 
+                            line: 'F 후쿠토신선', 
+                            from: '시부야역', 
+                            to: '신주쿠산초메역', 
+                            desc: '저녁 먹으러 이동' 
+                        }
+                    },
+                    { 
+                        time: '19:00', category: 'food', content: '저녁: 교엔 로안', 
+                        jp: '御苑 ろあん', 
+                        desc: '신주쿠 교엔 근처 분위기 좋은 수타 소바 맛집.',
+                        tip: '조용하게 하루 마무리하기 좋음.'
+                    }
+                ]
+            },
+            {
+                day: 5,
+                date: '2.1 (일)',
+                title: '아사쿠사 & 일루미',
+                tag: '전통/빛',
+                timeline: [
+                    { 
+                        time: '10:30', category: 'transport', content: '아사쿠사 이동', 
+                        travelToNext: { 
+                            time: '약 15분', 
+                            line: 'A 아사쿠사선', 
+                            from: '닌교초역', 
+                            to: '아사쿠사역', 
+                            desc: '숙소에서 닌교초까지 도보 후 탑승' 
+                        }
+                    },
+                    { 
+                        time: '11:00', category: 'sightseeing', content: '센소지 & 나카미세', 
+                        jp: '浅草寺', 
+                        shortDesc: '도쿄에서 가장 오래된 절',
+                        tip: '멘치카츠, 실크푸딩 등 길거리 간식 먹방.',
+                        travelToNext: { 
+                            time: '약 25분', 
+                            line: 'E 오에도선', 
+                            from: '구라마에역', 
+                            to: '가스가역', 
+                            desc: '도쿄돔 시티로 이동' 
+                        }
+                    },
+                    { 
+                        time: '15:00', category: 'activity', content: '도쿄돔 시티', 
+                        jp: 'Tokyo Dome City', 
+                        shortDesc: '윈터 일루미네이션',
+                        desc: '무료로 즐길 수 있는 고퀄리티 일루미네이션.',
+                        travelToNext: { 
+                            time: '약 10분', 
+                            line: 'M 마루노우치선', 
+                            from: '고라쿠엔역', 
+                            to: '도쿄역', 
+                            desc: '마루노우치 이동' 
+                        }
+                    },
+                    { 
+                        time: '18:00', category: 'view', content: '마루노우치 일루미네이션', 
+                        jp: '丸の内', 
+                        shortDesc: '도쿄역 앞 가로수길',
+                        desc: '샴페인 골드빛 조명이 켜진 유럽풍 거리 산책.'
+                    }
+                ]
+            },
+            {
+                day: 6,
+                date: '2.2 (월)',
+                title: '오다이바 & 팀랩',
+                tag: '전시',
+                timeline: [
+                    { 
+                        time: '10:30', category: 'transport', content: '토요스 이동', 
+                        travelToNext: { 
+                            time: '약 20분', 
+                            line: 'Y 유라쿠초선', 
+                            from: '핫초보리역', 
+                            to: '토요스역', 
+                            desc: '팀랩 플래닛으로 이동' 
+                        }
+                    },
+                    { 
+                        time: '11:00', category: 'activity', content: '팀랩 플래닛 도쿄', 
+                        jp: 'teamLab Planets', 
+                        shortDesc: '물에 들어가는 체험 전시',
+                        tip: '반바지 착용 권장. 수건은 제공됨.',
+                        travelToNext: { 
+                            time: '약 15분', 
+                            line: 'U 유리카모메', 
+                            from: '신토요스역', 
+                            to: '다이바역', 
+                            desc: '맨 앞칸 타면 뷰가 좋음' 
+                        }
+                    },
+                    { 
+                        time: '14:00', category: 'sightseeing', content: '오다이바 해변공원', 
+                        shortDesc: '건담 & 자유의 여신상',
+                        desc: '쇼핑몰 구경하고 해변가 산책.',
+                        travelToNext: { time: '도보 10분', from: '해변', to: '아쿠아시티', desc: '' }
+                    },
+                    { 
+                        time: '17:00', category: 'food', content: '쿠아아이나 버거', 
+                        jp: 'KUA`AINA', 
+                        shortDesc: '레인보우 브릿지 뷰 저녁',
+                        desc: '창가 자리에 앉으면 야경이 끝내줌. 아보카도 버거 추천.'
+                    }
+                ]
+            },
+            {
+                day: 7,
+                date: '2.3 (화)',
+                title: '귀국',
+                tag: 'Last Day',
+                timeline: [
+                    { 
+                        time: '10:00', category: 'accommodation', content: '체크아웃', 
+                        desc: '짐 맡기고 마지막 점심 식사',
+                        travelToNext: { time: '도보 10분', from: '숙소', to: '닌교초', desc: '' }
+                    },
+                    { 
+                        time: '11:30', category: 'food', content: '점심: 미요시테이', 
+                        jp: '三好弥', 
+                        shortDesc: '가성비 훌륭한 노포',
+                        desc: '마지막으로 든든한 덮밥이나 스키야키 정식.',
+                        travelToNext: { time: '도보', from: '식당', to: '호텔', desc: '짐 찾기' }
+                    },
+                    { 
+                        time: '14:00', category: 'flight', content: '공항 이동 (T-CAT)', 
+                        shortDesc: '리무진 버스 탑승',
+                        desc: 'T-CAT(도심공항터미널)에서 리무진 버스 타고 편하게 공항으로.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=T-CAT&destination=Narita+Airport&travelmode=transit",
+                        travelToNext: { 
+                            time: '약 60분', 
+                            line: '리무진 버스', 
+                            from: 'T-CAT', 
+                            to: '나리타 공항', 
+                            desc: '꿀잠 자며 이동' 
+                        }
+                    }
+                ]
+            }
+        ];
+
+        // --- 6. Main App ---
         function App() {
-            const [openDay, setOpenDay] = useState(1); // Default open Day 1
+            const [openDay, setOpenDay] = useState(1);
 
             const toggleDay = (day) => {
                 setOpenDay(openDay === day ? null : day);
             };
 
-            // --- DEEP RESEARCH 일정 데이터 ---
-            const itineraryData = [
-                {
-                    day: 1,
-                    date: '1.28 (수)',
-                    title: '도쿄 도착 & 워밍업',
-                    subTitle: '니혼바시의 뉴트로 감성',
-                    tag: '입국',
-                    timeline: [
-                        { 
-                            time: '18:00', category: 'accommodation', content: '숙소 체크인', jp: '京王プレッソイン (케이오 프레소인)',
-                            desc: '게이오 프레소 인 니혼바시 가야바초',
-                            tip: '나리타공항 → T-CAT(도심공항터미널) 리무진이 가장 편함 (숙소까지 도보 이동 가능)',
-                            distance: '65km (공항)',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Narita+Airport&destination=Keio+Presso+Inn+Nihombashi+Kayabacho&travelmode=transit&z=16"
-                        },
-                        { 
-                            time: '19:00', category: 'food', content: '저녁: 츠지한 (카이센동)', jp: 'つじ半 (츠지한 본점)', 
-                            desc: '해산물 덮밥(제이타쿠동) 맛집, 웨이팅 필수',
-                            tip: '숙소 근처라 체크인 후 바로 가기 좋음. 다 먹고 도미 육수 꼭 요청!',
-                            restaurants: [{ name: "츠지한", desc: "해산물 폭탄 덮밥" }],
-                            distance: '도보 10분',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tsujihan+Nihonbashi&travelmode=walking&z=16"
-                        },
-                        { 
-                            time: '20:30', category: 'sightseeing', content: '니혼바시 야경 산책', jp: '日本橋 (니혼바시)', 
-                            desc: '배부르게 먹고 코레도 무로마치 뒷골목 등불 거리 산책',
-                            tip: '도쿄타워는 3일차에 가는 게 동선상 훨씬 좋아요! 오늘은 가볍게 휴식.',
-                            distance: '300m',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tsujihan+Nihonbashi&destination=Nihombashi+Bridge&travelmode=walking&z=16"
-                        }
-                    ]
-                },
-                {
-                    day: 2,
-                    date: '1.29 (목)',
-                    title: '도쿄 디즈니랜드',
-                    subTitle: '꿈과 환상의 나라 종일반',
-                    tag: '테마파크',
-                    timeline: [
-                        { 
-                            time: '08:30', category: 'transport', content: '디즈니랜드 이동', jp: '舞浜駅 (마이하마역)',
-                            desc: '핫초보리역(숙소 옆) → 마이하마역 (JR 게이요선)',
-                            tip: '숙소 위치가 디즈니 가기에 최적! 20분 컷 가능',
-                            distance: '12km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Disneyland&travelmode=transit&z=16"
-                        },
-                        { 
-                            time: '09:00', category: 'theme_park', content: '입장 & 오픈런', jp: 'ディズニーランド', 
-                            desc: '미녀와 야수 DPA(유료 패스) 최우선 구매 추천',
-                            tip: '신데렐라 성 앞에서 플래시 터뜨리고 찍는게 국룰',
-                            distance: '도보 5분',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Maihama+Station&destination=Tokyo+Disneyland&travelmode=walking&z=16"
-                        },
-                        { 
-                            time: '13:00', category: 'food', content: '파크 내 런치', jp: 'ランチ', 
-                            desc: '알린 모찌, 미키 피자 등 캐릭터 푸드 즐기기',
-                            distance: '파크 내'
-                        },
-                        { 
-                            time: '20:30', category: 'sightseeing', content: '일렉트리컬 퍼레이드 & 불꽃', jp: 'パレード', 
-                            desc: '폐장 시간까지 야경과 불꽃놀이 즐기기',
-                            distance: '파크 내'
-                        }
-                    ]
-                },
-                {
-                    day: 3,
-                    date: '1.30 (금)',
-                    title: '긴자 & 롯폰기',
-                    subTitle: '럭셔리 쇼핑과 도쿄타워 뷰',
-                    tag: 'PASS 1일차',
-                    timeline: [
-                        { 
-                            time: '10:30', category: 'food', content: '판 메종 긴자 (소금빵)', jp: 'パン・メゾン', 
-                            desc: '오픈런 필수! 인생 소금빵 구매 (간식용)',
-                            tip: '줄 서서 사고 이동하면서 먹으면 꿀맛',
-                            transports: [{ name: 'H 히비야선', detail: '가야바초 → 긴자 (직통)' }],
-                            distance: '2.5km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Pain+Maison+Ginza&travelmode=transit&z=16"
-                        },
-                        { 
-                            time: '12:00', category: 'shopping', content: '긴자 쇼핑 & 하브스', jp: 'HARBS (하브스)', 
-                            desc: '긴자 식스 구경 후 하브스(루미네/마로니에점)에서 크레이프 케이크',
-                            tip: '하브스 웨이팅 길면 포장해서 호텔에서 먹어도 됨',
-                            distance: '500m',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Pain+Maison+Ginza&destination=HARBS+Lumine+Yurakucho&travelmode=walking&z=16"
-                        },
-                        { 
-                            time: '13:30', category: 'cafe', content: '스즈카게 히비야점', jp: '鈴懸 (스즈카게)', 
-                            desc: '긴자 바로 옆 히비야 미드타운. 딸기모찌/도라야키 명가',
-                            tip: '선물용으로도 좋고 하나씩 사서 맛보기도 좋음',
-                            distance: '도보 10분',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=HARBS+Lumine+Yurakucho&destination=Suzukage+Hibiya&travelmode=walking&z=16"
-                        },
-                        { 
-                            time: '15:30', category: 'sightseeing', content: '도쿄타워 (시바공원)', jp: '東京タワー & 芝公園', 
-                            desc: '전망대 입장 X. 공원 잔디밭이나 주차장 계단에서 인증샷만!',
-                            tip: '프린스 시바 공원이 사진 제일 잘 나오는 명당',
-                            distance: '2.0km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Suzukage+Hibiya&destination=Shiba+Park&travelmode=transit&z=16"
-                        },
-                        { 
-                            time: '18:00', category: 'view', content: '롯폰기 힐즈 전망대', jp: '六本木ヒルズ', 
-                            desc: '도쿄타워가 가장 예쁘게 보이는 "도쿄 시티뷰"',
-                            tip: '케야키자카 일루미네이션(겨울 시즌) 체크',
-                            distance: '1.5km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shiba+Park&destination=Roppongi+Hills&travelmode=transit&z=16"
-                        },
-                        { 
-                            time: '20:00', category: 'food', content: '저녁: 이마카츠 (롯폰기)', jp: 'イマカツ (이마카츠 본점)',
-                            desc: '인생 닭가슴살 카츠 (사사미카츠)',
-                            tip: '미슐랭 빕구르망 선정, 부드러움의 끝판왕',
-                            restaurants: [{ name: "이마카츠", desc: "사사미카츠(닭가슴살) 필수 주문" }],
-                            distance: '500m',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Roppongi+Hills&destination=Imakatsu+Roppongi&travelmode=walking&z=16"
-                        }
-                    ]
-                },
-                {
-                    day: 4,
-                    date: '1.31 (토)',
-                    title: '시부야 & 하라주쿠',
-                    subTitle: 'MZ 트렌드 최전선',
-                    tag: 'PASS 2일차',
-                    timeline: [
-                        { 
-                            time: '11:00', category: 'food', content: '점심: 로스트비프 오노', jp: 'ローストビーフ大野', 
-                            desc: '하라주쿠점. 산처럼 쌓인 로스트비프 덮밥',
-                            tip: '오픈 시간 맞춰 가는 것 추천, 비주얼 압도적',
-                            distance: '7km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Roast+Beef+Ohno+Harajuku&travelmode=transit&z=16"
-                        },
-                        { 
-                            time: '12:30', category: 'shopping', content: '하라주쿠 & 오모테산도', jp: '原宿 (하라주쿠)', 
-                            desc: '캣스트리트, 휴먼메이드, 키디랜드 구경',
-                            restaurants: [{ name: "간식", desc: "마리온 크레페 or 갓 구운 츄러스" }],
-                            distance: '300m',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Roast+Beef+Ohno+Harajuku&destination=Omotesando+Hills&travelmode=walking&z=16"
-                        },
-                        { 
-                            time: '15:30', category: 'sightseeing', content: '시부야 스크램블 교차로', jp: '渋谷 (시부야)', 
-                            desc: '하치코 동상 및 인파 속 인증샷',
-                            distance: '1.2km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Omotesando+Hills&destination=Shibuya+Scramble+Crossing&travelmode=walking&z=16"
-                        },
-                        { 
-                            time: '16:20', category: 'sunset', content: '시부야 스카이 (예약 필수)', jp: '渋谷スカイ', 
-                            desc: '17:05 일몰 시간에 맞춰 입장 (노을+야경)',
-                            tip: '1달 전 예매 필수! 에스컬레이터 샷 놓치지 말기',
-                            distance: '300m',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shibuya+Scramble+Crossing&destination=Shibuya+Scramble+Square&travelmode=walking&z=16"
-                        },
-                        { 
-                            time: '19:00', category: 'food', content: '저녁: 교엔 로안 (소바)', jp: '御苑 ろあん (교엔 로안)', 
-                            desc: '신주쿠 교엔 근처. 분위기 좋은 수타 소바 맛집',
-                            tip: '시부야에서 지하철로 금방 이동 가능. 담백한 마무리로 딱!',
-                            distance: '3.5km (이동)',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shibuya+Scramble+Square&destination=Gyoen+Roan+Shinjuku&travelmode=transit&z=16"
-                        }
-                    ]
-                },
-                {
-                    day: 5,
-                    date: '2.1 (일)',
-                    title: '아사쿠사 & 일루미',
-                    subTitle: '전통과 빛의 축제',
-                    tag: 'PASS 3일차',
-                    timeline: [
-                        { 
-                            time: '11:00', category: 'sightseeing', content: '아사쿠사 센소지', jp: '浅草寺 (센소지)', 
-                            desc: '기모노 체험 및 나카미세 거리 군것질',
-                            tip: '멘치카츠와 딸기 모찌는 꼭 먹어보기',
-                            distance: '4.5km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Senso-ji&travelmode=transit&z=16"
-                        },
-                        { 
-                            time: '15:00', category: 'activity', content: '도쿄돔 시티 일루미네이션', jp: '東京ドームシティ', 
-                            desc: '2월 말까지 진행되는 화려한 윈터 일루미네이션',
-                            tip: '무료 입장 구역도 많고 사진 찍기 좋음',
-                            distance: '3.8km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Senso-ji&destination=Tokyo+Dome+City&travelmode=transit&z=16"
-                        },
-                        { 
-                            time: '18:00', category: 'view', content: '마루노우치 일루미네이션', jp: '丸の内 (마루노우치)', 
-                            desc: '도쿄역 앞 샴페인 골드빛 가로수길 (~2/15)',
-                            tip: '겨울 도쿄에서 가장 클래식하고 고급스러운 야경',
-                            distance: '3.0km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Dome+City&destination=Marunouchi+Illumination&travelmode=transit&z=16"
-                        }
-                    ]
-                },
-                {
-                    day: 6,
-                    date: '2.2 (월)',
-                    title: '오다이바 & 팀랩',
-                    subTitle: '퓨처리스틱 도쿄',
-                    tag: '전시/야경',
-                    timeline: [
-                        { 
-                            time: '11:00', category: 'activity', content: '팀랩 플래닛 도쿄', jp: 'チームラボ豊洲', 
-                            desc: '물에 들어가는 체험형 전시 (토요스)',
-                            tip: '반바지 착용 추천 (수건 제공됨). 2025 리뉴얼!',
-                            distance: '5.5km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=teamLab+Planets&travelmode=transit&z=16"
-                        },
-                        { 
-                            time: '14:00', category: 'sightseeing', content: '오다이바 해변공원', jp: 'お台場 (오다이바)', 
-                            desc: '유리카모메 타고 이동, 실물 크기 건담 & 자유의 여신상',
-                            distance: '2.0km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=teamLab+Planets&destination=Odaiba+Marine+Park&travelmode=transit&z=16"
-                        },
-                        { 
-                            time: '17:00', category: 'food', content: '오다이바 야경 디너', jp: 'レインボーブリッジ', 
-                            desc: '레인보우 브릿지가 보이는 레스토랑',
-                            restaurants: [
-                                { name: "쿠아아이나", desc: "하와이안 버거 (뷰 맛집)" },
-                                { name: "다이버시티", desc: "푸드코트 및 다양한 식당가" }
-                            ],
-                            distance: '800m',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Odaiba+Marine+Park&destination=Aqua+City+Odaiba&travelmode=walking&z=16"
-                        }
-                    ]
-                },
-                {
-                    day: 7,
-                    date: '2.3 (화)',
-                    title: '여행 마무리',
-                    subTitle: '체크아웃 및 귀국',
-                    tag: '귀국',
-                    timeline: [
-                        { 
-                            time: '10:00', category: 'accommodation', content: '숙소 체크아웃 & 짐 보관', jp: 'チェックアウト', 
-                            desc: '체크아웃 후 숙소에 짐 맡기고 점심 먹으러 이동'
-                        },
-                        { 
-                            time: '11:30', category: 'food', content: '점심: 미요시테이 (닌교초)', jp: '三好弥 (미요시테이)', 
-                            desc: '숙소 도보 10분. 가성비 좋은 스키야키/덮밥 노포',
-                            tip: '마지막 식사로 든든하게! 브레이크 타임 주의',
-                            distance: '도보 10분',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Miyoshiya+Ningyocho&travelmode=walking&z=16"
-                        },
-                        { 
-                            time: '14:00', category: 'flight', content: '공항 이동 및 귀국', jp: '成田/羽田', 
-                            desc: 'T-CAT(공항터미널)에서 편하게 리무진 탑승',
-                            distance: '65km',
-                            pathUrl: "https://www.google.com/maps/dir/?api=1&origin=T-CAT&destination=Narita+Airport&travelmode=transit&z=16"
-                        }
-                    ]
-                }
-            ];
-
             return (
-                <div className="min-h-screen pb-20 relative bg-white font-sans selection:bg-pink-100">
-                    <GlobalStyles />
-                    {/* SakuraEffect Removed */}
-                    
-                    {/* Header */}
-                    <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md shadow-sm border-b border-pink-100 px-6 py-4 flex items-center justify-between">
-                         <div className="flex items-center gap-2 text-pink-500">
-                            <Flower className="w-5 h-5 animate-spin-slow" />
-                            <h1 className="text-lg font-extrabold tracking-tight text-gray-900">도쿄 여행 <span className="text-xs font-normal text-pink-400 ml-1">2026</span></h1>
+                <div className="max-w-md mx-auto min-h-screen bg-gray-50 pb-10 shadow-2xl relative overflow-hidden">
+                    {/* 상단 헤더 */}
+                    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <div>
+                            <h1 className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
+                                <Flower className="text-pink-500 animate-spin-slow" size={20} />
+                                Tokyo Trip
+                            </h1>
+                            <p className="text-[11px] text-gray-500 font-medium ml-7">2026.1.28 - 2.3 (6박 7일)</p>
                         </div>
-                        <div className="text-[10px] font-medium text-gray-500 bg-pink-50 px-2.5 py-1 rounded-full border border-pink-100 shadow-sm">
-                            2026.1.28 - 2.3
+                        <div className="bg-pink-50 text-pink-600 px-3 py-1 rounded-full text-xs font-bold border border-pink-100">
+                            D-{Math.ceil((new Date('2026-01-28') - new Date()) / (1000 * 60 * 60 * 24))}
                         </div>
-                    </div>
+                    </header>
 
-                    {/* Content List */}
-                    <div className="max-w-xl mx-auto p-4 space-y-3 relative z-10">
+                    {/* 메인 콘텐츠 */}
+                    <main className="p-4 space-y-4">
                         {itineraryData.map((data) => (
                             <DayCard 
                                 key={data.day} 
@@ -564,12 +654,13 @@
                                 onClick={() => toggleDay(data.day)} 
                             />
                         ))}
-                    </div>
+                    </main>
 
-                    {/* Bottom Info */}
-                     <div className="text-center text-gray-400 text-[10px] pb-8 relative z-10">
-                        © 2026 Tokyo Trip Guide
-                    </div>
+                    {/* 하단 푸터 */}
+                    <footer className="py-6 text-center text-gray-400 text-[10px]">
+                        <p>© 2026 Tokyo Trip Guide</p>
+                        <p className="mt-1">Enjoy your trip!</p>
+                    </footer>
                 </div>
             );
         }
