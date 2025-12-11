@@ -16,37 +16,21 @@
         }
     </script>
     <style>
-        /* 프리텐다드 폰트 */
         @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 
         body {
-            font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-            background-color: #f8fafc;
+            font-family: "Pretendard Variable", "Pretendard", sans-serif;
+            background-color: #fff0f5; /* 아주 연한 핑크 배경 */
+            color: #111;
             -webkit-tap-highlight-color: transparent;
-            color: #1e293b;
-        }
-
-        /* 스크롤바 숨김 */
-        ::-webkit-scrollbar {
-            display: none;
-        }
-
-        .animate-fadeIn {
-            animation: fadeIn 0.4s ease-out forwards;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        ::-webkit-scrollbar { display: none; }
 
-        .animate-spin-slow {
-            animation: spin 8s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .animate-fadeIn { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-spin-slow { animation: spin 8s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -58,51 +42,52 @@
         import { 
             Plane, Hotel, MapPin, Utensils, ShoppingBag, Camera, Star, Zap, Train, 
             Moon, Sun, ChevronDown, ChevronUp, Coffee, Flower, Navigation, Map, 
-            Clock, ArrowDown, ExternalLink, Footprints, Home
+            Clock, ArrowDown, Footprints, Home
         } from 'lucide-react';
 
-        // --- 1. 유틸리티 & 아이콘 ---
+        // --- 1. 유틸리티 ---
 
         const getLineColor = (lineName) => {
-            if (lineName.includes('긴자')) return 'bg-orange-400 text-white';
-            if (lineName.includes('마루노우치')) return 'bg-red-500 text-white';
-            if (lineName.includes('히비야')) return 'bg-gray-400 text-white';
-            if (lineName.includes('토자이')) return 'bg-sky-400 text-white';
-            if (lineName.includes('치요다')) return 'bg-green-600 text-white';
-            if (lineName.includes('유라쿠초')) return 'bg-yellow-600 text-white';
-            if (lineName.includes('한조몬')) return 'bg-purple-600 text-white';
-            if (lineName.includes('오에도')) return 'bg-pink-600 text-white';
-            if (lineName.includes('아사쿠사')) return 'bg-rose-400 text-white';
-            if (lineName.includes('JR') || lineName.includes('야마노테')) return 'bg-green-500 text-white';
-            if (lineName.includes('소부')) return 'bg-yellow-400 text-white';
-            if (lineName.includes('신주쿠')) return 'bg-emerald-600 text-white';
-            if (lineName.includes('유리카모메')) return 'bg-blue-400 text-white';
-            if (lineName.includes('후쿠토신')) return 'bg-amber-700 text-white';
-            if (lineName.includes('린카이')) return 'bg-teal-500 text-white';
-            if (lineName.includes('게이요')) return 'bg-red-600 text-white';
-            return 'bg-slate-500 text-white';
+            if (!lineName) return 'bg-gray-400';
+            if (lineName.includes('긴자')) return 'text-orange-500 border-orange-200';
+            if (lineName.includes('마루노우치')) return 'text-red-500 border-red-200';
+            if (lineName.includes('히비야')) return 'text-gray-500 border-gray-200';
+            if (lineName.includes('토자이')) return 'text-sky-500 border-sky-200';
+            if (lineName.includes('치요다')) return 'text-green-600 border-green-200';
+            if (lineName.includes('유라쿠초')) return 'text-yellow-600 border-yellow-200';
+            if (lineName.includes('한조몬')) return 'text-purple-600 border-purple-200';
+            if (lineName.includes('오에도')) return 'text-pink-600 border-pink-200';
+            if (lineName.includes('아사쿠사')) return 'text-rose-500 border-rose-200';
+            if (lineName.includes('JR') || lineName.includes('야마노테')) return 'text-green-600 border-green-200';
+            if (lineName.includes('소부')) return 'text-yellow-500 border-yellow-200';
+            if (lineName.includes('신주쿠')) return 'text-emerald-600 border-emerald-200';
+            if (lineName.includes('유리카모메')) return 'text-blue-500 border-blue-200';
+            if (lineName.includes('후쿠토신')) return 'text-amber-700 border-amber-200';
+            if (lineName.includes('린카이')) return 'text-teal-500 border-teal-200';
+            if (lineName.includes('게이요')) return 'text-red-600 border-red-200';
+            return 'text-slate-500 border-slate-200';
         };
 
         const CategoryIcon = ({ type }) => {
-            const className = "w-4 h-4";
+            const className = "w-3.5 h-3.5 text-white";
             switch (type) {
-                case 'food': return <Utensils className={`${className} text-white`} />;
-                case 'cafe': return <Coffee className={`${className} text-white`} />;
-                case 'shopping': return <ShoppingBag className={`${className} text-white`} />;
-                case 'sightseeing': return <Camera className={`${className} text-white`} />;
-                case 'theme_park': return <Star className={`${className} text-white`} />;
-                case 'accommodation': return <Hotel className={`${className} text-white`} />;
-                case 'flight': return <Plane className={`${className} text-white`} />;
-                case 'transport': return <Train className={`${className} text-white`} />;
-                case 'activity': return <Zap className={`${className} text-white`} />;
-                case 'view': return <Moon className={`${className} text-white`} />;
-                case 'sunset': return <Sun className={`${className} text-white`} />;
-                case 'return': return <Home className={`${className} text-white`} />;
+                case 'food': return <Utensils className={className} />;
+                case 'cafe': return <Coffee className={className} />;
+                case 'shopping': return <ShoppingBag className={className} />;
+                case 'sightseeing': return <Camera className={className} />;
+                case 'theme_park': return <Star className={className} />;
+                case 'accommodation': return <Hotel className={className} />;
+                case 'flight': return <Plane className={className} />;
+                case 'transport': return <Train className={className} />;
+                case 'activity': return <Zap className={className} />;
+                case 'view': return <Moon className={className} />;
+                case 'sunset': return <Sun className={className} />;
+                case 'return': return <Home className={className} />;
                 default: return <div className="w-2 h-2 rounded-full bg-white"></div>;
             }
         };
 
-        const getCategoryBg = (type) => {
+        const getCategoryColor = (type) => {
             switch (type) {
                 case 'food': return 'bg-orange-400';
                 case 'cafe': return 'bg-amber-600';
@@ -118,199 +103,198 @@
                 case 'return': return 'bg-slate-600';
                 default: return 'bg-gray-400';
             }
-        }
+        };
 
         // --- 2. 컴포넌트 ---
 
-        // 이동 정보
-        const TravelConnector = ({ travel }) => {
+        // 이동 정보 배지 (심플 텍스트)
+        const TravelBadge = ({ travel }) => {
             if (!travel) return null;
+
+            const timeText = travel.time.replace(/도보|약/g, '').trim();
+            const displayTime = timeText || '이동';
+            
+            // 이동 수단 텍스트 및 색상
+            let modeText = '도보';
+            let styleClass = 'text-slate-500 border-slate-200'; // 기본
+
+            if (travel.line) {
+                modeText = travel.line.split(' ')[0];
+                styleClass = getLineColor(travel.line);
+            }
+
             return (
-                <div className="relative h-12 my-0">
-                    {/* 수직선: 핑크색으로 변경 */}
-                    <div className="absolute left-[19px] top-0 bottom-0 w-[2px] bg-pink-200"></div>
-                    
-                    {/* 텍스트 정보: 선 위에 겹쳐서 배치 (z-index 활용) */}
-                    <div className="absolute left-[20px] top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 w-max max-w-[200px]">
-                         <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-700 bg-white border border-pink-100 shadow-sm px-2 py-1 rounded-full whitespace-nowrap">
-                            {travel.line ? <Train size={10} className="text-pink-500 shrink-0" /> : <Footprints size={10} className="text-pink-500 shrink-0" />}
-                            <span>{travel.time}</span>
-                            {travel.line && (
-                                <span className={`px-1 py-[0.5px] rounded-[2px] text-[9px] font-bold leading-none ${getLineColor(travel.line)}`}>
-                                    {travel.line.split(' ')[0]}
-                                </span>
-                            )}
-                         </div>
-                    </div>
+                <div className={`relative z-10 bg-white px-2 py-1 rounded-lg border shadow-sm flex flex-col items-center justify-center min-w-[40px] ${styleClass}`}>
+                    <span className="text-[9px] font-bold leading-none mb-0.5 opacity-80">{modeText}</span>
+                    <span className="text-[10px] font-extrabold leading-none">{displayTime}</span>
                 </div>
             );
         };
 
-        const TimelineItem = ({ item }) => {
+        const TimelineItem = ({ item, isLast }) => {
             const [isOpen, setIsOpen] = useState(false);
             const hasDetails = item.tip || (item.restaurants && item.restaurants.length > 0) || item.desc;
             const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.jp || item.content)}`;
 
             return (
-                <div className="relative group">
-                    <div className="flex gap-3">
-                        {/* 왼쪽 타임라인 & 아이콘 */}
-                        <div className="flex flex-col items-center relative min-w-[40px]">
-                            {/* 시간 */}
-                            <span className="text-[11px] font-bold text-slate-500 font-mono mb-1">{item.time}</span>
-                            
-                            {/* 아이콘 */}
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm z-20 border-2 border-white ${getCategoryBg(item.category)}`}>
-                                <CategoryIcon type={item.category} />
-                            </div>
-
-                            {/* 연결선 (핑크색) */}
-                            <div className="w-[2px] bg-pink-200 flex-1 min-h-[20px] -mt-1 mb-[-4px]"></div>
+                <div className="flex w-full">
+                    {/* [Left] Timeline Track */}
+                    <div className="w-[60px] flex flex-col items-center shrink-0 relative">
+                        
+                        {/* Icon Node (Centered) */}
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center z-20 border-[3px] border-white shadow-sm ${getCategoryColor(item.category)}`}>
+                            <CategoryIcon type={item.category} />
                         </div>
 
-                        {/* 오른쪽 컨텐츠 카드 */}
-                        <div className="flex-1 pb-4 pr-1">
-                            <div 
-                                className={`bg-white rounded-2xl p-4 border transition-all cursor-pointer relative overflow-hidden ${isOpen ? 'border-pink-200 shadow-md' : 'border-slate-100 shadow-sm hover:border-pink-100'}`}
-                                onClick={() => hasDetails && setIsOpen(!isOpen)}
-                            >
-                                {/* 상단 타이틀 & 뱃지 */}
-                                <div className="flex justify-between items-start mb-1">
-                                    <div>
-                                        <h4 className="font-bold text-slate-800 text-[15px] leading-tight flex items-center gap-2">
-                                            {item.content}
-                                            {item.distance && (
-                                                <span className="text-[10px] font-normal text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
-                                                    {item.distance}
-                                                </span>
-                                            )}
-                                        </h4>
-                                        {item.jp && <p className="text-[11px] text-slate-400 font-medium mt-0.5">{item.jp}</p>}
+                        {/* Vertical Line & Badge */}
+                        {!isLast && (
+                            <div className="flex-1 flex flex-col items-center w-full relative">
+                                {/* Top Line Segment */}
+                                <div className="w-[2px] bg-pink-200 h-4"></div>
+                                
+                                {/* Badge (Center) - Only if travel info exists, otherwise continuous line */}
+                                {item.travelToNext ? (
+                                    <div className="my-1">
+                                        <TravelBadge travel={item.travelToNext} />
                                     </div>
-                                    
-                                    {/* 액션 버튼 (크기 증가) */}
-                                    <div className="flex gap-2">
-                                        <a 
-                                            href={mapUrl} target="_blank" rel="noreferrer"
-                                            onClick={(e) => e.stopPropagation()}
-                                            className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-500 transition-colors border border-slate-100"
-                                        >
-                                            <MapPin size={18} />
-                                        </a>
-                                        {item.pathUrl && (
-                                            <a 
-                                                href={item.pathUrl} target="_blank" rel="noreferrer"
-                                                onClick={(e) => e.stopPropagation()}
-                                                className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-green-50 hover:text-green-600 transition-colors border border-slate-100"
-                                            >
-                                                <Navigation size={18} />
-                                            </a>
+                                ) : (
+                                    <div className="w-[2px] bg-pink-200 flex-1"></div>
+                                )}
+
+                                {/* Bottom Line Segment (if badge exists) */}
+                                {item.travelToNext && <div className="w-[2px] bg-pink-200 flex-1 min-h-[10px]"></div>}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* [Right] Content Card */}
+                    <div className="flex-1 pb-6 pl-2 min-w-0">
+                        <div 
+                            className={`bg-white rounded-xl p-4 border border-pink-100 shadow-sm relative transition-all ${isOpen ? 'ring-1 ring-pink-300' : ''}`}
+                            onClick={() => hasDetails && setIsOpen(!isOpen)}
+                        >
+                            {/* Header */}
+                            <div className="flex justify-between items-start gap-2">
+                                <div className="flex-1">
+                                    <div className="flex items-baseline gap-2 mb-1">
+                                        <span className="text-sm font-bold text-pink-500 font-mono">{item.time}</span>
+                                        {item.distance && (
+                                            <span className="text-[10px] text-gray-500 bg-gray-50 px-1.5 rounded border border-gray-100">
+                                                {item.distance}
+                                            </span>
                                         )}
                                     </div>
+                                    <h3 className="font-bold text-gray-900 text-[16px] leading-tight mb-0.5">
+                                        {item.content}
+                                    </h3>
+                                    {item.jp && <p className="text-xs text-gray-400">{item.jp}</p>}
                                 </div>
 
-                                {/* 짧은 설명 (닫혀있을 때) */}
-                                {!isOpen && item.shortDesc && (
-                                    <p className="text-xs text-slate-500 mt-2 line-clamp-1">{item.shortDesc}</p>
-                                )}
-
-                                {/* 상세 내용 (열렸을 때) */}
-                                {hasDetails && isOpen && (
-                                    <div className="mt-3 pt-3 border-t border-slate-50 animate-fadeIn space-y-3">
-                                        {item.desc && <p className="text-xs text-slate-600 leading-relaxed">{item.desc}</p>}
-                                        
-                                        {item.tip && (
-                                            <div className="flex gap-2 bg-yellow-50/50 p-2.5 rounded-xl border border-yellow-100/50">
-                                                <span className="text-yellow-500 mt-0.5"><Zap size={12} fill="currentColor" /></span>
-                                                <p className="text-[11px] text-yellow-800 leading-snug"><span className="font-bold">TIP:</span> {item.tip}</p>
-                                            </div>
-                                        )}
-
-                                        {item.restaurants && (
-                                            <div className="space-y-1.5">
-                                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-orange-600">
-                                                    <Utensils size={12} /> 추천 메뉴
-                                                </div>
-                                                <div className="bg-orange-50/50 rounded-xl p-2.5 border border-orange-100/50 space-y-1">
-                                                    {item.restaurants.map((r, i) => (
-                                                        <div key={i} className="flex justify-between text-[11px]">
-                                                            <span className="font-bold text-slate-700">{r.name}</span>
-                                                            <span className="text-slate-500">{r.desc}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                        
-                                        <div className="flex justify-center pt-1">
-                                            <button 
-                                                onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
-                                                className="text-slate-300 hover:text-slate-500 transition-colors"
-                                            >
-                                                <ChevronUp size={18} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
+                                {/* Map Buttons */}
+                                <div className="flex flex-col gap-2 shrink-0">
+                                    <a 
+                                        href={mapUrl} 
+                                        target="_blank" 
+                                        rel="noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-pink-100 text-gray-400 hover:text-pink-500 hover:border-pink-300 transition-colors shadow-sm"
+                                    >
+                                        <MapPin size={16} />
+                                    </a>
+                                    {item.pathUrl && (
+                                        <a 
+                                            href={item.pathUrl} 
+                                            target="_blank" 
+                                            rel="noreferrer"
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-pink-100 text-gray-400 hover:text-green-500 hover:border-green-300 transition-colors shadow-sm"
+                                        >
+                                            <Navigation size={16} />
+                                        </a>
+                                    )}
+                                </div>
                             </div>
+
+                            {/* Short Desc */}
+                            {!isOpen && item.shortDesc && (
+                                <p className="text-xs text-gray-500 mt-2 line-clamp-1 border-t border-dashed border-pink-50 pt-2">
+                                    {item.shortDesc}
+                                </p>
+                            )}
+
+                            {/* Expanded Content */}
+                            {isOpen && hasDetails && (
+                                <div className="mt-3 pt-3 border-t border-pink-50 animate-fadeIn space-y-3">
+                                    {item.desc && <p className="text-xs text-gray-700 leading-relaxed">{item.desc}</p>}
+                                    
+                                    {item.tip && (
+                                        <div className="bg-yellow-50 p-2.5 rounded-lg border border-yellow-100 text-xs text-yellow-800 flex gap-2">
+                                            <span className="font-bold">TIP</span>
+                                            <span>{item.tip}</span>
+                                        </div>
+                                    )}
+
+                                    {item.restaurants && (
+                                        <div className="bg-orange-50 p-2.5 rounded-lg border border-orange-100">
+                                            <div className="text-[10px] font-bold text-orange-600 mb-1 flex items-center gap-1">
+                                                <Utensils size={10} /> 추천 메뉴
+                                            </div>
+                                            {item.restaurants.map((r, i) => (
+                                                <div key={i} className="flex justify-between text-xs">
+                                                    <span className="font-bold text-gray-800">{r.name}</span>
+                                                    <span className="text-gray-500">{r.desc}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    <div className="flex justify-center">
+                                        <ChevronUp className="text-pink-200" size={20} />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
-                    
-                    {/* 다음 장소로 이동하는 정보 */}
-                    {item.travelToNext && <TravelConnector travel={item.travelToNext} />}
                 </div>
             );
         };
 
         const DayCard = ({ data, isOpen, onClick }) => {
             return (
-                <div className="mb-6 last:mb-20"> {/* 하단 여백 추가 */}
+                <div className="mb-6 last:mb-24">
                     <div 
                         onClick={onClick}
-                        className={`bg-white rounded-[1.2rem] p-1 pr-4 shadow-sm border border-slate-100 cursor-pointer transition-all duration-300 flex items-center justify-between group ${isOpen ? 'ring-2 ring-pink-100 border-pink-200' : 'hover:border-pink-200'}`}
+                        className={`bg-white rounded-2xl p-4 shadow-sm border border-pink-100 cursor-pointer flex items-center justify-between transition-all ${isOpen ? 'ring-2 ring-pink-100' : 'hover:border-pink-300'}`}
                     >
                         <div className="flex items-center gap-4">
-                            {/* 날짜 박스 */}
-                            <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center transition-colors ${isOpen ? 'bg-pink-50 text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-pink-50 group-hover:text-pink-500'}`}>
-                                <span className="text-[10px] font-bold uppercase tracking-wider opacity-70">Day</span>
-                                <span className="text-2xl font-black leading-none -mt-0.5">{data.day}</span>
+                            <div className={`w-14 h-14 rounded-xl flex flex-col items-center justify-center ${isOpen ? 'bg-pink-500 text-white' : 'bg-pink-50 text-pink-500'}`}>
+                                <span className="text-[10px] font-bold uppercase opacity-80">Day</span>
+                                <span className="text-xl font-extrabold leading-none">{data.day}</span>
                             </div>
-                            
-                            {/* 텍스트 정보 */}
                             <div>
                                 <div className="flex items-center gap-2 mb-0.5">
-                                    <span className="text-xs font-bold text-pink-500">{data.date}</span>
-                                    <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                                    <span className="text-[10px] font-medium text-slate-400">{data.tag}</span>
+                                    <span className="text-xs font-bold text-gray-800">{data.date}</span>
+                                    <span className="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded-full">{data.tag}</span>
                                 </div>
-                                <h3 className="text-[17px] font-bold text-slate-800">{data.title}</h3>
+                                <h2 className="text-lg font-bold text-gray-900">{data.title}</h2>
                             </div>
                         </div>
-
-                        {/* 토글 아이콘 */}
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isOpen ? 'bg-pink-50 text-pink-500 rotate-180' : 'text-slate-300 bg-slate-50'}`}>
-                            <ChevronDown size={18} />
-                        </div>
+                        <ChevronDown className={`text-gray-300 transition-transform ${isOpen ? 'rotate-180 text-pink-500' : ''}`} />
                     </div>
 
-                    {/* 타임라인 컨텐츠 */}
-                    <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-[3000px] opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
-                        <div className="px-1">
-                            {data.timeline.map((item, idx) => (
-                                <TimelineItem key={idx} item={item} />
-                            ))}
-                        </div>
-                        {/* 마지막 종료 표시 */}
-                        <div className="pl-[2.2rem] flex items-center gap-3 opacity-30 mt-[-10px]">
-                            <div className="w-2 h-2 rounded-full bg-slate-300 ml-[2px]"></div>
-                            <span className="text-[10px] font-bold text-slate-400">일정 종료</span>
-                        </div>
+                    <div className={`transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-[3000px] opacity-100 mt-6' : 'max-h-0 opacity-0'}`}>
+                        {data.timeline.map((item, idx) => (
+                            <TimelineItem 
+                                key={idx} 
+                                item={item} 
+                                isLast={idx === data.timeline.length - 1} 
+                            />
+                        ))}
                     </div>
                 </div>
             );
         };
 
-        // --- 데이터 ---
+        // --- Data ---
         const itineraryData = [
             {
                 day: 1,
@@ -683,7 +667,7 @@
             {
                 day: 6,
                 date: '2.2 (월)',
-                title: '오다이바',
+                title: '크리에이티브뮤지엄 & 오다이바',
                 tag: '베이 에어리어',
                 timeline: [
                     { 
@@ -790,11 +774,9 @@
             }
         ];
 
-        // --- 앱 ---
         function App() {
             const [openDay, setOpenDay] = useState(1);
             
-            // 날짜 계산 (D-Day)
             const today = new Date();
             const tripDate = new Date('2026-01-28');
             const diffTime = tripDate - today;
@@ -802,9 +784,8 @@
             const dDay = diffDays > 0 ? `D-${diffDays}` : (diffDays === 0 ? 'D-Day' : `D+${Math.abs(diffDays)}`);
 
             return (
-                <div className="max-w-md mx-auto min-h-screen bg-slate-50 relative">
-                    {/* 상단 네비게이션 */}
-                    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-slate-200">
+                <div className="max-w-md mx-auto min-h-screen relative">
+                    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-pink-100">
                         <div className="max-w-md mx-auto px-5 h-14 flex items-center justify-between">
                             <h1 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
                                 <Flower className="text-pink-500 animate-spin-slow" size={20} />
@@ -816,9 +797,7 @@
                         </div>
                     </nav>
 
-                    {/* 메인 컨텐츠 */}
                     <main className="pt-20 px-5 pb-10">
-                        {/* 여행 개요 */}
                         <div className="mb-8 pl-1">
                             <h2 className="text-2xl font-black text-slate-800 mb-1">2026 Winter Trip</h2>
                             <p className="text-sm text-slate-500 font-medium">1월 28일 - 2월 3일 (6박 7일)</p>
@@ -834,7 +813,6 @@
                         ))}
                     </main>
 
-                    {/* 플로팅 탑 버튼 */}
                     <button 
                         onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
                         className="fixed bottom-6 right-6 w-12 h-12 bg-slate-800 text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform z-40"
