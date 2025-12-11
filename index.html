@@ -74,9 +74,12 @@
             if (lineName.includes('한조몬')) return 'bg-purple-600 text-white';
             if (lineName.includes('오에도')) return 'bg-pink-600 text-white';
             if (lineName.includes('아사쿠사')) return 'bg-rose-400 text-white';
-            if (lineName.includes('JR')) return 'bg-green-500 text-white';
+            if (lineName.includes('JR') || lineName.includes('야마노테')) return 'bg-green-500 text-white';
+            if (lineName.includes('소부')) return 'bg-yellow-400 text-white';
+            if (lineName.includes('신주쿠')) return 'bg-emerald-600 text-white';
             if (lineName.includes('유리카모메')) return 'bg-blue-400 text-white';
             if (lineName.includes('후쿠토신')) return 'bg-amber-700 text-white';
+            if (lineName.includes('린카이')) return 'bg-teal-500 text-white';
             return 'bg-gray-500 text-white';
         };
 
@@ -182,7 +185,7 @@
                                                     target="_blank" 
                                                     rel="noopener noreferrer"
                                                     className="w-6 h-6 flex items-center justify-center rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors border border-blue-100"
-                                                    title="구글 지도 보기"
+                                                    title="구글 지도에서 위치 보기"
                                                 >
                                                     <MapPin size={12} fill="currentColor" className="opacity-80" />
                                                 </a>
@@ -192,7 +195,7 @@
                                                         target="_blank" 
                                                         rel="noopener noreferrer"
                                                         className="w-6 h-6 flex items-center justify-center rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition-colors border border-green-100"
-                                                        title="길찾기"
+                                                        title="현재 위치까지 길찾기 (Google Maps)"
                                                     >
                                                         <Navigation size={12} />
                                                     </a>
@@ -305,7 +308,7 @@
             );
         };
 
-        // --- 5. 데이터 ---
+        // --- 5. 데이터 (순차적 경로 네비게이션 적용) ---
         const itineraryData = [
             {
                 day: 1,
@@ -325,16 +328,18 @@
                         time: '19:00', category: 'food', content: '저녁: 츠지한', 
                         jp: 'つじ半 (츠지한 본점)', 
                         shortDesc: '해산물 덮밥 맛집 (웨이팅 주의)',
-                        desc: '제이타쿠동(해산물 덮밥) 전문점. 다 먹고 도미 육수(타이다시) 요청 필수.',
+                        desc: '제이타쿠동(해산물 덮밥) 전문점.',
                         restaurants: [{ name: "우메(梅)", desc: "기본 메뉴로도 충분히 훌륭함" }],
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tsujihan+Nihonbashi&travelmode=walking",
                         travelToNext: { time: '도보 5분', from: '츠지한', to: '니혼바시 다리', desc: '소화시킬 겸 산책' }
                     },
                     { 
                         time: '20:30', category: 'sightseeing', content: '니혼바시 야경', 
                         jp: '日本橋', 
                         shortDesc: '코레도 무로마치 등불 거리',
-                        desc: '도쿄의 전통과 현대가 섞인 야경 명소. 다리 위 기린 동상이 포인트.',
-                        tip: '편의점(세븐일레븐) 들러서 내일 아침 간식 사서 복귀'
+                        desc: '도쿄의 전통과 현대가 섞인 야경 명소.',
+                        tip: '편의점(세븐일레븐) 들러서 내일 아침 간식 사서 복귀',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tsujihan+Nihonbashi&destination=Nihombashi+Bridge&travelmode=walking"
                     }
                 ]
             },
@@ -360,8 +365,9 @@
                         time: '09:00', category: 'theme_park', content: '디즈니랜드 입장', 
                         jp: 'Tokyo Disneyland', 
                         shortDesc: '오픈런 & DPA 구매',
-                        desc: '입장하자마자 앱으로 미녀와 야수 DPA(유료 패스) 구매 또는 40주년 패스 확인.',
-                        tip: '입구 근처 샵보다 안쪽이 덜 붐빔. 팝콘통부터 겟!',
+                        desc: '입장하자마자 앱으로 미녀와 야수 DPA(유료 패스) 구매.',
+                        tip: '입구 근처 샵보다 안쪽이 덜 붐빔.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Maihama+Station&destination=Tokyo+Disneyland+Entrance&travelmode=walking",
                         travelToNext: { time: '종일', from: '파크 내', to: '파크 내', desc: '' }
                     },
                     { 
@@ -372,7 +378,8 @@
                     { 
                         time: '20:30', category: 'sightseeing', content: '불꽃놀이 & 퇴장', 
                         shortDesc: '스카이 풀 오브 컬러',
-                        desc: '폐장 시간까지 즐기고 JR 타고 복귀. 사람이 많으니 티켓 미리 챙길 것.'
+                        desc: '폐장 시간까지 즐기고 JR 타고 복귀.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Disneyland&destination=Keio+Presso+Inn+Nihombashi+Kayabacho&travelmode=transit"
                     }
                 ]
             },
@@ -384,7 +391,8 @@
                 timeline: [
                     { 
                         time: '10:00', category: 'transport', content: '긴자 이동', 
-                        shortDesc: '호텔 → 긴자',
+                        shortDesc: '호텔 → 긴자역',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Ginza+Station&travelmode=transit",
                         travelToNext: { 
                             time: '약 10분', 
                             line: 'H 히비야선', 
@@ -397,7 +405,8 @@
                         time: '10:30', category: 'food', content: '판 메종 긴자', 
                         jp: 'Pain Maison', 
                         shortDesc: '소금빵 원조 맛집',
-                        tip: '웨이팅 있음. 대량 구매 추천(다음날 아침용). 카드 결제 불가할 수 있음.',
+                        tip: '웨이팅 있음. 대량 구매 추천.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Ginza+Station&destination=Pain+Maison+Ginza&travelmode=walking",
                         travelToNext: { time: '도보 10분', from: '판 메종', to: '긴자 식스', desc: '긴자 거리 구경하며 이동' }
                     },
                     { 
@@ -405,6 +414,7 @@
                         jp: 'HARBS', 
                         shortDesc: '루미네 유라쿠초점',
                         desc: '긴자 식스, 유니클로 구경 후 하브스에서 크레이프 케이크.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Pain+Maison+Ginza&destination=HARBS+Lumine+Yurakucho&travelmode=walking",
                         travelToNext: { 
                             time: '약 15분', 
                             line: 'H 히비야선', 
@@ -418,6 +428,7 @@
                         jp: '芝公園', 
                         shortDesc: '도쿄타워 포토 스팟',
                         desc: '프린스 시바 공원 잔디밭이 사진 명당.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=HARBS+Lumine+Yurakucho&destination=Prince+Shiba+Park&travelmode=transit",
                         travelToNext: { 
                             time: '약 15분', 
                             line: 'E 오에도선', 
@@ -430,14 +441,15 @@
                         time: '18:00', category: 'view', content: '롯폰기 힐즈 전망대', 
                         jp: 'Roppongi Hills', 
                         shortDesc: '도쿄 시티뷰',
-                        tip: '일몰 시간에 맞춰 가면 최고. 모리 미술관도 관람 가능.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shiba+Park&destination=Roppongi+Hills&travelmode=transit",
+                        tip: '일몰 시간에 맞춰 가면 최고.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Prince+Shiba+Park&destination=Roppongi+Hills&travelmode=transit",
                         travelToNext: { time: '도보 5분', from: '힐즈', to: '이마카츠', desc: '' }
                     },
                     {
                         time: '20:00', category: 'food', content: '저녁: 이마카츠',
                         jp: 'イマカツ',
-                        desc: '닭가슴살 카츠(사사미카츠)가 입에서 녹음. 미슐랭 맛집.',
+                        desc: '닭가슴살 카츠(사사미카츠)가 입에서 녹음.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Roppongi+Hills&destination=Imakatsu+Roppongi&travelmode=walking",
                         tip: '예약 안했으면 웨이팅 각오해야 함.'
                     }
                 ]
@@ -450,6 +462,8 @@
                 timeline: [
                     { 
                         time: '10:30', category: 'transport', content: '하라주쿠 이동', 
+                        shortDesc: '호텔 → 하라주쿠',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Harajuku+Station&travelmode=transit",
                         travelToNext: { 
                             time: '약 35분', 
                             line: 'C 치요다선', 
@@ -462,13 +476,15 @@
                         time: '11:00', category: 'food', content: '로스트비프 오노', 
                         jp: 'Roast Beef Ohno', 
                         shortDesc: '하라주쿠점 점심',
-                        desc: '산더미 로스트비프 덮밥. 비주얼과 맛 모두 잡음.',
+                        desc: '산더미 로스트비프 덮밥.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Harajuku+Station&destination=Roast+Beef+Ohno+Harajuku&travelmode=walking",
                         travelToNext: { time: '도보 이동', from: '하라주쿠', to: '오모테산도', desc: '캣스트리트 구경' }
                     },
                     { 
                         time: '13:00', category: 'shopping', content: '오모테산도 & 캣스트리트', 
                         shortDesc: '쇼핑과 카페 투어',
                         tip: '랄프로렌 카페, 키디랜드, 휴먼메이드 등 구경',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Roast+Beef+Ohno+Harajuku&destination=Omotesando+Hills&travelmode=walking",
                         travelToNext: { time: '도보 15분', from: '오모테산도', to: '시부야', desc: '쭉 걸어서 시부야로' }
                     },
                     { 
@@ -476,6 +492,7 @@
                         jp: 'SHIBUYA SKY', 
                         shortDesc: '스크램블 스퀘어 전망대',
                         tip: '예약 필수! 에스컬레이터 샷과 모서리 샷이 포인트.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Omotesando+Hills&destination=Shibuya+Scramble+Square&travelmode=walking",
                         travelToNext: { 
                             time: '약 15분', 
                             line: 'F 후쿠토신선', 
@@ -488,6 +505,7 @@
                         time: '19:00', category: 'food', content: '저녁: 교엔 로안', 
                         jp: '御苑 ろあん', 
                         desc: '신주쿠 교엔 근처 분위기 좋은 수타 소바 맛집.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shibuya+Scramble+Square&destination=Gyoen+Roan+Shinjuku&travelmode=transit",
                         tip: '조용하게 하루 마무리하기 좋음.'
                     }
                 ]
@@ -495,30 +513,35 @@
             {
                 day: 5,
                 date: '2.1 (일)',
-                title: '아사쿠사 & 일루미',
-                tag: '전통/빛',
+                title: '아키하바라 & 일루미',
+                tag: '서브컬처/빛',
                 timeline: [
                     { 
-                        time: '10:30', category: 'transport', content: '아사쿠사 이동', 
+                        time: '10:30', category: 'transport', content: '아키하바라 이동', 
+                        shortDesc: '호텔 → 아키하바라',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Akihabara+Station&travelmode=transit",
                         travelToNext: { 
-                            time: '약 15분', 
-                            line: 'A 아사쿠사선', 
-                            from: '닌교초역', 
-                            to: '아사쿠사역', 
-                            desc: '숙소에서 닌교초까지 도보 후 탑승' 
+                            time: '약 5분', 
+                            line: 'H 히비야선', 
+                            from: '가야바초역', 
+                            to: '아키하바라역', 
+                            desc: '숙소에서 매우 가까움' 
                         }
                     },
                     { 
-                        time: '11:00', category: 'sightseeing', content: '센소지 & 나카미세', 
-                        jp: '浅草寺', 
-                        shortDesc: '도쿄에서 가장 오래된 절',
-                        tip: '멘치카츠, 실크푸딩 등 길거리 간식 먹방.',
+                        time: '11:00', category: 'shopping', content: '아키하바라 관광', 
+                        jp: '秋葉原 (Akihabara)', 
+                        shortDesc: '라디오회관 & 전자상가',
+                        desc: '애니메이션 굿즈, 피규어, 전자제품 쇼핑.',
+                        tip: '라디오회관만 봐도 1시간 순삭. 점심은 근처 규카츠 추천.',
+                        restaurants: [{ name: "규카츠 이치니산", desc: "아키하바라 대표 맛집" }],
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Akihabara+Station&destination=Radio+Kaikan&travelmode=walking",
                         travelToNext: { 
-                            time: '약 25분', 
-                            line: 'E 오에도선', 
-                            from: '구라마에역', 
-                            to: '가스가역', 
-                            desc: '도쿄돔 시티로 이동' 
+                            time: '약 5분', 
+                            line: 'JB 소부선', 
+                            from: '아키하바라역', 
+                            to: '스이도바시역', 
+                            desc: '도쿄돔 시티로 이동 (2정거장)' 
                         }
                     },
                     { 
@@ -526,6 +549,7 @@
                         jp: 'Tokyo Dome City', 
                         shortDesc: '윈터 일루미네이션',
                         desc: '무료로 즐길 수 있는 고퀄리티 일루미네이션.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Akihabara+Station&destination=Tokyo+Dome+City&travelmode=transit",
                         travelToNext: { 
                             time: '약 10분', 
                             line: 'M 마루노우치선', 
@@ -538,50 +562,58 @@
                         time: '18:00', category: 'view', content: '마루노우치 일루미네이션', 
                         jp: '丸の内', 
                         shortDesc: '도쿄역 앞 가로수길',
-                        desc: '샴페인 골드빛 조명이 켜진 유럽풍 거리 산책.'
+                        desc: '샴페인 골드빛 조명이 켜진 유럽풍 거리 산책.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Dome+City&destination=Marunouchi+Illumination&travelmode=transit"
                     }
                 ]
             },
             {
                 day: 6,
                 date: '2.2 (월)',
-                title: '오다이바 & 팀랩',
-                tag: '전시',
+                title: '신주쿠 & 오다이바',
+                tag: '시티/베이',
                 timeline: [
                     { 
-                        time: '10:30', category: 'transport', content: '토요스 이동', 
+                        time: '10:00', category: 'transport', content: '신주쿠 이동', 
+                        shortDesc: '호텔 → 신주쿠',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Shinjuku+Station&travelmode=transit",
                         travelToNext: { 
-                            time: '약 20분', 
-                            line: 'Y 유라쿠초선', 
-                            from: '핫초보리역', 
-                            to: '토요스역', 
-                            desc: '팀랩 플래닛으로 이동' 
+                            time: '약 25분', 
+                            line: 'S 신주쿠선', 
+                            from: '바쿠로요코야마역', 
+                            to: '신주쿠산초메역', 
+                            desc: '숙소 근처 역에서 이동' 
                         }
                     },
                     { 
-                        time: '11:00', category: 'activity', content: '팀랩 플래닛 도쿄', 
-                        jp: 'teamLab Planets', 
-                        shortDesc: '물에 들어가는 체험 전시',
-                        tip: '반바지 착용 권장. 수건은 제공됨.',
+                        time: '10:45', category: 'sightseeing', content: '신주쿠 교엔 & 쇼핑', 
+                        jp: '新宿御苑 (신주쿠 교엔)', 
+                        shortDesc: '도심 속 정원 산책',
+                        desc: '신카이 마코토 "언어의 정원" 배경지. 쇼핑은 이세탄/루미네 추천.',
+                        tip: '점심으로 우동신(오픈런) 또는 츠케멘 추천.',
+                        restaurants: [{ name: "우동신", desc: "극강의 쫄깃함 (웨이팅 필수)" }],
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shinjuku+Sanchome+Station&destination=Shinjuku+Gyoen+National+Garden&travelmode=walking",
                         travelToNext: { 
-                            time: '약 15분', 
-                            line: 'U 유리카모메', 
-                            from: '신토요스역', 
-                            to: '다이바역', 
-                            desc: '맨 앞칸 타면 뷰가 좋음' 
+                            time: '약 25분', 
+                            line: 'JR 사이쿄선', 
+                            from: '신주쿠역', 
+                            to: '도쿄텔레포트역', 
+                            desc: '오다이바 직통 (린카이선 직결)' 
                         }
                     },
                     { 
-                        time: '14:00', category: 'sightseeing', content: '오다이바 해변공원', 
+                        time: '14:30', category: 'sightseeing', content: '오다이바 해변공원', 
                         shortDesc: '건담 & 자유의 여신상',
-                        desc: '쇼핑몰 구경하고 해변가 산책.',
+                        desc: '도쿄텔레포트역에서 도보 이동. 건담 구경 후 해변 산책.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Teleport+Station&destination=Odaiba+Marine+Park&travelmode=walking",
                         travelToNext: { time: '도보 10분', from: '해변', to: '아쿠아시티', desc: '' }
                     },
                     { 
                         time: '17:00', category: 'food', content: '쿠아아이나 버거', 
                         jp: 'KUA`AINA', 
                         shortDesc: '레인보우 브릿지 뷰 저녁',
-                        desc: '창가 자리에 앉으면 야경이 끝내줌. 아보카도 버거 추천.'
+                        desc: '창가 자리에 앉으면 야경이 끝내줌.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Odaiba+Marine+Park&destination=Kua+Aina+Aqua+City&travelmode=walking"
                     }
                 ]
             },
@@ -601,13 +633,14 @@
                         jp: '三好弥', 
                         shortDesc: '가성비 훌륭한 노포',
                         desc: '마지막으로 든든한 덮밥이나 스키야키 정식.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Miyoshiya+Ningyocho&travelmode=walking",
                         travelToNext: { time: '도보', from: '식당', to: '호텔', desc: '짐 찾기' }
                     },
                     { 
                         time: '14:00', category: 'flight', content: '공항 이동 (T-CAT)', 
                         shortDesc: '리무진 버스 탑승',
                         desc: 'T-CAT(도심공항터미널)에서 리무진 버스 타고 편하게 공항으로.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=T-CAT&destination=Narita+Airport&travelmode=transit",
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=T-CAT&travelmode=walking",
                         travelToNext: { 
                             time: '약 60분', 
                             line: '리무진 버스', 
