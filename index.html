@@ -20,7 +20,7 @@
 
         body {
             font-family: "Pretendard Variable", "Pretendard", sans-serif;
-            background-color: #fff0f5; /* 아주 연한 핑크 배경 */
+            background-color: #fdf2f8; /* 더 밝고 부드러운 핑크 배경 */
             color: #111;
             -webkit-tap-highlight-color: transparent;
         }
@@ -31,6 +31,11 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .animate-spin-slow { animation: spin 8s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* 부드러운 카드 그림자 효과 */
+        .soft-shadow {
+            box-shadow: 4px 4px 10px rgba(236, 72, 153, 0.05), -4px -4px 10px rgba(255, 255, 255, 0.8);
+        }
     </style>
 </head>
 <body>
@@ -69,7 +74,8 @@
         };
 
         const CategoryIcon = ({ type }) => {
-            const className = "w-3.5 h-3.5 text-white";
+            // 아이콘 사이즈 축소 (w-3.5 -> w-3)
+            const className = "w-3 h-3 text-white";
             switch (type) {
                 case 'food': return <Utensils className={className} />;
                 case 'cafe': return <Coffee className={className} />;
@@ -83,50 +89,49 @@
                 case 'view': return <Moon className={className} />;
                 case 'sunset': return <Sun className={className} />;
                 case 'return': return <Home className={className} />;
-                default: return <div className="w-2 h-2 rounded-full bg-white"></div>;
+                default: return <div className="w-1.5 h-1.5 rounded-full bg-white"></div>;
             }
         };
 
         const getCategoryColor = (type) => {
             switch (type) {
-                case 'food': return 'bg-orange-400';
-                case 'cafe': return 'bg-amber-600';
-                case 'shopping': return 'bg-purple-500';
-                case 'sightseeing': return 'bg-blue-500';
-                case 'theme_park': return 'bg-yellow-500';
-                case 'accommodation': return 'bg-indigo-500';
-                case 'flight': return 'bg-sky-500';
-                case 'transport': return 'bg-green-600';
-                case 'activity': return 'bg-red-500';
-                case 'view': return 'bg-indigo-600';
-                case 'sunset': return 'bg-orange-500';
-                case 'return': return 'bg-slate-600';
-                default: return 'bg-gray-400';
+                case 'food': return 'bg-orange-400 shadow-orange-100';
+                case 'cafe': return 'bg-amber-500 shadow-amber-100';
+                case 'shopping': return 'bg-purple-400 shadow-purple-100';
+                case 'sightseeing': return 'bg-blue-400 shadow-blue-100';
+                case 'theme_park': return 'bg-yellow-400 shadow-yellow-100';
+                case 'accommodation': return 'bg-indigo-400 shadow-indigo-100';
+                case 'flight': return 'bg-sky-400 shadow-sky-100';
+                case 'transport': return 'bg-green-500 shadow-green-100';
+                case 'activity': return 'bg-rose-400 shadow-rose-100';
+                case 'view': return 'bg-indigo-500 shadow-indigo-100';
+                case 'sunset': return 'bg-orange-500 shadow-orange-100';
+                case 'return': return 'bg-slate-500 shadow-slate-100';
+                default: return 'bg-gray-400 shadow-gray-100';
             }
         };
 
         // --- 2. 컴포넌트 ---
 
-        // 이동 정보 배지 (심플 텍스트)
         const TravelBadge = ({ travel }) => {
             if (!travel) return null;
 
             const timeText = travel.time.replace(/도보|약/g, '').trim();
             const displayTime = timeText || '이동';
             
-            // 이동 수단 텍스트 및 색상
             let modeText = '도보';
-            let styleClass = 'text-slate-500 border-slate-200'; // 기본
+            let styleClass = 'text-slate-500 border-slate-200';
 
             if (travel.line) {
                 modeText = travel.line.split(' ')[0];
                 styleClass = getLineColor(travel.line);
             }
 
+            // 배지 사이즈 축소: min-w-[40px] -> min-w-[32px], padding 줄임, 폰트 축소
             return (
-                <div className={`relative z-10 bg-white px-2 py-1 rounded-lg border shadow-sm flex flex-col items-center justify-center min-w-[40px] ${styleClass}`}>
-                    <span className="text-[9px] font-bold leading-none mb-0.5 opacity-80">{modeText}</span>
-                    <span className="text-[10px] font-extrabold leading-none">{displayTime}</span>
+                <div className={`relative z-10 bg-white px-1.5 py-0.5 rounded-md border shadow-[0_2px_4px_rgba(0,0,0,0.03)] flex flex-col items-center justify-center min-w-[32px] ${styleClass}`}>
+                    <span className="text-[8px] font-bold leading-none mb-0.5 opacity-80">{modeText}</span>
+                    <span className="text-[9px] font-extrabold leading-none">{displayTime}</span>
                 </div>
             );
         };
@@ -138,68 +143,65 @@
 
             return (
                 <div className="flex w-full">
-                    {/* [Left] Timeline Track */}
-                    <div className="w-[60px] flex flex-col items-center shrink-0 relative">
+                    {/* [Left] Timeline Track: 너비 60px -> 45px로 축소 */}
+                    <div className="w-[45px] flex flex-col items-center shrink-0 relative">
                         
-                        {/* Icon Node (Centered) */}
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center z-20 border-[3px] border-white shadow-sm ${getCategoryColor(item.category)}`}>
+                        {/* Icon Node: w-8 h-8 -> w-6 h-6로 축소 */}
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center z-20 border-[2px] border-white shadow-md ${getCategoryColor(item.category)}`}>
                             <CategoryIcon type={item.category} />
                         </div>
 
                         {/* Vertical Line & Badge */}
                         {!isLast && (
                             <div className="flex-1 flex flex-col items-center w-full relative">
-                                {/* Top Line Segment */}
-                                <div className="w-[2px] bg-pink-200 h-4"></div>
-                                
-                                {/* Badge (Center) - Only if travel info exists, otherwise continuous line */}
+                                <div className="w-[1.5px] bg-pink-100 h-3"></div>
                                 {item.travelToNext ? (
-                                    <div className="my-1">
+                                    <div className="my-0.5">
                                         <TravelBadge travel={item.travelToNext} />
                                     </div>
                                 ) : (
-                                    <div className="w-[2px] bg-pink-200 flex-1"></div>
+                                    <div className="w-[1.5px] bg-pink-100 flex-1"></div>
                                 )}
-
-                                {/* Bottom Line Segment (if badge exists) */}
-                                {item.travelToNext && <div className="w-[2px] bg-pink-200 flex-1 min-h-[10px]"></div>}
+                                {item.travelToNext && <div className="w-[1.5px] bg-pink-100 flex-1 min-h-[8px]"></div>}
                             </div>
                         )}
                     </div>
 
-                    {/* [Right] Content Card */}
-                    <div className="flex-1 pb-6 pl-2 min-w-0">
+                    {/* [Right] Content Card: 패딩 및 폰트 사이즈 전체 축소 */}
+                    <div className="flex-1 pb-4 pl-1 min-w-0">
                         <div 
-                            className={`bg-white rounded-xl p-4 border border-pink-100 shadow-sm relative transition-all ${isOpen ? 'ring-1 ring-pink-300' : ''}`}
+                            className={`bg-white rounded-2xl p-3 border border-pink-50 soft-shadow relative transition-all ${isOpen ? 'ring-1 ring-pink-200' : ''}`}
                             onClick={() => hasDetails && setIsOpen(!isOpen)}
                         >
                             {/* Header */}
                             <div className="flex justify-between items-start gap-2">
-                                <div className="flex-1">
-                                    <div className="flex items-baseline gap-2 mb-1">
-                                        <span className="text-sm font-bold text-pink-500 font-mono">{item.time}</span>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-baseline gap-1.5 mb-0.5">
+                                        <span className="text-xs font-bold text-pink-500 font-mono tracking-tight">{item.time}</span>
                                         {item.distance && (
-                                            <span className="text-[10px] text-gray-500 bg-gray-50 px-1.5 rounded border border-gray-100">
+                                            <span className="text-[9px] text-gray-400 bg-gray-50 px-1 rounded border border-gray-100">
                                                 {item.distance}
                                             </span>
                                         )}
                                     </div>
-                                    <h3 className="font-bold text-gray-900 text-[16px] leading-tight mb-0.5">
+                                    {/* 제목 폰트 16px -> 14px */}
+                                    <h3 className="font-bold text-slate-800 text-sm leading-tight mb-0.5 truncate pr-1">
                                         {item.content}
                                     </h3>
-                                    {item.jp && <p className="text-xs text-gray-400">{item.jp}</p>}
+                                    {/* 일본어 폰트 축소 */}
+                                    {item.jp && <p className="text-[10px] text-gray-400 truncate">{item.jp}</p>}
                                 </div>
 
-                                {/* Map Buttons - 가로 배치로 변경 */}
-                                <div className="flex gap-2 shrink-0">
+                                {/* Map Buttons: 32px -> 26px로 축소 */}
+                                <div className="flex gap-1.5 shrink-0">
                                     <a 
                                         href={mapUrl} 
                                         target="_blank" 
                                         rel="noreferrer"
                                         onClick={(e) => e.stopPropagation()}
-                                        className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-pink-100 text-gray-400 hover:text-pink-500 hover:border-pink-300 transition-colors shadow-sm"
+                                        className="w-[26px] h-[26px] flex items-center justify-center rounded-full bg-slate-50 border border-slate-100 text-gray-400 hover:text-pink-500 hover:bg-white hover:border-pink-200 transition-colors shadow-sm"
                                     >
-                                        <MapPin size={16} />
+                                        <MapPin size={13} />
                                     </a>
                                     {item.pathUrl && (
                                         <a 
@@ -207,48 +209,48 @@
                                             target="_blank" 
                                             rel="noreferrer"
                                             onClick={(e) => e.stopPropagation()}
-                                            className="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-pink-100 text-gray-400 hover:text-green-500 hover:border-green-300 transition-colors shadow-sm"
+                                            className="w-[26px] h-[26px] flex items-center justify-center rounded-full bg-slate-50 border border-slate-100 text-gray-400 hover:text-green-500 hover:bg-white hover:border-green-200 transition-colors shadow-sm"
                                         >
-                                            <Navigation size={16} />
+                                            <Navigation size={13} />
                                         </a>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Short Desc */}
+                            {/* Short Desc: 폰트 12px -> 11px */}
                             {!isOpen && item.shortDesc && (
-                                <p className="text-xs text-gray-500 mt-2 line-clamp-1 border-t border-dashed border-pink-50 pt-2">
+                                <p className="text-[11px] text-slate-500 mt-1.5 line-clamp-1 border-t border-dashed border-pink-50 pt-1.5">
                                     {item.shortDesc}
                                 </p>
                             )}
 
                             {/* Expanded Content */}
                             {isOpen && hasDetails && (
-                                <div className="mt-3 pt-3 border-t border-pink-50 animate-fadeIn space-y-3">
-                                    {item.desc && <p className="text-xs text-gray-700 leading-relaxed">{item.desc}</p>}
+                                <div className="mt-2 pt-2 border-t border-pink-50 animate-fadeIn space-y-2">
+                                    {item.desc && <p className="text-[11px] text-gray-600 leading-relaxed break-keep">{item.desc}</p>}
                                     
                                     {item.tip && (
-                                        <div className="bg-yellow-50 p-2.5 rounded-lg border border-yellow-100 text-xs text-yellow-800 flex gap-2">
-                                            <span className="font-bold">TIP</span>
-                                            <span>{item.tip}</span>
+                                        <div className="bg-yellow-50/80 p-2 rounded-lg border border-yellow-100 text-[10px] text-yellow-800 flex gap-1.5 items-start">
+                                            <span className="font-bold bg-yellow-200 px-1 rounded text-[9px] mt-0.5">TIP</span>
+                                            <span className="leading-snug">{item.tip}</span>
                                         </div>
                                     )}
 
                                     {item.restaurants && (
-                                        <div className="bg-orange-50 p-2.5 rounded-lg border border-orange-100">
+                                        <div className="bg-orange-50/80 p-2 rounded-lg border border-orange-100">
                                             <div className="text-[10px] font-bold text-orange-600 mb-1 flex items-center gap-1">
-                                                <Utensils size={10} /> 추천 메뉴
+                                                <Utensils size={9} /> 추천 메뉴
                                             </div>
                                             {item.restaurants.map((r, i) => (
-                                                <div key={i} className="flex justify-between text-xs">
-                                                    <span className="font-bold text-gray-800">{r.name}</span>
+                                                <div key={i} className="flex justify-between text-[10px] py-0.5">
+                                                    <span className="font-bold text-gray-700">{r.name}</span>
                                                     <span className="text-gray-500">{r.desc}</span>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
-                                    <div className="flex justify-center">
-                                        <ChevronUp className="text-pink-200" size={20} />
+                                    <div className="flex justify-center pt-1">
+                                        <ChevronUp className="text-pink-200" size={14} />
                                     </div>
                                 </div>
                             )}
@@ -260,28 +262,33 @@
 
         const DayCard = ({ data, isOpen, onClick }) => {
             return (
-                <div className="mb-6 last:mb-24">
+                <div className="mb-4 last:mb-20">
                     <div 
                         onClick={onClick}
-                        className={`bg-white rounded-2xl p-4 shadow-sm border border-pink-100 cursor-pointer flex items-center justify-between transition-all ${isOpen ? 'ring-2 ring-pink-100' : 'hover:border-pink-300'}`}
+                        // 패딩 p-4 -> p-3, 둥글기 rounded-2xl -> rounded-xl (비율 고려)
+                        className={`bg-white rounded-2xl p-3 soft-shadow border border-white cursor-pointer flex items-center justify-between transition-all duration-200 ${isOpen ? 'ring-1 ring-pink-200' : 'hover:scale-[1.01]'}`}
                     >
-                        <div className="flex items-center gap-4">
-                            <div className={`w-14 h-14 rounded-xl flex flex-col items-center justify-center ${isOpen ? 'bg-pink-500 text-white' : 'bg-pink-50 text-pink-500'}`}>
-                                <span className="text-[10px] font-bold uppercase opacity-80">Day</span>
-                                <span className="text-xl font-extrabold leading-none">{data.day}</span>
+                        <div className="flex items-center gap-3">
+                            {/* Day 박스: 56px -> 44px로 축소 */}
+                            <div className={`w-[44px] h-[44px] rounded-xl flex flex-col items-center justify-center shrink-0 transition-colors ${isOpen ? 'bg-pink-500 text-white shadow-lg shadow-pink-200' : 'bg-pink-50 text-pink-500'}`}>
+                                <span className="text-[8px] font-bold uppercase opacity-80 mb-[1px]">Day</span>
+                                <span className="text-lg font-extrabold leading-none">{data.day}</span>
                             </div>
-                            <div>
-                                <div className="flex items-center gap-2 mb-0.5">
-                                    <span className="text-xs font-bold text-gray-800">{data.date}</span>
-                                    <span className="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded-full">{data.tag}</span>
+                            <div className="flex flex-col justify-center">
+                                <div className="flex items-center gap-1.5 mb-0.5">
+                                    {/* 날짜 폰트 축소 */}
+                                    <span className="text-[11px] font-bold text-gray-600">{data.date}</span>
+                                    {/* 태그 패딩 축소 */}
+                                    <span className="text-[9px] px-1.5 py-[1px] bg-slate-100 text-slate-500 rounded-full font-medium">{data.tag}</span>
                                 </div>
-                                <h2 className="text-lg font-bold text-gray-900">{data.title}</h2>
+                                {/* 제목 폰트 18px -> 15px */}
+                                <h2 className="text-[15px] font-bold text-slate-800 tracking-tight">{data.title}</h2>
                             </div>
                         </div>
-                        <ChevronDown className={`text-gray-300 transition-transform ${isOpen ? 'rotate-180 text-pink-500' : ''}`} />
+                        <ChevronDown className={`text-gray-300 transition-transform duration-300 ${isOpen ? 'rotate-180 text-pink-500' : ''}`} size={18} />
                     </div>
 
-                    <div className={`transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-[3000px] opacity-100 mt-6' : 'max-h-0 opacity-0'}`}>
+                    <div className={`transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-[3000px] opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
                         {data.timeline.map((item, idx) => (
                             <TimelineItem 
                                 key={idx} 
@@ -784,23 +791,23 @@
             const dDay = diffDays > 0 ? `D-${diffDays}` : (diffDays === 0 ? 'D-Day' : `D+${Math.abs(diffDays)}`);
 
             return (
-                <div className="max-w-md mx-auto min-h-screen relative">
-                    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-pink-100">
-                        <div className="max-w-md mx-auto px-5 h-14 flex items-center justify-between">
-                            <h1 className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
-                                <Flower className="text-pink-500 animate-spin-slow" size={20} />
+                <div className="max-w-sm mx-auto min-h-screen relative bg-white/30">
+                    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-pink-50/50">
+                        <div className="max-w-sm mx-auto px-4 h-12 flex items-center justify-between">
+                            <h1 className="text-base font-extrabold text-slate-800 flex items-center gap-1.5 tracking-tight">
+                                <Flower className="text-pink-500 animate-spin-slow" size={16} />
                                 Tokyo Trip
                             </h1>
-                            <div className="bg-pink-500 text-white px-3 py-1 rounded-full text-[11px] font-bold shadow-sm shadow-pink-200">
+                            <div className="bg-gradient-to-r from-pink-400 to-pink-500 text-white px-2.5 py-0.5 rounded-full text-[10px] font-bold shadow-md shadow-pink-200">
                                 {dDay}
                             </div>
                         </div>
                     </nav>
 
-                    <main className="pt-20 px-5 pb-10">
-                        <div className="mb-8 pl-1">
-                            <h2 className="text-2xl font-black text-slate-800 mb-1">2026 Winter Trip</h2>
-                            <p className="text-sm text-slate-500 font-medium">1월 28일 - 2월 3일 (6박 7일)</p>
+                    <main className="pt-16 px-3 pb-10">
+                        <div className="mb-6 pl-1">
+                            <h2 className="text-xl font-black text-slate-800 mb-0.5 tracking-tight">2026 Winter Trip</h2>
+                            <p className="text-xs text-slate-400 font-medium">1월 28일 - 2월 3일 (6박 7일)</p>
                         </div>
 
                         {itineraryData.map((data) => (
@@ -815,9 +822,9 @@
 
                     <button 
                         onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
-                        className="fixed bottom-6 right-6 w-12 h-12 bg-slate-800 text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform z-40"
+                        className="fixed bottom-5 right-5 w-10 h-10 bg-slate-800 text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform z-40"
                     >
-                        <ChevronUp size={24} />
+                        <ChevronUp size={20} />
                     </button>
                 </div>
             );
