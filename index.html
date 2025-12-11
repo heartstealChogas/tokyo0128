@@ -79,6 +79,7 @@
             if (lineName.includes('유리카모메')) return 'bg-blue-400 text-white';
             if (lineName.includes('후쿠토신')) return 'bg-amber-700 text-white';
             if (lineName.includes('린카이')) return 'bg-teal-500 text-white';
+            if (lineName.includes('게이요')) return 'bg-red-600 text-white';
             return 'bg-slate-500 text-white';
         };
 
@@ -463,8 +464,8 @@
             {
                 day: 4,
                 date: '1.31 (토)',
-                title: '하라주쿠 & 시부야',
-                tag: '트렌드',
+                title: '하라주쿠, 시부야 & 신주쿠',
+                tag: '트렌드/밤',
                 timeline: [
                     { 
                         time: '10:30', category: 'transport', content: '하라주쿠 이동', 
@@ -503,26 +504,28 @@
                         tip: '예약 필수! 에스컬레이터 샷과 모서리 샷이 포인트.',
                         pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Omotesando+Hills&destination=Shibuya+Scramble+Square&travelmode=walking",
                         travelToNext: { 
-                            time: '15분', 
-                            line: 'F 후쿠토신선', 
+                            time: '7분', 
+                            line: 'JR 야마노테선', 
                             from: '시부야역', 
-                            to: '신주쿠산초메역'
+                            to: '신주쿠역'
                         }
                     },
                     { 
-                        time: '19:00', category: 'food', content: '저녁: 교엔 로안', 
-                        jp: '御苑 ろあん', 
-                        distance: '3.5km',
-                        desc: '신주쿠 교엔 근처 분위기 좋은 수타 소바 맛집.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shibuya+Scramble+Square&destination=Gyoen+Roan+Shinjuku&travelmode=transit",
-                        tip: '조용하게 하루 마무리하기 좋음.'
+                        time: '19:00', category: 'sightseeing', content: '신주쿠의 밤', 
+                        jp: '新宿 (Shinjuku)', 
+                        shortDesc: '오모이데 요코초 & 가부키초',
+                        distance: '도보',
+                        desc: '가부키초 네온사인 구경 후 좁은 골목의 꼬치 거리에서 저녁.',
+                        restaurants: [{ name: "오모이데 요코초", desc: "야키토리와 맥주" }],
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shibuya+Scramble+Square&destination=Omoide+Yokocho&travelmode=transit",
+                        tip: '가부키초 타워나 고질라 헤드 앞에서 인증샷 필수.'
                     }
                 ]
             },
             {
                 day: 5,
                 date: '2.1 (일)',
-                title: '아키하바라 & 일루미',
+                title: '아키하바라 & 도쿄역',
                 tag: '서브컬처',
                 timeline: [
                     { 
@@ -547,24 +550,24 @@
                         restaurants: [{ name: "규카츠 이치니산", desc: "아키하바라 대표 맛집" }],
                         pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Akihabara+Station&destination=Radio+Kaikan&travelmode=walking",
                         travelToNext: { 
-                            time: '5분', 
-                            line: 'JB 소부선', 
+                            time: '4분', 
+                            line: 'JR 야마노테선', 
                             from: '아키하바라역', 
-                            to: '스이도바시역'
+                            to: '도쿄역'
                         }
                     },
                     { 
-                        time: '15:00', category: 'activity', content: '도쿄돔 시티', 
-                        jp: 'Tokyo Dome City', 
-                        shortDesc: '윈터 일루미네이션',
-                        distance: '2.5km',
-                        desc: '무료로 즐길 수 있는 고퀄리티 일루미네이션.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Akihabara+Station&destination=Tokyo+Dome+City&travelmode=transit",
+                        time: '14:30', category: 'shopping', content: '도쿄 캐릭터 스트리트', 
+                        jp: '東京キャラクターストリート', 
+                        shortDesc: '도쿄역 이치반가',
+                        distance: '도보',
+                        desc: '지브리, 점프샵, 포켓몬 등 캐릭터 샵이 모여있는 거리.',
+                        tip: '바로 옆 라멘 스트리트에서 늦은 점심 해결 가능.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Akihabara+Station&destination=Tokyo+Character+Street&travelmode=transit",
                         travelToNext: { 
-                            time: '10분', 
-                            line: 'M 마루노우치선', 
-                            from: '고라쿠엔역', 
-                            to: '도쿄역'
+                            time: '도보 5분', 
+                            from: '이치반가', 
+                            to: '마루노우치'
                         }
                     },
                     { 
@@ -573,59 +576,62 @@
                         shortDesc: '도쿄역 앞 가로수길',
                         distance: '3.0km',
                         desc: '샴페인 골드빛 조명이 켜진 유럽풍 거리 산책.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Dome+City&destination=Marunouchi+Illumination&travelmode=transit"
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Station&destination=Marunouchi+Illumination&travelmode=walking"
                     }
                 ]
             },
             {
                 day: 6,
                 date: '2.2 (월)',
-                title: '신주쿠 & 오다이바',
-                tag: '시티/베이',
+                title: '오다이바',
+                tag: '베이 에어리어',
                 timeline: [
                     { 
-                        time: '10:00', category: 'transport', content: '신주쿠 이동', 
-                        shortDesc: '호텔 → 신주쿠',
-                        distance: '8km',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Shinjuku+Station&travelmode=transit",
+                        time: '10:30', category: 'transport', content: '오다이바 이동', 
+                        shortDesc: '호텔 → 오다이바',
+                        distance: '10km',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Teleport+Station&travelmode=transit",
                         travelToNext: { 
-                            time: '25분', 
-                            line: 'S 신주쿠선', 
-                            from: '바쿠로요코야마역', 
-                            to: '신주쿠산초메역'
-                        }
-                    },
-                    { 
-                        time: '10:45', category: 'sightseeing', content: '신주쿠 교엔 & 쇼핑', 
-                        jp: '新宿御苑', 
-                        shortDesc: '도심 속 정원 산책',
-                        distance: '도보 10분',
-                        desc: '신카이 마코토 "언어의 정원" 배경지. 쇼핑은 이세탄/루미네 추천.',
-                        tip: '점심으로 우동신(오픈런) 또는 츠케멘 추천.',
-                        restaurants: [{ name: "우동신", desc: "극강의 쫄깃함" }],
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shinjuku+Sanchome+Station&destination=Shinjuku+Gyoen+National+Garden&travelmode=walking",
-                        travelToNext: { 
-                            time: '25분', 
-                            line: 'JR 사이쿄선', 
-                            from: '신주쿠역', 
+                            time: '30분', 
+                            line: 'JR 게이요선+린카이선', 
+                            from: '핫초보리역', 
                             to: '도쿄텔레포트역'
                         }
                     },
                     { 
-                        time: '14:30', category: 'sightseeing', content: '오다이바 해변공원', 
+                        time: '11:30', category: 'sightseeing', content: '오다이바 해변공원', 
                         shortDesc: '건담 & 자유의 여신상',
-                        distance: '10km',
-                        desc: '도쿄텔레포트역에서 도보 이동. 건담 구경 후 해변 산책.',
+                        distance: '도보',
+                        desc: '다이버시티 건담 구경하고 아쿠아시티/덱스 구경.',
                         pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Teleport+Station&destination=Odaiba+Marine+Park&travelmode=walking",
-                        travelToNext: { time: '도보 10분', from: '해변', to: '아쿠아시티' }
+                        travelToNext: { time: '도보', from: '공원', to: '레스토랑' }
                     },
                     { 
-                        time: '17:00', category: 'food', content: '쿠아아이나 버거', 
+                        time: '13:00', category: 'food', content: '점심: 쿠아아이나 버거', 
                         jp: 'KUA`AINA', 
-                        shortDesc: '레인보우 브릿지 뷰 저녁',
+                        shortDesc: '레인보우 브릿지 뷰',
                         distance: '800m',
-                        desc: '창가 자리에 앉으면 야경이 끝내줌.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Odaiba+Marine+Park&destination=Kua+Aina+Aqua+City&travelmode=walking"
+                        desc: '창가 자리에 앉으면 오다이바 전경이 한눈에.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Odaiba+Marine+Park&destination=Kua+Aina+Aqua+City&travelmode=walking",
+                        travelToNext: { time: '도보', from: '아쿠아시티', to: '다이버시티' }
+                    },
+                    { 
+                        time: '15:00', category: 'shopping', content: '오다이바 쇼핑', 
+                        jp: 'DiverCity Tokyo', 
+                        shortDesc: '다이버시티 & 덱스',
+                        distance: '도보',
+                        desc: '쇼핑몰 구경 및 카페 휴식. 조이폴리스 등 실내 즐길거리.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Kua+Aina+Aqua+City&destination=DiverCity+Tokyo+Plaza&travelmode=walking",
+                        travelToNext: { time: '도보', from: '다이버시티', to: '야경스팟' }
+                    },
+                    { 
+                        time: '18:00', category: 'view', content: '오다이바 야경', 
+                        jp: 'Odaiba Night View',
+                        shortDesc: '레인보우 브릿지 야경',
+                        distance: '도보',
+                        desc: '반짝이는 레인보우 브릿지와 도쿄타워 뷰 감상하며 저녁 식사.',
+                        restaurants: [{ name: "킹 오브 더 파이러츠", desc: "해적 컨셉 레스토랑 (뷰 좋음)" }],
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=DiverCity+Tokyo+Plaza&destination=Statue+of+Liberty+Odaiba&travelmode=walking"
                     }
                 ]
             },
