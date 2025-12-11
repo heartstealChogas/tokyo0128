@@ -396,13 +396,28 @@
                             time: '30분', 
                             line: 'JR 게이요선', 
                             from: '마이하마역', 
-                            to: '핫초보리역'
+                            to: '도쿄역'
                         }
                     },
                     {
-                        time: '21:30', category: 'return', content: '숙소 복귀',
+                        time: '21:20', category: 'food', content: '저녁: 키지 마루노우치',
+                        jp: 'きじ 丸の内店',
+                        shortDesc: '오코노미야끼 맛집',
+                        distance: '도보',
+                        desc: '도쿄역 바로 앞 TOKIA 빌딩 지하. 오사카풍 오코노미야끼.',
+                        tip: '라스트 오더 확인 필요 (보통 22:00).',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Station&destination=Kiji+Marunouchi&travelmode=walking",
+                        travelToNext: {
+                            time: '15분',
+                            line: '도보/택시',
+                            from: '도쿄역',
+                            to: '숙소'
+                        }
+                    },
+                    {
+                        time: '22:30', category: 'return', content: '숙소 복귀',
                         shortDesc: '휴식',
-                        desc: '편의점에서 야식 구매 후 휴식.'
+                        desc: '배부르게 먹고 숙소로 복귀.'
                     }
                 ]
             },
@@ -431,15 +446,25 @@
                         distance: '도보 5분',
                         tip: '웨이팅 있음. 대량 구매 추천.',
                         pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Ginza+Station&destination=Pain+Maison+Ginza&travelmode=walking",
-                        travelToNext: { time: '도보 10분', from: '판 메종', to: '긴자 식스' }
+                        travelToNext: { time: '도보 5분', from: '판 메종', to: '규카츠' }
+                    },
+                    {
+                        time: '11:30', category: 'food', content: '점심: 규카츠 모토무라',
+                        jp: '牛かつ もと村 銀座店',
+                        shortDesc: '긴자점',
+                        distance: '도보',
+                        desc: '돌판에 구워먹는 규카츠. 한국인 입맛에 딱.',
+                        tip: '웨이팅이 길 수 있으니 오픈런 추천.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Pain+Maison+Ginza&destination=Gyukatsu+Motomura+Ginza&travelmode=walking",
+                        travelToNext: { time: '도보 10분', from: '규카츠', to: '긴자 식스' }
                     },
                     { 
-                        time: '12:00', category: 'shopping', content: '긴자 쇼핑 & 하브스', 
+                        time: '13:00', category: 'shopping', content: '긴자 쇼핑 & 하브스', 
                         jp: 'HARBS', 
                         shortDesc: '루미네 유라쿠초점',
                         distance: '500m',
-                        desc: '긴자 식스, 유니클로 구경 후 하브스에서 크레이프 케이크.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Pain+Maison+Ginza&destination=HARBS+Lumine+Yurakucho&travelmode=walking",
+                        desc: '긴자 식스, 유니클로 구경 후 하브스에서 크레이프 케이크 디저트.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Gyukatsu+Motomura+Ginza&destination=HARBS+Lumine+Yurakucho&travelmode=walking",
                         travelToNext: { 
                             time: '15분', 
                             line: 'H 히비야선', 
@@ -631,13 +656,27 @@
                             time: '15분',
                             line: '도보/택시',
                             from: '도쿄역',
+                            to: '가야바초'
+                        }
+                    },
+                    {
+                        time: '19:30', category: 'food', content: '저녁: 쿠시카츠 타나카',
+                        jp: '串カツ田中 茅場町店',
+                        shortDesc: '가야바초점',
+                        distance: '숙소 근처',
+                        desc: '오사카 명물 꼬치튀김. 숙소 근처에서 가볍게 한잔하며 마무리.',
+                        restaurants: [{ name: "쿠시카츠", desc: "연근, 소고기, 치즈 꼬치 추천" }],
+                        pathUrl: "https://www.google.com/maps/search/?api=1&query=Kushikatsu+Tanaka+Kayabacho",
+                        travelToNext: {
+                            time: '도보 3분',
+                            from: '식당',
                             to: '숙소'
                         }
                     },
                     {
-                        time: '20:00', category: 'return', content: '숙소 복귀',
-                        shortDesc: '도보 또는 택시',
-                        desc: '도쿄역에서 숙소까지 가깝습니다. (택시 추천)'
+                        time: '21:00', category: 'return', content: '숙소 복귀',
+                        shortDesc: '도보',
+                        desc: '숙소 바로 근처라 편하게 복귀.'
                     }
                 ]
             },
