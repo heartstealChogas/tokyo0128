@@ -58,7 +58,7 @@
         import { 
             Plane, Hotel, MapPin, Utensils, ShoppingBag, Camera, Star, Zap, Train, 
             Moon, Sun, ChevronDown, ChevronUp, Coffee, Flower, Navigation, Map, 
-            Clock, ArrowDown, ExternalLink, Footprints
+            Clock, ArrowDown, ExternalLink, Footprints, Home
         } from 'lucide-react';
 
         // --- 1. 유틸리티 & 아이콘 ---
@@ -97,6 +97,7 @@
                 case 'activity': return <Zap className={`${className} text-white`} />;
                 case 'view': return <Moon className={`${className} text-white`} />;
                 case 'sunset': return <Sun className={`${className} text-white`} />;
+                case 'return': return <Home className={`${className} text-white`} />;
                 default: return <div className="w-2 h-2 rounded-full bg-white"></div>;
             }
         };
@@ -114,27 +115,28 @@
                 case 'activity': return 'bg-red-500';
                 case 'view': return 'bg-indigo-600';
                 case 'sunset': return 'bg-orange-500';
+                case 'return': return 'bg-slate-600';
                 default: return 'bg-gray-400';
             }
         }
 
         // --- 2. 컴포넌트 ---
 
-        // 이동 정보 (수정됨: 핑크 라인 + 블랙 텍스트)
+        // 이동 정보
         const TravelConnector = ({ travel }) => {
             if (!travel) return null;
             return (
-                <div className="relative h-8 my-1">
-                    {/* 수직선: 그레이 -> 핑크 변경 */}
+                <div className="relative h-12 my-0">
+                    {/* 수직선: 핑크색으로 변경 */}
                     <div className="absolute left-[19px] top-0 bottom-0 w-[2px] bg-pink-200"></div>
                     
-                    {/* 텍스트 정보: 블랙으로 변경, 라인 옆에 배치 */}
-                    <div className="absolute left-[32px] top-1/2 -translate-y-1/2 flex items-center gap-2">
-                         <div className="flex items-center gap-1.5 text-[11px] font-bold text-black bg-white/80 pr-2 py-1 rounded">
-                            {travel.line ? <Train size={12} className="text-pink-500" /> : <Footprints size={12} className="text-pink-500" />}
+                    {/* 텍스트 정보: 선 위에 겹쳐서 배치 (z-index 활용) */}
+                    <div className="absolute left-[20px] top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 w-max max-w-[200px]">
+                         <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-700 bg-white border border-pink-100 shadow-sm px-2 py-1 rounded-full whitespace-nowrap">
+                            {travel.line ? <Train size={10} className="text-pink-500 shrink-0" /> : <Footprints size={10} className="text-pink-500 shrink-0" />}
                             <span>{travel.time}</span>
                             {travel.line && (
-                                <span className={`px-1.5 py-[1px] rounded-[3px] text-[9px] font-bold leading-tight ${getLineColor(travel.line)}`}>
+                                <span className={`px-1 py-[0.5px] rounded-[2px] text-[9px] font-bold leading-none ${getLineColor(travel.line)}`}>
                                     {travel.line.split(' ')[0]}
                                 </span>
                             )}
@@ -158,12 +160,12 @@
                             <span className="text-[11px] font-bold text-slate-500 font-mono mb-1">{item.time}</span>
                             
                             {/* 아이콘 */}
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm z-10 border-2 border-white ${getCategoryBg(item.category)}`}>
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm z-20 border-2 border-white ${getCategoryBg(item.category)}`}>
                                 <CategoryIcon type={item.category} />
                             </div>
 
-                            {/* 연결선 */}
-                            <div className="w-[2px] bg-gray-100 flex-1 min-h-[20px] -mt-1 mb-[-4px]"></div>
+                            {/* 연결선 (핑크색) */}
+                            <div className="w-[2px] bg-pink-200 flex-1 min-h-[20px] -mt-1 mb-[-4px]"></div>
                         </div>
 
                         {/* 오른쪽 컨텐츠 카드 */}
@@ -186,22 +188,22 @@
                                         {item.jp && <p className="text-[11px] text-slate-400 font-medium mt-0.5">{item.jp}</p>}
                                     </div>
                                     
-                                    {/* 액션 버튼 (항상 노출, 작게) */}
-                                    <div className="flex gap-1.5">
+                                    {/* 액션 버튼 (크기 증가) */}
+                                    <div className="flex gap-2">
                                         <a 
                                             href={mapUrl} target="_blank" rel="noreferrer"
                                             onClick={(e) => e.stopPropagation()}
-                                            className="w-7 h-7 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-500 transition-colors border border-slate-100"
+                                            className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-500 transition-colors border border-slate-100"
                                         >
-                                            <MapPin size={14} />
+                                            <MapPin size={18} />
                                         </a>
                                         {item.pathUrl && (
                                             <a 
                                                 href={item.pathUrl} target="_blank" rel="noreferrer"
                                                 onClick={(e) => e.stopPropagation()}
-                                                className="w-7 h-7 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-green-50 hover:text-green-600 transition-colors border border-slate-100"
+                                                className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:bg-green-50 hover:text-green-600 transition-colors border border-slate-100"
                                             >
-                                                <Navigation size={14} />
+                                                <Navigation size={18} />
                                             </a>
                                         )}
                                     </div>
@@ -269,7 +271,7 @@
                     >
                         <div className="flex items-center gap-4">
                             {/* 날짜 박스 */}
-                            <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center transition-colors ${isOpen ? 'bg-pink-500 text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-pink-50 group-hover:text-pink-500'}`}>
+                            <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center transition-colors ${isOpen ? 'bg-pink-50 text-white' : 'bg-slate-50 text-slate-400 group-hover:bg-pink-50 group-hover:text-pink-500'}`}>
                                 <span className="text-[10px] font-bold uppercase tracking-wider opacity-70">Day</span>
                                 <span className="text-2xl font-black leading-none -mt-0.5">{data.day}</span>
                             </div>
@@ -342,7 +344,13 @@
                         distance: '300m',
                         desc: '도쿄의 전통과 현대가 섞인 야경 명소.',
                         tip: '편의점(세븐일레븐) 들러서 내일 아침 간식 사서 복귀',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tsujihan+Nihonbashi&destination=Nihombashi+Bridge&travelmode=walking"
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tsujihan+Nihonbashi&destination=Nihombashi+Bridge&travelmode=walking",
+                        travelToNext: { time: '도보 15분', from: '니혼바시', to: '숙소' }
+                    },
+                    {
+                        time: '21:30', category: 'return', content: '숙소 복귀',
+                        shortDesc: '휴식 및 다음날 준비',
+                        desc: '내일 디즈니랜드를 위해 일찍 휴식.'
                     }
                 ]
             },
@@ -383,7 +391,18 @@
                         time: '20:30', category: 'sightseeing', content: '불꽃놀이 & 퇴장', 
                         shortDesc: '스카이 풀 오브 컬러',
                         desc: '폐장 시간까지 즐기고 JR 타고 복귀.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Disneyland&destination=Keio+Presso+Inn+Nihombashi+Kayabacho&travelmode=transit"
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Disneyland&destination=Keio+Presso+Inn+Nihombashi+Kayabacho&travelmode=transit",
+                        travelToNext: { 
+                            time: '30분', 
+                            line: 'JR 게이요선', 
+                            from: '마이하마역', 
+                            to: '핫초보리역'
+                        }
+                    },
+                    {
+                        time: '21:30', category: 'return', content: '숙소 복귀',
+                        shortDesc: '휴식',
+                        desc: '편의점에서 야식 구매 후 휴식.'
                     }
                 ]
             },
@@ -457,7 +476,18 @@
                         distance: '500m',
                         desc: '닭가슴살 카츠(사사미카츠)가 입에서 녹음.',
                         pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Roppongi+Hills&destination=Imakatsu+Roppongi&travelmode=walking",
-                        tip: '예약 안했으면 웨이팅 각오해야 함.'
+                        tip: '예약 안했으면 웨이팅 각오해야 함.',
+                        travelToNext: {
+                            time: '25분',
+                            line: 'H 히비야선',
+                            from: '롯폰기역',
+                            to: '가야바초역'
+                        }
+                    },
+                    {
+                        time: '22:00', category: 'return', content: '숙소 복귀',
+                        shortDesc: '하루 마무리',
+                        desc: '롯폰기에서 히비야선 타고 직통으로 복귀.'
                     }
                 ]
             },
@@ -480,12 +510,13 @@
                         }
                     },
                     { 
-                        time: '11:00', category: 'food', content: '로스트비프 오노', 
-                        jp: 'Roast Beef Ohno', 
+                        time: '11:00', category: 'food', content: '아후리 라멘 (유자 라멘)', 
+                        jp: 'AFURI 原宿', 
                         shortDesc: '하라주쿠점 점심',
                         distance: '도보 5분',
-                        desc: '산더미 로스트비프 덮밥.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Harajuku+Station&destination=Roast+Beef+Ohno+Harajuku&travelmode=walking",
+                        desc: '상큼한 유자시오 라멘. 하라주쿠의 힙한 분위기와 잘 어울림.',
+                        restaurants: [{ name: "유자시오 라멘", desc: "시그니처 메뉴" }],
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Harajuku+Station&destination=Afuri+Harajuku&travelmode=walking",
                         travelToNext: { time: '도보', from: '하라주쿠', to: '오모테산도' }
                     },
                     { 
@@ -493,7 +524,7 @@
                         shortDesc: '쇼핑과 카페 투어',
                         distance: '300m',
                         tip: '랄프로렌 카페, 키디랜드, 휴먼메이드 등 구경',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Roast+Beef+Ohno+Harajuku&destination=Omotesando+Hills&travelmode=walking",
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Afuri+Harajuku&destination=Omotesando+Hills&travelmode=walking",
                         travelToNext: { time: '도보 15분', from: '오모테산도', to: '시부야' }
                     },
                     { 
@@ -518,7 +549,18 @@
                         desc: '가부키초 네온사인 구경 후 좁은 골목의 꼬치 거리에서 저녁.',
                         restaurants: [{ name: "오모이데 요코초", desc: "야키토리와 맥주" }],
                         pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shibuya+Scramble+Square&destination=Omoide+Yokocho&travelmode=transit",
-                        tip: '가부키초 타워나 고질라 헤드 앞에서 인증샷 필수.'
+                        tip: '가부키초 타워나 고질라 헤드 앞에서 인증샷 필수.',
+                        travelToNext: {
+                            time: '20분',
+                            line: 'S 신주쿠선',
+                            from: '신주쿠산초메역',
+                            to: '바쿠로요코야마역'
+                        }
+                    },
+                    {
+                        time: '22:00', category: 'return', content: '숙소 복귀',
+                        shortDesc: '하루 마무리',
+                        desc: '신주쿠선 타고 숙소 근처로 복귀.'
                     }
                 ]
             },
@@ -546,13 +588,21 @@
                         shortDesc: '라디오회관 & 전자상가',
                         distance: '300m',
                         desc: '애니메이션 굿즈, 피규어, 전자제품 쇼핑.',
-                        tip: '라디오회관만 봐도 1시간 순삭. 점심은 근처 규카츠 추천.',
-                        restaurants: [{ name: "규카츠 이치니산", desc: "아키하바라 대표 맛집" }],
+                        tip: '라디오회관만 봐도 1시간 순삭.',
                         pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Akihabara+Station&destination=Radio+Kaikan&travelmode=walking",
-                        travelToNext: { 
-                            time: '4분', 
-                            line: 'JR 야마노테선', 
-                            from: '아키하바라역', 
+                        travelToNext: { time: '도보', from: '전자상가', to: '식당' }
+                    },
+                    {
+                        time: '12:30', category: 'food', content: '점심: 로스트비프 오노',
+                        jp: 'Roast Beef Ohno',
+                        shortDesc: '아키하바라점',
+                        distance: '도보',
+                        desc: '산더미 로스트비프 덮밥. 비주얼과 맛 모두 잡음.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Radio+Kaikan&destination=Roast+Beef+Ohno+Akihabara&travelmode=walking",
+                        travelToNext: {
+                            time: '4분',
+                            line: 'JR 야마노테선',
+                            from: '아키하바라역',
                             to: '도쿄역'
                         }
                     },
@@ -576,7 +626,18 @@
                         shortDesc: '도쿄역 앞 가로수길',
                         distance: '3.0km',
                         desc: '샴페인 골드빛 조명이 켜진 유럽풍 거리 산책.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Station&destination=Marunouchi+Illumination&travelmode=walking"
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Station&destination=Marunouchi+Illumination&travelmode=walking",
+                        travelToNext: {
+                            time: '15분',
+                            line: '도보/택시',
+                            from: '도쿄역',
+                            to: '숙소'
+                        }
+                    },
+                    {
+                        time: '20:00', category: 'return', content: '숙소 복귀',
+                        shortDesc: '도보 또는 택시',
+                        desc: '도쿄역에서 숙소까지 가깝습니다. (택시 추천)'
                     }
                 ]
             },
@@ -587,24 +648,31 @@
                 tag: '베이 에어리어',
                 timeline: [
                     { 
-                        time: '10:30', category: 'transport', content: '오다이바 이동', 
-                        shortDesc: '호텔 → 오다이바',
-                        distance: '10km',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Teleport+Station&travelmode=transit",
+                        time: '10:00', category: 'activity', content: 'CREATIVE MUSEUM TOKYO', 
+                        jp: 'TODA BUILDING 6F', 
+                        shortDesc: '최신 전시 관람',
+                        distance: '도보 15분',
+                        desc: '숙소에서 도보로 이동 가능한 교바시의 새로운 핫플레이스.',
+                        tip: '전시 일정 미리 확인 필요.',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=TODA+BUILDING&travelmode=walking",
                         travelToNext: { 
-                            time: '30분', 
-                            line: 'JR 게이요선+린카이선', 
-                            from: '핫초보리역', 
-                            to: '도쿄텔레포트역'
+                            time: '20분', 
+                            line: 'G 긴자선+유리카모메', 
+                            from: '교바시/신바시', 
+                            to: '오다이바' 
                         }
                     },
                     { 
-                        time: '11:30', category: 'sightseeing', content: '오다이바 해변공원', 
-                        shortDesc: '건담 & 자유의 여신상',
-                        distance: '도보',
-                        desc: '다이버시티 건담 구경하고 아쿠아시티/덱스 구경.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Teleport+Station&destination=Odaiba+Marine+Park&travelmode=walking",
-                        travelToNext: { time: '도보', from: '공원', to: '레스토랑' }
+                        time: '12:30', category: 'transport', content: '오다이바 이동', 
+                        shortDesc: '교바시 → 오다이바',
+                        distance: '7km',
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=TODA+BUILDING&destination=Odaiba-kaihinkoen+Station&travelmode=transit",
+                        travelToNext: { 
+                            time: '30분', 
+                            line: 'U 유리카모메', 
+                            from: '시오도메/신바시', 
+                            to: '오다이바'
+                        }
                     },
                     { 
                         time: '13:00', category: 'food', content: '점심: 쿠아아이나 버거', 
@@ -631,7 +699,18 @@
                         distance: '도보',
                         desc: '반짝이는 레인보우 브릿지와 도쿄타워 뷰 감상하며 저녁 식사.',
                         restaurants: [{ name: "킹 오브 더 파이러츠", desc: "해적 컨셉 레스토랑 (뷰 좋음)" }],
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=DiverCity+Tokyo+Plaza&destination=Statue+of+Liberty+Odaiba&travelmode=walking"
+                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=DiverCity+Tokyo+Plaza&destination=Statue+of+Liberty+Odaiba&travelmode=walking",
+                        travelToNext: {
+                            time: '35분',
+                            line: 'U 유리카모메',
+                            from: '다이바역',
+                            to: '시오도메/가야바초'
+                        }
+                    },
+                    {
+                        time: '21:00', category: 'return', content: '숙소 복귀',
+                        shortDesc: '마지막 밤',
+                        desc: '유리카모메 타고 야경 보며 복귀. 짐 정리.'
                     }
                 ]
             },
