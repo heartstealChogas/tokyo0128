@@ -74,7 +74,6 @@
         };
 
         const CategoryIcon = ({ type }) => {
-            // 아이콘 사이즈 축소 (w-3.5 -> w-3)
             const className = "w-3 h-3 text-white";
             switch (type) {
                 case 'food': return <Utensils className={className} />;
@@ -127,7 +126,6 @@
                 styleClass = getLineColor(travel.line);
             }
 
-            // 배지 사이즈 축소: min-w-[40px] -> min-w-[32px], padding 줄임, 폰트 축소
             return (
                 <div className={`relative z-10 bg-white px-1.5 py-0.5 rounded-md border shadow-[0_2px_4px_rgba(0,0,0,0.03)] flex flex-col items-center justify-center min-w-[32px] ${styleClass}`}>
                     <span className="text-[8px] font-bold leading-none mb-0.5 opacity-80">{modeText}</span>
@@ -139,19 +137,17 @@
         const TimelineItem = ({ item, isLast }) => {
             const [isOpen, setIsOpen] = useState(false);
             const hasDetails = item.tip || (item.restaurants && item.restaurants.length > 0) || item.desc;
+            
+            // API 호출 없이 순수 Google Maps 검색 링크 생성 (API 키 필요 없음)
             const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.jp || item.content)}`;
 
             return (
                 <div className="flex w-full">
-                    {/* [Left] Timeline Track: 너비 60px -> 45px로 축소 */}
                     <div className="w-[45px] flex flex-col items-center shrink-0 relative">
-                        
-                        {/* Icon Node: w-8 h-8 -> w-6 h-6로 축소 */}
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center z-20 border-[2px] border-white shadow-md ${getCategoryColor(item.category)}`}>
                             <CategoryIcon type={item.category} />
                         </div>
 
-                        {/* Vertical Line & Badge */}
                         {!isLast && (
                             <div className="flex-1 flex flex-col items-center w-full relative">
                                 <div className="w-[1.5px] bg-pink-100 h-3"></div>
@@ -167,13 +163,11 @@
                         )}
                     </div>
 
-                    {/* [Right] Content Card: 패딩 및 폰트 사이즈 전체 축소 */}
                     <div className="flex-1 pb-4 pl-1 min-w-0">
                         <div 
                             className={`bg-white rounded-2xl p-3 border border-pink-50 soft-shadow relative transition-all ${isOpen ? 'ring-1 ring-pink-200' : ''}`}
                             onClick={() => hasDetails && setIsOpen(!isOpen)}
                         >
-                            {/* Header */}
                             <div className="flex justify-between items-start gap-2">
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-baseline gap-1.5 mb-0.5">
@@ -184,15 +178,12 @@
                                             </span>
                                         )}
                                     </div>
-                                    {/* 제목 폰트 16px -> 14px */}
                                     <h3 className="font-bold text-slate-800 text-sm leading-tight mb-0.5 truncate pr-1">
                                         {item.content}
                                     </h3>
-                                    {/* 일본어 폰트 축소 */}
                                     {item.jp && <p className="text-[10px] text-gray-400 truncate">{item.jp}</p>}
                                 </div>
 
-                                {/* Map Buttons: 32px -> 26px로 축소 */}
                                 <div className="flex gap-1.5 shrink-0">
                                     <a 
                                         href={mapUrl} 
@@ -217,14 +208,12 @@
                                 </div>
                             </div>
 
-                            {/* Short Desc: 폰트 12px -> 11px */}
                             {!isOpen && item.shortDesc && (
                                 <p className="text-[11px] text-slate-500 mt-1.5 line-clamp-1 border-t border-dashed border-pink-50 pt-1.5">
                                     {item.shortDesc}
                                 </p>
                             )}
 
-                            {/* Expanded Content */}
                             {isOpen && hasDetails && (
                                 <div className="mt-2 pt-2 border-t border-pink-50 animate-fadeIn space-y-2">
                                     {item.desc && <p className="text-[11px] text-gray-600 leading-relaxed break-keep">{item.desc}</p>}
@@ -265,23 +254,18 @@
                 <div className="mb-4 last:mb-20">
                     <div 
                         onClick={onClick}
-                        // 패딩 p-4 -> p-3, 둥글기 rounded-2xl -> rounded-xl (비율 고려)
                         className={`bg-white rounded-2xl p-3 soft-shadow border border-white cursor-pointer flex items-center justify-between transition-all duration-200 ${isOpen ? 'ring-1 ring-pink-200' : 'hover:scale-[1.01]'}`}
                     >
                         <div className="flex items-center gap-3">
-                            {/* Day 박스: 56px -> 44px로 축소 */}
                             <div className={`w-[44px] h-[44px] rounded-xl flex flex-col items-center justify-center shrink-0 transition-colors ${isOpen ? 'bg-pink-500 text-white shadow-lg shadow-pink-200' : 'bg-pink-50 text-pink-500'}`}>
                                 <span className="text-[8px] font-bold uppercase opacity-80 mb-[1px]">Day</span>
                                 <span className="text-lg font-extrabold leading-none">{data.day}</span>
                             </div>
                             <div className="flex flex-col justify-center">
                                 <div className="flex items-center gap-1.5 mb-0.5">
-                                    {/* 날짜 폰트 축소 */}
                                     <span className="text-[11px] font-bold text-gray-600">{data.date}</span>
-                                    {/* 태그 패딩 축소 */}
                                     <span className="text-[9px] px-1.5 py-[1px] bg-slate-100 text-slate-500 rounded-full font-medium">{data.tag}</span>
                                 </div>
-                                {/* 제목 폰트 18px -> 15px */}
                                 <h2 className="text-[15px] font-bold text-slate-800 tracking-tight">{data.title}</h2>
                             </div>
                         </div>
@@ -301,7 +285,7 @@
             );
         };
 
-        // --- Data ---
+        // --- Data (하드코딩된 데이터, API 호출 없음) ---
         const itineraryData = [
             {
                 day: 1,
@@ -315,7 +299,7 @@
                         shortDesc: '니혼바시 가야바초 호텔',
                         distance: '65km',
                         tip: '체크인 후 짐만 풀고 바로 저녁 식사 이동',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Narita+Airport&destination=Keio+Presso+Inn+Nihombashi+Kayabacho&travelmode=transit",
+                        pathUrl: "#",
                         travelToNext: { time: '도보 10분', from: '호텔', to: '츠지한' }
                     },
                     { 
@@ -325,7 +309,7 @@
                         distance: '400m',
                         desc: '제이타쿠동(해산물 덮밥) 전문점. 다 먹고 도미 육수(타이다시) 요청 필수.',
                         restaurants: [{ name: "우메(梅)", desc: "기본 메뉴로도 충분히 훌륭함" }],
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tsujihan+Nihonbashi&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '도보 5분', from: '츠지한', to: '니혼바시 다리' }
                     },
                     { 
@@ -335,7 +319,7 @@
                         distance: '300m',
                         desc: '도쿄의 전통과 현대가 섞인 야경 명소.',
                         tip: '편의점(세븐일레븐) 들러서 내일 아침 간식 사서 복귀',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tsujihan+Nihonbashi&destination=Nihombashi+Bridge&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '도보 15분', from: '니혼바시', to: '숙소' }
                     },
                     {
@@ -355,7 +339,7 @@
                         time: '08:00', category: 'transport', content: '출발', 
                         shortDesc: '숙소 → 디즈니랜드',
                         distance: '12km',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Tokyo+Disneyland&travelmode=transit",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '20분', 
                             line: 'JR 게이요선', 
@@ -370,7 +354,7 @@
                         distance: '도보 5분',
                         desc: '입장하자마자 앱으로 미녀와 야수 DPA(유료 패스) 구매.',
                         tip: '입구 근처 샵보다 안쪽이 덜 붐빔.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Maihama+Station&destination=Tokyo+Disneyland+Entrance&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '종일', from: '파크 내', to: '파크 내' }
                     },
                     { 
@@ -382,7 +366,7 @@
                         time: '20:30', category: 'sightseeing', content: '불꽃놀이 & 퇴장', 
                         shortDesc: '스카이 풀 오브 컬러',
                         desc: '폐장 시간까지 즐기고 JR 타고 복귀.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Disneyland&destination=Keio+Presso+Inn+Nihombashi+Kayabacho&travelmode=transit",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '30분', 
                             line: 'JR 게이요선', 
@@ -397,7 +381,7 @@
                         distance: '도보',
                         desc: '도쿄역 바로 앞 TOKIA 빌딩 지하. 오사카풍 오코노미야끼.',
                         tip: '라스트 오더 확인 필요 (보통 22:00).',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Station&destination=Kiji+Marunouchi&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: {
                             time: '15분',
                             line: '도보/택시',
@@ -422,7 +406,7 @@
                         time: '10:00', category: 'transport', content: '긴자 이동', 
                         shortDesc: '호텔 → 긴자역',
                         distance: '2.5km',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Ginza+Station&travelmode=transit",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '10분', 
                             line: 'H 히비야선', 
@@ -436,7 +420,7 @@
                         shortDesc: '소금빵 원조 맛집',
                         distance: '도보 5분',
                         tip: '웨이팅 있음. 대량 구매 추천.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Ginza+Station&destination=Pain+Maison+Ginza&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '도보 5분', from: '판 메종', to: '규카츠' }
                     },
                     {
@@ -446,7 +430,7 @@
                         distance: '도보',
                         desc: '돌판에 구워먹는 규카츠. 한국인 입맛에 딱.',
                         tip: '웨이팅이 길 수 있으니 오픈런 추천.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Pain+Maison+Ginza&destination=Gyukatsu+Motomura+Ginza&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '도보 10분', from: '규카츠', to: '긴자 식스' }
                     },
                     { 
@@ -455,7 +439,7 @@
                         shortDesc: '루미네 유라쿠초점',
                         distance: '500m',
                         desc: '긴자 식스, 유니클로 구경 후 하브스에서 크레이프 케이크 디저트.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Gyukatsu+Motomura+Ginza&destination=HARBS+Lumine+Yurakucho&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '15분', 
                             line: 'H 히비야선', 
@@ -469,7 +453,7 @@
                         shortDesc: '도쿄타워 포토 스팟',
                         distance: '2.0km',
                         desc: '프린스 시바 공원 잔디밭이 사진 명당.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=HARBS+Lumine+Yurakucho&destination=Prince+Shiba+Park&travelmode=transit",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '15분', 
                             line: 'E 오에도선', 
@@ -483,7 +467,7 @@
                         shortDesc: '게야키자카 거리',
                         distance: '1.5km',
                         tip: '도쿄타워와 함께 찍는 뷰포인트가 인기.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Prince+Shiba+Park&destination=Roppongi+Hills&travelmode=transit",
+                        pathUrl: "#",
                         travelToNext: { time: '도보 5분', from: '힐즈', to: '이마카츠' }
                     },
                     {
@@ -491,7 +475,7 @@
                         jp: 'イマカツ',
                         distance: '500m',
                         desc: '닭가슴살 카츠(사사미카츠)가 입에서 녹음.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Roppongi+Hills&destination=Imakatsu+Roppongi&travelmode=walking",
+                        pathUrl: "#",
                         tip: '예약 안했으면 웨이팅 각오해야 함.',
                         travelToNext: {
                             time: '25분',
@@ -517,7 +501,7 @@
                         time: '10:30', category: 'transport', content: '하라주쿠 이동', 
                         shortDesc: '호텔 → 하라주쿠',
                         distance: '7km',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Harajuku+Station&travelmode=transit",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '35분', 
                             line: 'C 치요다선', 
@@ -532,7 +516,7 @@
                         distance: '도보 5분',
                         desc: '상큼한 유자시오 라멘. 하라주쿠의 힙한 분위기와 잘 어울림.',
                         restaurants: [{ name: "유자시오 라멘", desc: "시그니처 메뉴" }],
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Harajuku+Station&destination=Afuri+Harajuku&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '도보', from: '하라주쿠', to: '오모테산도' }
                     },
                     { 
@@ -540,7 +524,7 @@
                         shortDesc: '쇼핑과 카페 투어',
                         distance: '300m',
                         tip: '랄프로렌 카페, 키디랜드, 휴먼메이드 등 구경',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Afuri+Harajuku&destination=Omotesando+Hills&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '도보 15분', from: '오모테산도', to: '시부야' }
                     },
                     { 
@@ -549,7 +533,7 @@
                         shortDesc: '스크램블 스퀘어 전망대',
                         distance: '1.2km',
                         tip: '예약 필수! 에스컬레이터 샷과 모서리 샷이 포인트.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Omotesando+Hills&destination=Shibuya+Scramble+Square&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '7분', 
                             line: 'JR 야마노테선', 
@@ -564,7 +548,7 @@
                         distance: '도보',
                         desc: '가부키초 네온사인 구경 후 좁은 골목의 꼬치 거리에서 저녁.',
                         restaurants: [{ name: "오모이데 요코초", desc: "야키토리와 맥주" }],
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Shibuya+Scramble+Square&destination=Omoide+Yokocho&travelmode=transit",
+                        pathUrl: "#",
                         tip: '가부키초 타워나 고질라 헤드 앞에서 인증샷 필수.',
                         travelToNext: {
                             time: '20분',
@@ -590,7 +574,7 @@
                         time: '10:30', category: 'transport', content: '아키하바라 이동', 
                         shortDesc: '호텔 → 아키하바라',
                         distance: '2.0km',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Akihabara+Station&travelmode=transit",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '5분', 
                             line: 'H 히비야선', 
@@ -605,7 +589,7 @@
                         distance: '300m',
                         desc: '애니메이션 굿즈, 피규어, 전자제품 쇼핑.',
                         tip: '라디오회관만 봐도 1시간 순삭.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Akihabara+Station&destination=Radio+Kaikan&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '도보', from: '전자상가', to: '식당' }
                     },
                     {
@@ -614,7 +598,7 @@
                         shortDesc: '아키하바라점',
                         distance: '도보',
                         desc: '산더미 로스트비프 덮밥. 비주얼과 맛 모두 잡음.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Radio+Kaikan&destination=Roast+Beef+Ohno+Akihabara&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: {
                             time: '4분',
                             line: 'JR 야마노테선',
@@ -629,7 +613,7 @@
                         distance: '도보',
                         desc: '지브리, 점프샵, 포켓몬 등 캐릭터 샵이 모여있는 거리.',
                         tip: '바로 옆 라멘 스트리트에서 늦은 점심 해결 가능.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Akihabara+Station&destination=Tokyo+Character+Street&travelmode=transit",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '도보 5분', 
                             from: '이치반가', 
@@ -642,7 +626,7 @@
                         shortDesc: '도쿄역 앞 가로수길',
                         distance: '3.0km',
                         desc: '샴페인 골드빛 조명이 켜진 유럽풍 거리 산책.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Tokyo+Station&destination=Marunouchi+Illumination&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: {
                             time: '15분',
                             line: '도보/택시',
@@ -657,7 +641,7 @@
                         distance: '숙소 근처',
                         desc: '오사카 명물 꼬치튀김. 숙소 근처에서 가볍게 한잔하며 마무리.',
                         restaurants: [{ name: "쿠시카츠", desc: "연근, 소고기, 치즈 꼬치 추천" }],
-                        pathUrl: "https://www.google.com/maps/search/?api=1&query=Kushikatsu+Tanaka+Kayabacho",
+                        pathUrl: "#",
                         travelToNext: {
                             time: '도보 3분',
                             from: '식당',
@@ -684,7 +668,7 @@
                         distance: '도보 15분',
                         desc: '숙소에서 도보로 이동 가능한 교바시의 새로운 핫플레이스.',
                         tip: '전시 일정 미리 확인 필요.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=TODA+BUILDING&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '20분', 
                             line: 'G 긴자선+유리카모메', 
@@ -696,7 +680,7 @@
                         time: '12:30', category: 'transport', content: '오다이바 이동', 
                         shortDesc: '교바시 → 오다이바',
                         distance: '7km',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=TODA+BUILDING&destination=Odaiba-kaihinkoen+Station&travelmode=transit",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '30분', 
                             line: 'U 유리카모메', 
@@ -710,7 +694,7 @@
                         shortDesc: '레인보우 브릿지 뷰',
                         distance: '800m',
                         desc: '창가 자리에 앉으면 오다이바 전경이 한눈에.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Odaiba+Marine+Park&destination=Kua+Aina+Aqua+City&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '도보', from: '아쿠아시티', to: '다이버시티' }
                     },
                     { 
@@ -719,7 +703,7 @@
                         shortDesc: '다이버시티 & 덱스',
                         distance: '도보',
                         desc: '쇼핑몰 구경 및 카페 휴식. 조이폴리스 등 실내 즐길거리.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Kua+Aina+Aqua+City&destination=DiverCity+Tokyo+Plaza&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '도보', from: '다이버시티', to: '야경스팟' }
                     },
                     { 
@@ -729,11 +713,11 @@
                         distance: '도보',
                         desc: '반짝이는 레인보우 브릿지와 도쿄타워 뷰 감상하며 저녁 식사.',
                         restaurants: [{ name: "킹 오브 더 파이러츠", desc: "해적 컨셉 레스토랑 (뷰 좋음)" }],
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=DiverCity+Tokyo+Plaza&destination=Statue+of+Liberty+Odaiba&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: {
                             time: '35분',
-                            line: 'U 유리카모메',
-                            from: '다이바역',
+                            line: 'U 유리카모메', 
+                            from: '다이바역', 
                             to: '시오도메/가야바초'
                         }
                     },
@@ -761,7 +745,7 @@
                         shortDesc: '가성비 훌륭한 노포',
                         distance: '500m',
                         desc: '마지막으로 든든한 덮밥이나 스키야키 정식.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=Miyoshiya+Ningyocho&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { time: '도보', from: '식당', to: '호텔' }
                     },
                     { 
@@ -769,7 +753,7 @@
                         shortDesc: '리무진 버스 탑승',
                         distance: '65km',
                         desc: 'T-CAT(도심공항터미널)에서 리무진 버스 타고 편하게 공항으로.',
-                        pathUrl: "https://www.google.com/maps/dir/?api=1&origin=Keio+Presso+Inn+Nihombashi+Kayabacho&destination=T-CAT&travelmode=walking",
+                        pathUrl: "#",
                         travelToNext: { 
                             time: '60분', 
                             line: '리무진 버스', 
