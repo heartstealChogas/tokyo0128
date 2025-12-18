@@ -20,7 +20,7 @@
 
         body {
             font-family: "Pretendard Variable", "Pretendard", sans-serif;
-            background-color: #fdf2f8; /* 더 밝고 부드러운 핑크 배경 */
+            background-color: #fdf2f8;
             color: #111;
             -webkit-tap-highlight-color: transparent;
         }
@@ -32,7 +32,6 @@
         .animate-spin-slow { animation: spin 8s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* 부드러운 카드 그림자 효과 */
         .soft-shadow {
             box-shadow: 4px 4px 10px rgba(236, 72, 153, 0.05), -4px -4px 10px rgba(255, 255, 255, 0.8);
         }
@@ -134,12 +133,25 @@
             );
         };
 
+        // *** 수정된 TimelineItem 컴포넌트 ***
         const TimelineItem = ({ item, isLast }) => {
             const [isOpen, setIsOpen] = useState(false);
             const hasDetails = item.tip || (item.restaurants && item.restaurants.length > 0) || item.desc;
             
-            // API 호출 없이 순수 Google Maps 검색 링크 생성 (API 키 필요 없음)
-            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.jp || item.content)}`;
+            // 1. 장소 검색 URL 생성 (일본어 우선, 없으면 한글 내용)
+            const searchQuery = encodeURIComponent(item.jp || item.content);
+            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${searchQuery}`;
+
+            // 2. 길찾기 URL 생성 (데이터에 pathUrl이 없으면 travelToNext 정보를 이용해 자동 생성)
+            let navUrl = item.pathUrl;
+            
+            // pathUrl이 '#'이거나 비어있고, 이동 정보(travelToNext)가 있는 경우 자동 생성
+            if ((!navUrl || navUrl === "#") && item.travelToNext && item.travelToNext.from && item.travelToNext.to) {
+                const origin = encodeURIComponent(item.travelToNext.from);
+                const destination = encodeURIComponent(item.travelToNext.to);
+                // travelmode: walking(도보), transit(대중교통)
+                navUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=transit`;
+            }
 
             return (
                 <div className="flex w-full">
@@ -185,6 +197,7 @@
                                 </div>
 
                                 <div className="flex gap-1.5 shrink-0">
+                                    {/* 지도 검색 버튼 */}
                                     <a 
                                         href={mapUrl} 
                                         target="_blank" 
@@ -194,9 +207,11 @@
                                     >
                                         <MapPin size={13} />
                                     </a>
-                                    {item.pathUrl && (
+                                    
+                                    {/* 길찾기 버튼 (유효한 경로 URL이 있을 때만 표시) */}
+                                    {navUrl && navUrl !== "#" && (
                                         <a 
-                                            href={item.pathUrl} 
+                                            href={navUrl} 
                                             target="_blank" 
                                             rel="noreferrer"
                                             onClick={(e) => e.stopPropagation()}
@@ -285,7 +300,7 @@
             );
         };
 
-        // --- Data (하드코딩된 데이터, API 호출 없음) ---
+        // --- Data ---
         const itineraryData = [
             {
                 day: 1,
@@ -300,7 +315,7 @@
                         distance: '65km',
                         tip: '체크인 후 짐만 풀고 바로 저녁 식사 이동',
                         pathUrl: "#",
-                        travelToNext: { time: '도보 10분', from: '호텔', to: '츠지한' }
+                        travelToNext: { time: '도보 10분', from: '케이오 프레소인 가야바초', to: '츠지한 본점' }
                     },
                     { 
                         time: '19:00', category: 'food', content: '저녁: 츠지한', 
@@ -310,7 +325,7 @@
                         desc: '제이타쿠동(해산물 덮밥) 전문점. 다 먹고 도미 육수(타이다시) 요청 필수.',
                         restaurants: [{ name: "우메(梅)", desc: "기본 메뉴로도 충분히 훌륭함" }],
                         pathUrl: "#",
-                        travelToNext: { time: '도보 5분', from: '츠지한', to: '니혼바시 다리' }
+                        travelToNext: { time: '도보 5분', from: '츠지한 본점', to: '니혼바시 다리' }
                     },
                     { 
                         time: '20:30', category: 'sightseeing', content: '니혼바시 야경', 
@@ -320,7 +335,7 @@
                         desc: '도쿄의 전통과 현대가 섞인 야경 명소.',
                         tip: '편의점(세븐일레븐) 들러서 내일 아침 간식 사서 복귀',
                         pathUrl: "#",
-                        travelToNext: { time: '도보 15분', from: '니혼바시', to: '숙소' }
+                        travelToNext: { time: '도보 15분', from: '니혼바시', to: '케이오 프레소인 가야바초' }
                     },
                     {
                         time: '21:30', category: 'return', content: '숙소 복귀',
@@ -355,7 +370,7 @@
                         desc: '입장하자마자 앱으로 미녀와 야수 DPA(유료 패스) 구매.',
                         tip: '입구 근처 샵보다 안쪽이 덜 붐빔.',
                         pathUrl: "#",
-                        travelToNext: { time: '종일', from: '파크 내', to: '파크 내' }
+                        travelToNext: { time: '종일', from: '도쿄 디즈니랜드', to: '도쿄 디즈니랜드' }
                     },
                     { 
                         time: '13:00', category: 'food', content: '점심 식사', 
@@ -386,7 +401,7 @@
                             time: '15분',
                             line: '도보/택시',
                             from: '도쿄역',
-                            to: '숙소'
+                            to: '케이오 프레소인 가야바초'
                         }
                     },
                     {
@@ -416,12 +431,12 @@
                     },
                     { 
                         time: '10:30', category: 'food', content: '판 메종 긴자', 
-                        jp: 'Pain Maison', 
+                        jp: 'Pain Maison Ginza', 
                         shortDesc: '소금빵 원조 맛집',
                         distance: '도보 5분',
                         tip: '웨이팅 있음. 대량 구매 추천.',
                         pathUrl: "#",
-                        travelToNext: { time: '도보 5분', from: '판 메종', to: '규카츠' }
+                        travelToNext: { time: '도보 5분', from: '판 메종 긴자', to: '규카츠 모토무라 긴자' }
                     },
                     {
                         time: '11:30', category: 'food', content: '점심: 규카츠 모토무라',
@@ -431,11 +446,11 @@
                         desc: '돌판에 구워먹는 규카츠. 한국인 입맛에 딱.',
                         tip: '웨이팅이 길 수 있으니 오픈런 추천.',
                         pathUrl: "#",
-                        travelToNext: { time: '도보 10분', from: '규카츠', to: '긴자 식스' }
+                        travelToNext: { time: '도보 10분', from: '규카츠 모토무라 긴자', to: '긴자 식스' }
                     },
                     { 
                         time: '13:00', category: 'shopping', content: '긴자 쇼핑 & 하브스', 
-                        jp: 'HARBS', 
+                        jp: 'HARBS Lumine Yurakucho', 
                         shortDesc: '루미네 유라쿠초점',
                         distance: '500m',
                         desc: '긴자 식스, 유니클로 구경 후 하브스에서 크레이프 케이크 디저트.',
@@ -463,12 +478,12 @@
                     },
                     { 
                         time: '18:00', category: 'view', content: '롯폰기 일루미네이션', 
-                        jp: 'Roppongi Illumination', 
+                        jp: 'Roppongi Hills', 
                         shortDesc: '게야키자카 거리',
                         distance: '1.5km',
                         tip: '도쿄타워와 함께 찍는 뷰포인트가 인기.',
                         pathUrl: "#",
-                        travelToNext: { time: '도보 5분', from: '힐즈', to: '이마카츠' }
+                        travelToNext: { time: '도보 5분', from: '롯폰기 힐즈', to: '이마카츠 롯폰기' }
                     },
                     {
                         time: '20:00', category: 'food', content: '저녁: 이마카츠',
@@ -517,7 +532,7 @@
                         desc: '상큼한 유자시오 라멘. 하라주쿠의 힙한 분위기와 잘 어울림.',
                         restaurants: [{ name: "유자시오 라멘", desc: "시그니처 메뉴" }],
                         pathUrl: "#",
-                        travelToNext: { time: '도보', from: '하라주쿠', to: '오모테산도' }
+                        travelToNext: { time: '도보', from: 'AFURI 하라주쿠', to: '오모테산도' }
                     },
                     { 
                         time: '13:00', category: 'shopping', content: '오모테산도 & 캣스트리트', 
@@ -525,7 +540,7 @@
                         distance: '300m',
                         tip: '랄프로렌 카페, 키디랜드, 휴먼메이드 등 구경',
                         pathUrl: "#",
-                        travelToNext: { time: '도보 15분', from: '오모테산도', to: '시부야' }
+                        travelToNext: { time: '도보 15분', from: '오모테산도', to: '시부야 스크램블 스퀘어' }
                     },
                     { 
                         time: '16:30', category: 'sunset', content: '시부야 스카이', 
@@ -590,11 +605,11 @@
                         desc: '애니메이션 굿즈, 피규어, 전자제품 쇼핑.',
                         tip: '라디오회관만 봐도 1시간 순삭.',
                         pathUrl: "#",
-                        travelToNext: { time: '도보', from: '전자상가', to: '식당' }
+                        travelToNext: { time: '도보', from: '아키하바라 라디오회관', to: '로스트비프 오노 아키하바라' }
                     },
                     {
                         time: '12:30', category: 'food', content: '점심: 로스트비프 오노',
-                        jp: 'Roast Beef Ohno',
+                        jp: 'Roast Beef Ohno Akihabara',
                         shortDesc: '아키하바라점',
                         distance: '도보',
                         desc: '산더미 로스트비프 덮밥. 비주얼과 맛 모두 잡음.',
@@ -616,13 +631,13 @@
                         pathUrl: "#",
                         travelToNext: { 
                             time: '도보 5분', 
-                            from: '이치반가', 
-                            to: '마루노우치'
+                            from: '도쿄 캐릭터 스트리트', 
+                            to: '마루노우치 일루미네이션'
                         }
                     },
                     { 
                         time: '18:00', category: 'view', content: '마루노우치 일루미네이션', 
-                        jp: '丸の内', 
+                        jp: 'Marunouchi Illumination', 
                         shortDesc: '도쿄역 앞 가로수길',
                         distance: '3.0km',
                         desc: '샴페인 골드빛 조명이 켜진 유럽풍 거리 산책.',
@@ -631,7 +646,7 @@
                             time: '15분',
                             line: '도보/택시',
                             from: '도쿄역',
-                            to: '가야바초'
+                            to: '가야바초역'
                         }
                     },
                     {
@@ -644,8 +659,8 @@
                         pathUrl: "#",
                         travelToNext: {
                             time: '도보 3분',
-                            from: '식당',
-                            to: '숙소'
+                            from: '쿠시카츠 타나카 가야바초',
+                            to: '케이오 프레소인 가야바초'
                         }
                     },
                     {
@@ -663,7 +678,7 @@
                 timeline: [
                     { 
                         time: '10:00', category: 'activity', content: 'CREATIVE MUSEUM TOKYO', 
-                        jp: 'TODA BUILDING 6F', 
+                        jp: 'CREATIVE MUSEUM TOKYO', 
                         shortDesc: '최신 전시 관람',
                         distance: '도보 15분',
                         desc: '숙소에서 도보로 이동 가능한 교바시의 새로운 핫플레이스.',
@@ -672,8 +687,8 @@
                         travelToNext: { 
                             time: '20분', 
                             line: 'G 긴자선+유리카모메', 
-                            from: '교바시/신바시', 
-                            to: '오다이바' 
+                            from: '교바시역', 
+                            to: '오다이바카이힌코엔역' 
                         }
                     },
                     { 
@@ -684,31 +699,31 @@
                         travelToNext: { 
                             time: '30분', 
                             line: 'U 유리카모메', 
-                            from: '시오도메/신바시', 
-                            to: '오다이바'
+                            from: '시오도메역', 
+                            to: '오다이바카이힌코엔역'
                         }
                     },
                     { 
                         time: '13:00', category: 'food', content: '점심: 쿠아아이나 버거', 
-                        jp: 'KUA`AINA', 
+                        jp: 'KUA`AINA Aqua City Odaiba', 
                         shortDesc: '레인보우 브릿지 뷰',
                         distance: '800m',
                         desc: '창가 자리에 앉으면 오다이바 전경이 한눈에.',
                         pathUrl: "#",
-                        travelToNext: { time: '도보', from: '아쿠아시티', to: '다이버시티' }
+                        travelToNext: { time: '도보', from: '아쿠아시티 오다이바', to: '다이버시티 도쿄' }
                     },
                     { 
                         time: '15:00', category: 'shopping', content: '오다이바 쇼핑', 
-                        jp: 'DiverCity Tokyo', 
+                        jp: 'DiverCity Tokyo Plaza', 
                         shortDesc: '다이버시티 & 덱스',
                         distance: '도보',
                         desc: '쇼핑몰 구경 및 카페 휴식. 조이폴리스 등 실내 즐길거리.',
                         pathUrl: "#",
-                        travelToNext: { time: '도보', from: '다이버시티', to: '야경스팟' }
+                        travelToNext: { time: '도보', from: '다이버시티 도쿄', to: '오다이바 해변공원' }
                     },
                     { 
                         time: '18:00', category: 'view', content: '오다이바 야경', 
-                        jp: 'Odaiba Night View',
+                        jp: 'Odaiba Marine Park',
                         shortDesc: '레인보우 브릿지 야경',
                         distance: '도보',
                         desc: '반짝이는 레인보우 브릿지와 도쿄타워 뷰 감상하며 저녁 식사.',
@@ -718,7 +733,7 @@
                             time: '35분',
                             line: 'U 유리카모메', 
                             from: '다이바역', 
-                            to: '시오도메/가야바초'
+                            to: '가야바초역'
                         }
                     },
                     {
@@ -737,16 +752,16 @@
                     { 
                         time: '10:00', category: 'accommodation', content: '체크아웃', 
                         desc: '짐 맡기고 마지막 점심 식사',
-                        travelToNext: { time: '도보 10분', from: '숙소', to: '닌교초' }
+                        travelToNext: { time: '도보 10분', from: '케이오 프레소인 가야바초', to: '닌교초 미요시테이' }
                     },
                     { 
                         time: '11:30', category: 'food', content: '점심: 미요시테이', 
-                        jp: '三好弥', 
+                        jp: 'Miyoshitei', 
                         shortDesc: '가성비 훌륭한 노포',
                         distance: '500m',
                         desc: '마지막으로 든든한 덮밥이나 스키야키 정식.',
                         pathUrl: "#",
-                        travelToNext: { time: '도보', from: '식당', to: '호텔' }
+                        travelToNext: { time: '도보', from: '닌교초', to: 'T-CAT' }
                     },
                     { 
                         time: '14:00', category: 'flight', content: '공항 이동 (T-CAT)', 
